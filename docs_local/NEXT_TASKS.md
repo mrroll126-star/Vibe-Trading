@@ -1,6 +1,6 @@
 # Next Tasks
 
-Status: updated after Tailscale/API auth preparation on 2026-07-05.
+Status: updated after Tailscale dry run was deferred and LLM setup planning was prepared on 2026-07-05.
 
 Basic local deployment now works:
 
@@ -8,18 +8,18 @@ Basic local deployment now works:
 * Frontend: `127.0.0.1:5899`
 * CLI: executable
 
-## Recommended Next Step 1: Configure LLM Provider Safely
+## Recommended Next Step 1: Configure LLM Provider And Run Minimal Research Task
 
 Priority: high.
 
 Business value:
 
-* Enables real agent research workflows instead of only health/UI checks.
+* Confirms the original Vibe-Trading Agent workflow can complete one real research task before we add more data-source customization.
 
 Options:
 
-* Local Ollama, no cloud API key.
-* OpenRouter/OpenAI/DeepSeek/etc. with API key.
+* OpenRouter as the simplest first cloud option.
+* Local Ollama as the no-cloud option, if a suitable local model is installed.
 * OpenAI Codex ChatGPT OAuth using `vibe-trading provider login openai-codex`.
 
 Boundary:
@@ -27,8 +27,61 @@ Boundary:
 * Create only local ignored config such as `agent/.env`.
 * Do not commit real keys.
 * See `docs_local/LOCAL_ENV_SETUP.md` for placeholder-only examples.
+* See `docs_local/MINIMAL_RESEARCH_TASK.md` for the first approved test.
 
-## Recommended Next Step 2: Investigate yfinance TLS Failure
+Why this comes first:
+
+* The most important next proof is that the unmodified Agent can start, use tools/data, and write a useful research answer.
+* After that baseline works, custom A-share integration will be much safer and easier to evaluate.
+
+## Recommended Next Step 2: Run Full US Data Source Smoke Test
+
+Priority: high.
+
+Business value:
+
+* Expands the quick AAPL/MSFT check to all planned symbols and windows.
+* Gives a better baseline before changing provider architecture.
+
+Suggested command:
+
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --timeout 15 --output-dir local_reports
+```
+
+Boundary:
+
+* Results stay under ignored `local_reports/`.
+* Missing API-key providers should remain skipped.
+
+## Recommended Next Step 3: Design Custom Provider Plugin Framework
+
+Priority: medium.
+
+Business value:
+
+* Defines how future custom data adapters can be added without breaking upstream compatibility.
+* Prepares a safer path for `a-stock-data` later.
+
+Boundary:
+
+* Design first.
+* Do not implement `a-stock-data` yet.
+* Do not change existing provider chain without explicit approval.
+
+## Recommended Next Step 4: Plan `a-stock-data` Adapter
+
+Priority: medium.
+
+Business value:
+
+* Improves future A-share coverage after the original workflow is proven.
+
+Boundary:
+
+* Planning document only until the user approves implementation.
+
+## Recommended Next Step 5: Choose Whether To Fix yfinance TLS
 
 Priority: high for US/HK equity research.
 
@@ -40,7 +93,7 @@ yfinance SSLError: curl: (35) TLS connect error ... OPENSSL_internal:invalid lib
 
 Business value:
 
-* yfinance is one of the no-key US/HK data fallbacks.
+* yfinance is one of the no-key US/HK data fallbacks, but quick smoke test showed Yahoo direct, Sina, and Eastmoney already provide some US coverage.
 
 Suggested approach:
 
@@ -54,7 +107,7 @@ Current diagnostic result:
 * `AAPL` 5d history fails with `curl_cffi` / libcurl TLS error.
 * This should not block testing every US provider because direct Yahoo, Stooq, Sina, Eastmoney, and key-gated providers use different paths.
 
-## Recommended Next Step 3: Prepare Tailscale Auth Dry Run
+## Deferred: Tailscale Auth Dry Run
 
 Priority: medium.
 
@@ -69,10 +122,20 @@ Current status:
 * Shell tools are explicitly disabled.
 * Tailscale is not installed or not available on `PATH`, so Tailnet dry run has not been executed.
 
-Next action:
+Decision:
 
-* Install and log in to Tailscale on the Mac mini.
-* Then follow `docs_local/REMOTE_ACCESS_RUNBOOK.md`.
+* Deferred for this project stage.
+* The user keeps the Mac App Store variant of Tailscale because existing virtual domains and other projects depend on it.
+* Remote control is temporarily handled through a remote desktop tool.
+* Web UI remote exposure is not a current-stage goal.
+
+Future re-enable conditions:
+
+* Tailnet-only.
+* `API_AUTH_KEY` configured.
+* Shell tools disabled.
+* No public exposure.
+* No `agent/.env` commit.
 
 ## Completed: US Data Source Smoke Test
 

@@ -160,3 +160,21 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No remote service was exposed.
 - No authentication logic was changed.
 - `agent/.env` remains untracked and must not be committed.
+
+## 2026-07-05 Closeout And LLM Provider Prep
+
+### Updated
+
+- Marked Tailscale dry run as deferred.
+- Documented that the user is keeping the Mac App Store Tailscale variant because existing virtual domains and other projects depend on it.
+- Updated `LOCAL_ENV_SETUP.md` with provider names, exact environment variables, and safe editing steps.
+- Added `MINIMAL_RESEARCH_TASK.md` for the first approved post-LLM validation.
+- Reordered `NEXT_TASKS.md` around proving the original Agent workflow before adding new data-source integrations.
+
+### Security
+
+- No real LLM provider key was configured.
+- Existing `API_AUTH_KEY` in `agent/.env` was not changed.
+- Shell tools remain disabled.
+- No remote Web UI exposure was attempted.
+- No business code was changed.

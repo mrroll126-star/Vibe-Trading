@@ -1,6 +1,15 @@
 # Tailscale Deployment Plan
 
-Status: plan plus local-port verification. A local ignored `agent/.env` with `API_AUTH_KEY` has been created. Tailscale is not installed on this Mac yet, so no Tailnet service was started and no remote access was enabled.
+Status: deferred for this project stage. A local ignored `agent/.env` with `API_AUTH_KEY` has been created, but Tailscale CLI dry run is intentionally skipped.
+
+Decision update on 2026-07-05:
+
+* The user currently uses the Mac App Store variant of Tailscale.
+* The user's existing Tailscale setup already has virtual domains and other projects depending on it.
+* The user does not want to reinstall or switch to the standalone Tailscale variant for this project.
+* This project will not depend on the `tailscale` CLI in the current stage.
+* Remote control needs are temporarily handled through a remote desktop tool instead of exposing this Web UI over Tailnet.
+* Remote Web UI exposure is not a current-stage goal.
 
 ## 1. Recommended Local Run Mode
 
@@ -299,7 +308,32 @@ tailscale ip -4
 
 Then follow `docs_local/REMOTE_ACCESS_RUNBOOK.md`.
 
-## 12. Recommended Binding Choice
+## 12. Deferred Dry Run Decision
+
+The Tailnet Web access dry run is deferred, not cancelled forever.
+
+Reason:
+
+* Tailscale already works for the user's other local projects through the Mac App Store app.
+* Reinstalling or changing Tailscale just to expose this project is unnecessary right now.
+* The user expects to use Codex remotely through a graphical/remote-desktop workflow first.
+
+Current boundary:
+
+* Do not expose backend port `8899` or frontend port `5899` for remote Web access in this stage.
+* Keep `API_AUTH_KEY` in `agent/.env`.
+* Keep `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+* Do not commit `agent/.env`.
+
+Future re-enable conditions:
+
+* Access must be Tailnet-only.
+* `API_AUTH_KEY` must be configured.
+* Shell tools must remain disabled unless explicitly approved.
+* No public internet exposure.
+* No secrets committed to Git.
+
+## 13. Recommended Binding Choice
 
 When Tailscale is installed, prefer this order:
 

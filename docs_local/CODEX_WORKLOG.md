@@ -197,3 +197,29 @@ What was not done:
 - No business code was modified.
 - No provider chain was modified.
 - No push was performed.
+
+## 2026-07-05 Project Closeout And LLM Provider Preparation
+
+User decided to defer Tailscale CLI dry run.
+
+Actions performed:
+
+1. Confirmed the repository state on `feature/bootstrap-local-setup`.
+2. Confirmed `agent/.env` exists and is ignored by Git.
+3. Confirmed `API_AUTH_KEY` exists without printing the full value.
+4. Confirmed `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+5. Confirmed no real LLM provider key is present in `agent/.env`.
+6. Recorded the Tailscale dry run as deferred.
+7. Read `agent/src/providers/llm_providers.json` and README provider notes.
+8. Updated local LLM setup guidance.
+9. Added `docs_local/MINIMAL_RESEARCH_TASK.md`.
+10. Updated next-task ordering.
+
+What was not done:
+
+- No real LLM key was configured.
+- No research task was run.
+- No Tailscale Web UI exposure was attempted.
+- No business code was modified.
+- No provider chain was modified.
+- No `a-stock-data` integration was attempted.

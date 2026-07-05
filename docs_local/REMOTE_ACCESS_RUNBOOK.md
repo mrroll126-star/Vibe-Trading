@@ -1,8 +1,22 @@
 # Remote Access Runbook
 
-Status: prepared on 2026-07-05. Tailscale is not installed on this Mac yet, so the Tailnet dry run has not been executed.
+Status: prepared on 2026-07-05, then deferred for this project stage.
+
+Decision update:
+
+* The user keeps the Mac App Store variant of Tailscale.
+* Existing virtual domains and other projects already depend on the current Tailscale setup.
+* This Vibe-Trading project will not require Tailscale CLI access right now.
+* Remote control will temporarily use a remote desktop tool instead of exposing the Web UI over Tailnet.
+* Keep this runbook for future use; do not delete it.
 
 This guide is for starting Vibe-Trading on the home Mac mini and accessing it from another device through Tailscale. It assumes remote access stays inside your private Tailnet and is not exposed to the public internet.
+
+Current recommendation:
+
+* Do not run the remote Web UI exposure steps yet.
+* Continue using local access or remote desktop access.
+* Revisit this runbook only if the user explicitly re-enables Tailnet Web access for this project.
 
 ## 1. 本地启动前检查
 
@@ -219,3 +233,16 @@ Shell tools risk:
 * Do not paste the key into AI chats.
 * Do not store LLM provider keys until you intentionally configure a provider.
 * Stop services when you are done using remote access.
+
+## 8. Deferred Status
+
+Tailscale dry run is deferred.
+
+Future Web access may be re-enabled only when all of these are true:
+
+* The user explicitly approves it.
+* Access stays Tailnet-only.
+* `API_AUTH_KEY` is configured.
+* `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+* `agent/.env` remains ignored and uncommitted.
+* No public ports are opened.
