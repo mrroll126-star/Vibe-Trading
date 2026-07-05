@@ -259,3 +259,25 @@ What was not done:
 - No shell tools were enabled.
 - No remote service was exposed.
 - No `a-stock-data` integration was attempted.
+
+## 2026-07-05 Phase 0 Closeout
+
+Actions performed:
+
+1. Confirmed current branch and Git status.
+2. Confirmed `agent/.env` is ignored by Git.
+3. Confirmed `agent/runs/` is ignored by Git.
+4. Added `PHASE_0_BOOTSTRAP_SUMMARY.md`.
+5. Added `PHASE_1_PLAN.md`.
+6. Updated `ROADMAP.md`.
+7. Rewrote `NEXT_TASKS.md` around Phase 1 sequence.
+8. Updated changelog and minimal research task conclusion.
+
+What was not done:
+
+- No business code was modified.
+- No new research task was run.
+- No `a-stock-data` integration was attempted.
+- No yfinance fix was attempted.
+- No model configuration was changed.
+- No ignored runtime files were committed.

@@ -1,201 +1,129 @@
 # Next Tasks
 
-Status: updated after LLM provider strategy design on 2026-07-05.
+Status: Phase 0 completed. Phase 1 is ready for user confirmation.
 
-Basic local deployment now works:
+Basic local deployment works:
 
 * Backend: `127.0.0.1:8899`
 * Frontend: `127.0.0.1:5899`
 * CLI: executable
+* DeepSeek provider: verified
+* Minimal native Agent research task: completed
 
-## Completed: Configure One Main LLM Provider
-
-Status: completed with DeepSeek on 2026-07-05.
-
-Result:
-
-* Provider: `deepseek`.
-* Model: `deepseek-v4-pro`.
-* Direct hello test passed.
-* JSON-output prompt test passed.
-* Minimal research task completed.
-
-## Completed: Run Minimal Research Task
-
-Status: completed with caveats.
-
-Result:
-
-* Run ID: `20260705_162441_99_2b6f81`.
-* Prompt used bare `SPY`.
-* Agent completed successfully and produced a readable Chinese market overview.
-* Data tools were called.
-* Some data calls failed due to bare symbol format and Yahoo/yfinance network issues.
-
-Next small follow-up:
-
-* Repeat with explicit project-style symbol `SPY.US` or `AAPL.US`.
-
-## Recommended Next Step 1: Run Full US Data Source Smoke Test
+## Phase 1 Recommended Task 1: Full US Data Source Smoke Test
 
 Priority: high.
 
 Business value:
 
-* Now that the original Agent workflow works, validate US data sources more thoroughly with explicit `.US` symbols.
-* Expands the quick AAPL/MSFT check to all planned symbols and windows.
-* Gives a better baseline before changing provider architecture.
+* Validates US data-source reliability with explicit project-style symbols.
+* Produces a baseline before changing provider architecture.
+* Helps decide which providers should be preferred for US research.
+
+Suggested symbols:
+
+* `AAPL.US`
+* `SPY.US`
+* `MSFT.US`
+* `NVDA.US`
+* `TSLA.US`
+* `QQQ.US`
 
 Suggested command:
 
 ```bash
-.venv/bin/python scripts/smoke_test_us_data_sources.py --timeout 15 --output-dir local_reports
+.venv/bin/python scripts/smoke_test_us_data_sources.py --symbols AAPL.US,SPY.US,MSFT.US,NVDA.US,TSLA.US,QQQ.US --timeout 15 --output-dir local_reports
 ```
 
 Boundary:
 
+* Test only.
+* Do not modify provider chain.
 * Results stay under ignored `local_reports/`.
-* Missing API-key providers should remain skipped.
 
-## Recommended Next Step 2: Fix Or Isolate yfinance TLS
+## Phase 1 Recommended Task 2: Symbol Normalization Design
 
 Priority: high.
 
 Business value:
 
-* yfinance and Yahoo-related paths are still noisy and can degrade US/HK research.
+* Fixes a real issue exposed by the minimal SPY task: bare `SPY` caused partial data-tool routing failures.
+* Creates a stable convention for A-share, US, HK, ETF, and index symbols.
 
-Boundary:
+Output:
 
-* Diagnose before changing dependency versions or provider code.
+* Design document first.
+* No code changes without approval.
 
-## Recommended Next Step 3: Design LLM Router
-
-Priority: medium.
-
-Business value:
-
-* Separates main reasoning, cheap summaries, vision/chart OCR, long report reading, structured JSON, and local fallback.
-* Keeps cost and quality auditable.
-
-Reference:
-
-* See `docs_local/LLM_PROVIDER_STRATEGY.md`.
-
-Boundary:
-
-* Design before implementation.
-* Do not assume current project has already validated vision model calls.
-
-## Recommended Next Step 4: Plan `a-stock-data` Adapter
+## Phase 1 Recommended Task 3: Custom Provider Plugin Framework Design
 
 Priority: medium.
 
 Business value:
 
-* Improves future A-share coverage after the original Agent workflow is proven.
+* Creates a safe extension path for local providers while preserving upstream compatibility.
+* Reduces future merge/rebase pain.
 
 Boundary:
 
-* Planning document only until the user approves implementation.
-* Do not replace existing provider chain.
+* Design only.
+* Do not replace original providers.
+* Do not change fallback chain yet.
 
-## Optional Later: Design Custom Provider Plugin Framework
+## Phase 1 Recommended Task 4: `a-stock-data` Adapter Planning
 
 Priority: medium.
 
 Business value:
 
-* Defines how future custom data adapters can be added without breaking upstream compatibility.
-* Prepares a safer path for `a-stock-data` later.
+* Prepares A-share enhancement while keeping original Vibe-Trading providers intact.
 
 Boundary:
 
-* Design first.
-* Do not implement `a-stock-data` yet.
-* Do not change existing provider chain without explicit approval.
+* Planning only.
+* No implementation yet.
+* No trading functionality.
 
-## Optional Later: Choose Whether To Fix yfinance TLS
-
-Priority: high for US/HK equity research.
-
-Observed issue:
-
-```text
-yfinance SSLError: curl: (35) TLS connect error ... OPENSSL_internal:invalid library (0)
-```
-
-Business value:
-
-* yfinance is one of the no-key US/HK data fallbacks, but quick smoke test showed Yahoo direct, Sina, and Eastmoney already provide some US coverage.
-
-Suggested approach:
-
-1. Reproduce inside `.venv` with a tiny yfinance request.
-2. Check `curl_cffi`, certificates, and OpenSSL linkage.
-3. Do not change provider code until root cause is clear.
-
-Current diagnostic result:
-
-* yfinance import succeeds.
-* `AAPL` 5d history fails with `curl_cffi` / libcurl TLS error.
-* This should not block testing every US provider because direct Yahoo, Stooq, Sina, Eastmoney, and key-gated providers use different paths.
-
-## Deferred: Tailscale Auth Dry Run
+## Phase 1 Recommended Task 5: LLM Router Design
 
 Priority: medium.
 
 Business value:
 
-* Moves toward remote access from the user's own devices.
+* Defines future task routing for DeepSeek, Qwen, Kimi, vision models, and Ollama.
+* Keeps model cost and quality auditable.
 
-Current status:
+Boundary:
 
-* Local ignored `agent/.env` now exists.
-* `API_AUTH_KEY` has been generated.
-* Shell tools are explicitly disabled.
-* Tailscale is not installed or not available on `PATH`, so Tailnet dry run has not been executed.
+* Design only.
+* Do not implement before data-source and symbol basics are cleaner.
 
-Decision:
+## Deferred / Later
 
-* Deferred for this project stage.
-* The user keeps the Mac App Store variant of Tailscale because existing virtual domains and other projects depend on it.
-* Remote control is temporarily handled through a remote desktop tool.
-* Web UI remote exposure is not a current-stage goal.
+### yfinance TLS
+
+Status: unresolved.
+
+Why later:
+
+* It is important for US/HK research, but quick smoke test showed Yahoo direct, Sina, and Eastmoney already provide some coverage.
+* Diagnose before changing dependencies or provider code.
+
+### Tailscale Web Dry Run
+
+Status: deferred by user decision.
+
+Current remote-control path:
+
+* Remote desktop tool.
 
 Future re-enable conditions:
 
 * Tailnet-only.
-* `API_AUTH_KEY` configured.
+* `API_AUTH_KEY`.
 * Shell tools disabled.
 * No public exposure.
 * No `agent/.env` commit.
-
-## Completed: US Data Source Smoke Test
-
-Status: completed as a low-risk feature.
-
-What exists now:
-
-* Script: `scripts/smoke_test_us_data_sources.py`.
-* Local ignored reports: `local_reports/`.
-* Quick command:
-
-```bash
-.venv/bin/python scripts/smoke_test_us_data_sources.py --quick --timeout 10 --output-dir local_reports
-```
-
-Latest quick result:
-
-* Working in quick test: `yahoo`, `sina`, `eastmoney`.
-* Failed or empty in quick test: `stooq`, `akshare`, `yfinance`.
-* Skipped because keys/config are missing: `tiingo`, `fmp`, `finnhub`, `alphavantage`, `local`.
-
-Recommended follow-up:
-
-* Keep the script as a baseline.
-* Do not change provider logic until repeated runs confirm which failures are stable.
-* Fix yfinance TLS separately if yfinance is important for US/HK coverage.
 
 ## Not Approved Yet
 

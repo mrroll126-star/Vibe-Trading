@@ -214,3 +214,19 @@ Next minimal rerun recommendation:
 ```text
 请生成 SPY.US 的简短市场概览，包括近期趋势、主要风险和后续关注点。不要给买卖建议。
 ```
+
+## 10. Phase 0 Conclusion
+
+The minimal native research workflow is verified.
+
+Conclusion:
+
+* DeepSeek can power the Agent.
+* The Agent can start and complete a research task.
+* The Agent can call data tools.
+* The Agent can generate a readable Chinese research summary.
+* The output can respect the no-buy/sell-advice boundary.
+
+Remaining caveat:
+
+* Symbol normalization and data-source reliability need Phase 1 work before this can be treated as a robust research production workflow.

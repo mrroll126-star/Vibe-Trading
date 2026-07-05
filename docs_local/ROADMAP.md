@@ -2,7 +2,9 @@
 
 This file tracks the local long-term plan for maintaining a private research version of Vibe-Trading.
 
-## Today: Bootstrap Local Setup
+## Phase 0: Bootstrap Local Setup
+
+Status: completed on 2026-07-05.
 
 Goal: create a clean, auditable local base without changing upstream business logic.
 
@@ -47,10 +49,38 @@ git fetch --all
 - `feature/*`: one feature or setup task per branch.
 - Backup tags: create a local tag before syncing upstream into local work.
 
-## Near-Term Milestones
+## Phase 0 Result
+
+Completed:
 
 1. Environment setup and dependency installation.
 2. Local backend/frontend run verification.
 3. Architecture discovery and documentation.
-4. Tailscale remote access design with authentication.
-5. US data source smoke test.
+4. API auth local setup.
+5. Tailscale remote-access design, later deferred by user decision.
+6. US data-source smoke test script.
+7. DeepSeek provider verification.
+8. Minimal native Agent research task.
+
+See:
+
+* `docs_local/PHASE_0_BOOTSTRAP_SUMMARY.md`
+* `docs_local/TEST_REPORT.md`
+* `docs_local/MINIMAL_RESEARCH_TASK.md`
+
+## Phase 1 Plan
+
+Status: proposed.
+
+Recommended order:
+
+1. Full US data-source smoke test with explicit `.US` symbols.
+2. Symbol normalization design.
+3. Custom provider plugin framework design.
+4. `a-stock-data` adapter planning.
+5. LLM router design.
+
+See:
+
+* `docs_local/PHASE_1_PLAN.md`
+* `docs_local/NEXT_TASKS.md`

@@ -207,3 +207,25 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - Shell tools remained disabled.
 - No remote access was exposed.
 - No business code was changed.
+
+## 2026-07-05 Phase 0 Closeout
+
+### Added
+
+- Added `docs_local/PHASE_0_BOOTSTRAP_SUMMARY.md`.
+- Added `docs_local/PHASE_1_PLAN.md`.
+
+### Updated
+
+- Updated `ROADMAP.md` to mark Phase 0 complete and link Phase 1.
+- Updated `NEXT_TASKS.md` with the recommended Phase 1 sequence.
+- Updated `CODEX_WORKLOG.md`.
+- Updated `MINIMAL_RESEARCH_TASK.md` with Phase 0 conclusion.
+
+### Security
+
+- No `agent/.env` commit.
+- No `agent/runs/` commit.
+- No business code changes.
+- No provider chain changes.
+- No new remote exposure.
