@@ -67,6 +67,51 @@ Alternative route:
 
 Use this if OpenRouter account management is easier than managing multiple direct provider accounts.
 
+### DeepSeek Model Switching
+
+Current project mechanism:
+
+* Provider is selected by `LANGCHAIN_PROVIDER`.
+* Model is selected by `LANGCHAIN_MODEL_NAME`.
+* For official DeepSeek direct API, `LANGCHAIN_PROVIDER=deepseek`.
+* The same `DEEPSEEK_API_KEY` is used when switching between supported DeepSeek model names.
+
+Validated locally on 2026-07-05:
+
+| Model | Provider doctor | Hello test | Notes |
+| -- | -- | -- | -- |
+| `deepseek-v4-pro` | passed in earlier Phase 0 verification | passed in earlier Phase 0 verification | Used for minimal research task validation. |
+| `deepseek-v4-flash` | passed | passed | Accepted by the current DeepSeek key in local test. |
+
+Important caveat:
+
+* A single DeepSeek API key can be used for `v4-flash` / `v4-pro` switching when the account has access to those models.
+* Actual availability depends on the user's DeepSeek account permissions, billing status, quota, and official DeepSeek model availability.
+* Do not commit `agent/.env`.
+* Do not paste the key into chat.
+
+How to switch:
+
+```text
+LANGCHAIN_PROVIDER=deepseek
+LANGCHAIN_MODEL_NAME=deepseek-v4-flash
+DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
+DEEPSEEK_API_KEY=<keep existing key>
+```
+
+How to switch back:
+
+```text
+LANGCHAIN_MODEL_NAME=deepseek-v4-pro
+```
+
+After changing the model:
+
+1. Save `agent/.env`.
+2. Restart the backend if it is running.
+3. Run `vibe-trading provider doctor`.
+4. Run a minimal hello test before running any research task.
+
 ### Low-Cost Fast Model
 
 Recommended:

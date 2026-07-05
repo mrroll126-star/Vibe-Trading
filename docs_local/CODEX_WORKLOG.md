@@ -401,3 +401,29 @@ What was not done:
 * No provider chain was changed.
 * No Web UI code was changed.
 * No `a-stock-data` integration was attempted.
+
+## 2026-07-05 DeepSeek v4-flash Model Switch Test
+
+User requested confirmation of DeepSeek model switching and a local switch from `deepseek-v4-pro` to `deepseek-v4-flash`.
+
+Actions performed:
+
+1. Confirmed `agent/.env` is ignored by Git.
+2. Confirmed `LANGCHAIN_PROVIDER=deepseek`, `LANGCHAIN_MODEL_NAME=deepseek-v4-pro`, DeepSeek key present, and shell tools set to `0`.
+3. Updated ignored `agent/.env` model line to `LANGCHAIN_MODEL_NAME=deepseek-v4-flash`.
+4. Ran `vibe-trading provider doctor`.
+5. Ran a minimal hello request through `src.providers.chat.ChatLLM`.
+6. Updated `TEST_REPORT.md` and `LLM_PROVIDER_STRATEGY.md`.
+
+Result:
+
+* Provider doctor succeeded with `deepseek-v4-flash`.
+* Hello test succeeded and returned `你已连接成功。`.
+* No extra DeepSeek key was required in this local test.
+
+What was not done:
+
+* No backend restart.
+* No real research task.
+* No business code change.
+* No API key printed or committed.

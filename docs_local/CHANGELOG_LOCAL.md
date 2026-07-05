@@ -361,3 +361,26 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No Web UI changes.
 - No `a-stock-data` integration.
 - No ignored runtime or secret files committed.
+
+## 2026-07-05 DeepSeek v4-flash Model Switch Test
+
+### Updated
+
+- Updated ignored local `agent/.env` model setting from `deepseek-v4-pro` to `deepseek-v4-flash`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/LLM_PROVIDER_STRATEGY.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+
+### Validation
+
+- `vibe-trading provider doctor` succeeded with `deepseek-v4-flash`.
+- Minimal hello test succeeded with `deepseek-v4-flash`.
+- No additional DeepSeek key was required in this local test.
+
+### Boundary
+
+- `agent/.env` remains ignored and must not be committed.
+- No full API key was printed.
+- No backend restart.
+- No real research task.
+- No business code changes.

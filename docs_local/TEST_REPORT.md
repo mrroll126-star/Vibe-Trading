@@ -697,3 +697,81 @@ Conclusion:
 * DeepSeek provider is usable.
 * Original Vibe-Trading Agent workflow can complete a minimal research task.
 * Data-source routing/reliability needs a follow-up test with explicit `.US` symbols.
+
+## 17. DeepSeek Model Switch Test: v4-pro To v4-flash
+
+Date: 2026-07-05.
+
+Scope:
+
+* Switch local ignored `agent/.env` model from `deepseek-v4-pro` to `deepseek-v4-flash`.
+* Do not print API keys.
+* Do not restart backend.
+* Do not run a real research task.
+* Do not modify business code.
+
+Configuration before switch:
+
+| Item | Result |
+| -- | -- |
+| `LANGCHAIN_PROVIDER` | `deepseek` |
+| `LANGCHAIN_MODEL_NAME` | `deepseek-v4-pro` |
+| `DEEPSEEK_API_KEY` | present, redacted |
+| `VIBE_TRADING_ENABLE_SHELL_TOOLS` | `0` |
+
+Configuration after switch:
+
+| Item | Result |
+| -- | -- |
+| `LANGCHAIN_PROVIDER` | `deepseek` |
+| `LANGCHAIN_MODEL_NAME` | `deepseek-v4-flash` |
+| `DEEPSEEK_API_KEY` | present, redacted |
+| `VIBE_TRADING_ENABLE_SHELL_TOOLS` | `0` |
+
+Commands:
+
+```bash
+.venv/bin/vibe-trading provider doctor
+
+.venv/bin/python - <<'PY'
+from dotenv import load_dotenv
+load_dotenv('agent/.env')
+from src.providers.chat import ChatLLM
+client = ChatLLM()
+resp = client.chat([
+    {'role': 'system', 'content': 'You are a connection test. Reply briefly.'},
+    {'role': 'user', 'content': '用一句话回答：你已连接成功。'},
+], timeout=60)
+print((resp.content or '').strip())
+PY
+```
+
+Provider doctor result:
+
+| Check | Result |
+| -- | -- |
+| Provider | `deepseek` |
+| Model | `deepseek-v4-flash` |
+| Base URL | `https://api.deepseek.com` |
+| API key | set, redacted |
+| Adapter | OpenAI-compatible |
+| Native `langchain-deepseek` package | not installed |
+| Command status | Success |
+
+Hello test result:
+
+| Check | Result |
+| -- | -- |
+| Model read from env | `deepseek-v4-flash` |
+| API key present | yes, redacted |
+| Request status | Success |
+| Elapsed time | about 2.5 seconds |
+| Response preview | `你已连接成功。` |
+
+Conclusion:
+
+* Local model switching works by changing `LANGCHAIN_MODEL_NAME` in ignored `agent/.env`.
+* The same configured DeepSeek API key was accepted for `deepseek-v4-flash` in this local test.
+* No additional key was required.
+* Actual availability still depends on the user's DeepSeek account permissions and official DeepSeek model availability.
+* To switch back, set `LANGCHAIN_MODEL_NAME=deepseek-v4-pro` in `agent/.env`, then restart backend or rerun provider tests.
