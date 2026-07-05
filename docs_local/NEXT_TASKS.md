@@ -26,6 +26,7 @@ Boundary:
 
 * Create only local ignored config such as `agent/.env`.
 * Do not commit real keys.
+* See `docs_local/LOCAL_ENV_SETUP.md` for placeholder-only examples.
 
 ## Recommended Next Step 2: Investigate yfinance TLS Failure
 
@@ -47,6 +48,12 @@ Suggested approach:
 2. Check `curl_cffi`, certificates, and OpenSSL linkage.
 3. Do not change provider code until root cause is clear.
 
+Current diagnostic result:
+
+* yfinance import succeeds.
+* `AAPL` 5d history fails with `curl_cffi` / libcurl TLS error.
+* This should not block testing every US provider because direct Yahoo, Stooq, Sina, Eastmoney, and key-gated providers use different paths.
+
 ## Recommended Next Step 3: Prepare Tailscale Auth Dry Run
 
 Priority: medium.
@@ -60,6 +67,23 @@ Boundary:
 * Do not expose services yet.
 * First create placeholder-only `.env.example.local` if approved.
 * Then configure real `API_AUTH_KEY` only in ignored local `agent/.env`.
+
+## Optional Next Step: US Data Source Smoke Test
+
+Priority: medium.
+
+Readiness:
+
+* Backend dependencies are installed, so a script can be written and run next.
+* yfinance is currently expected to fail.
+* The script should isolate providers and continue after individual failures.
+
+Recommended scope:
+
+* `yahoo`, `stooq`, `sina`, `eastmoney`, `yfinance`, optional key-gated providers, and `local` if configured.
+* Skip missing-key providers.
+* Record provider status, elapsed time, row count, fields, and error summary.
+* Do not alter provider chain or add `a-stock-data`.
 
 ## Not Approved Yet
 

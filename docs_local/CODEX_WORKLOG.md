@@ -111,3 +111,28 @@ Important findings:
 - Basic local deployment works.
 - LLM provider is not configured, so full agent research runs cannot function yet.
 - yfinance preflight failed with a curl/OpenSSL TLS error and needs follow-up before relying on yfinance.
+
+## 2026-07-05 Deployment Stabilization And Next-Step Prep
+
+Actions performed:
+
+1. Audited git status and ignored local artifacts.
+2. Confirmed `.venv/` and `frontend/node_modules/` are ignored.
+3. Confirmed no real `.env` was present.
+4. Committed the current bootstrap/deployment documentation:
+   - commit: `a348b36 docs: record local deployment setup`
+5. Read LLM provider metadata and Web UI settings code.
+6. Added placeholder-only local environment setup guidance.
+7. Reproduced yfinance TLS failure with a minimal AAPL 5-day request.
+8. Expanded Tailscale dry run plan.
+9. Assessed readiness for a future US data source smoke test.
+
+What was not done:
+
+- No push was performed.
+- No real key or `.env` file was created.
+- No dependency versions were changed.
+- No business code was modified.
+- No provider chain was changed.
+- No remote access was exposed.
+- No smoke test script was created.

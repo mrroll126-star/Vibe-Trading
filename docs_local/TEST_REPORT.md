@@ -240,3 +240,59 @@ Stop:
 ```bash
 Ctrl+C
 ```
+
+## 12. yfinance TLS Diagnostic
+
+Diagnostic date: 2026-07-05.
+
+Commands:
+
+```bash
+.venv/bin/python -c "import ssl; print(ssl.OPENSSL_VERSION)"
+.venv/bin/python -c "import certifi; print(certifi.where())"
+.venv/bin/python -m pip show yfinance curl_cffi requests certifi
+.venv/bin/python -c "import yfinance as yf; print(yf.__version__)"
+.venv/bin/python - <<'PY'
+import yfinance as yf
+try:
+    t = yf.Ticker("AAPL")
+    print(t.history(period="5d").tail())
+except Exception as e:
+    print(type(e).__name__)
+    print(str(e)[:1000])
+PY
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Python OpenSSL | `OpenSSL 3.6.3 9 Jun 2026` |
+| certifi path | `.venv/lib/python3.11/site-packages/certifi/cacert.pem` |
+| yfinance | 1.5.1 |
+| curl_cffi | 0.15.0 |
+| requests | 2.34.2 |
+| certifi | 2026.6.17 |
+| yfinance import | Success |
+| `AAPL` 5d history | Failed |
+
+Error summary:
+
+```text
+Failed to get ticker 'AAPL' reason: Failed to perform, curl: (35) Recv failure: Connection reset by peer.
+SSLError
+Failed to perform, curl: (35) TLS connect error: error:00000000:invalid library (0):OPENSSL_internal:invalid library (0).
+```
+
+Interpretation:
+
+* Python and certifi are present.
+* yfinance imports successfully.
+* Failure occurs during yfinance network access through `curl_cffi` / libcurl TLS.
+* This does not prove every US data source is broken. Direct Yahoo loader, Stooq, Eastmoney, Sina, and key-gated providers use different code paths.
+
+Recommendation:
+
+* Do not change provider code yet.
+* Before relying on yfinance, run a focused follow-up on `curl_cffi`, certificate configuration, and macOS/Homebrew OpenSSL linkage.
+* A future US provider smoke test should treat yfinance as one provider only; its failure should not fail the whole report.

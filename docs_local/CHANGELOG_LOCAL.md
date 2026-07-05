@@ -78,3 +78,28 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - Shell tools were not enabled.
 - Authentication logic was not changed.
 - Services were bound only to `127.0.0.1` during testing.
+
+## 2026-07-05 Deployment Stabilization
+
+### Git
+
+- Created local commit `a348b36 docs: record local deployment setup`.
+- No push was performed.
+
+### Added
+
+- Added `docs_local/LOCAL_ENV_SETUP.md` with placeholder-only local LLM and API auth configuration guidance.
+
+### Updated
+
+- Updated Tailscale dry run plan with verified local ports and next test steps.
+- Updated yfinance diagnostic notes.
+- Updated US data-source smoke test readiness notes.
+
+### Security
+
+- No real `.env` was created.
+- No token/API key/OAuth file was created.
+- Shell tools remain disabled.
+- No authentication logic was changed.
+- No provider chain was changed.

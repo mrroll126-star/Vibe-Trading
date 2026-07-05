@@ -217,3 +217,47 @@ Port occupied:
 
 1. Change `VIBE_BACKEND_PORT` or `VIBE_FRONTEND_PORT` for `scripts/dev`.
 2. Or pass `--port` manually to backend/frontend commands.
+
+## 10. Dry Run Preparation
+
+Verified local ports:
+
+* Backend: `127.0.0.1:8899`
+* Frontend: `127.0.0.1:5899`
+* Local UI: `http://127.0.0.1:5899`
+* Local health: `http://127.0.0.1:8899/health`
+* Local API info: `http://127.0.0.1:8899/api`
+
+Authentication behavior from code:
+
+* Loopback clients are trusted for local development.
+* Non-local sensitive API requests require `API_AUTH_KEY`.
+* If no key is set and the client is non-local, sensitive routes return 403.
+* If a key is set and the token is missing or wrong, protected requests return 401.
+
+Tailscale bind options:
+
+* Safer targeted option: bind backend/frontend to the Mac's Tailscale IP if the startup command accepts it.
+* Simpler option: bind to `0.0.0.0` only after setting `API_AUTH_KEY`, explicit CORS origins, and keeping shell tools off.
+* Do not bind non-local interfaces before authentication is configured.
+
+Next dry run plan, not yet executed:
+
+1. Create a local ignored `agent/.env` manually.
+2. Set a strong `API_AUTH_KEY`.
+3. Keep `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+4. Add explicit `CORS_ORIGINS` for local and Tailscale frontend origins.
+5. Start backend on a Tailscale-reachable bind address.
+6. Start frontend on a Tailscale-reachable bind address, with `VITE_API_URL` pointing to the backend Tailscale URL.
+7. From another Tailscale device, open the frontend URL.
+8. Verify unauthenticated sensitive requests fail.
+9. Enter/use the API key and verify authenticated requests succeed.
+10. Stop both services after the test.
+
+Example placeholder-only env values:
+
+```bash
+API_AUTH_KEY=replace_with_strong_random_key
+VIBE_TRADING_ENABLE_SHELL_TOOLS=0
+CORS_ORIGINS=http://127.0.0.1:5899,http://localhost:5899,http://replace-device-name:5899,http://replace-tailscale-ip:5899
+```

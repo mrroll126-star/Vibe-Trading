@@ -109,3 +109,46 @@ Proposed behavior:
 6. Record `success`, `failed`, or `skipped`, plus elapsed time, returned fields, row count, error summary, and whether API key is required.
 7. Write Markdown summary back to this document and JSON detail under an ignored directory such as `local_reports/`.
 8. Before writing JSON reports, update `.gitignore` to ignore `local_reports/`.
+
+## 7. yfinance Diagnostic
+
+Date: 2026-07-05.
+
+Result:
+
+* yfinance import succeeds.
+* yfinance version: 1.5.1.
+* curl_cffi version: 0.15.0.
+* `yf.Ticker("AAPL").history(period="5d")` fails.
+
+Error summary:
+
+```text
+SSLError: Failed to perform, curl: (35) TLS connect error:
+error:00000000:invalid library (0):OPENSSL_internal:invalid library (0)
+```
+
+Implication:
+
+* This may affect the `yfinance` loader.
+* It should not automatically block testing of `stooq`, direct `yahoo`, `sina`, `eastmoney`, `akshare`, or key-gated providers because they use different loader code paths.
+* Full US data-source validation should record yfinance as failed if the issue remains.
+
+## 8. Smoke Test Readiness
+
+Current judgment: can start a low-risk US smoke test script next, with constraints.
+
+Recommended scope:
+
+* Provider-by-provider independent checks.
+* Symbols normalized as `AAPL.US`, `MSFT.US`, `NVDA.US`, `TSLA.US`, `SPY.US`, `QQQ.US`.
+* Providers requiring missing keys should be `skipped`, not `failed`.
+* yfinance should be included but expected to fail until TLS is fixed.
+* Direct Yahoo, Stooq, Sina, Eastmoney, and AKShare can be tested separately.
+* Script should write JSON to an ignored local report directory only after `.gitignore` is checked or updated.
+
+Not recommended:
+
+* Do not integrate `a-stock-data` yet.
+* Do not replace the existing provider chain.
+* Do not change yfinance or curl dependency versions as part of the smoke test.
