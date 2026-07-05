@@ -333,3 +333,31 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No business code changes.
 - No provider chain changes.
 - No new remote exposure.
+
+## 2026-07-05 Symbol Normalizer Integration Plan
+
+### Added
+
+- Added `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+
+### Updated
+
+- Updated `ROADMAP.md`.
+- Updated `NEXT_TASKS.md`.
+- Updated `PRODUCT_BACKLOG.md`.
+- Updated `CODEX_WORKLOG.md`.
+- Updated `SYMBOL_NORMALIZATION_DESIGN.md`.
+
+### Decision
+
+- Do not connect the normalizer broadly yet.
+- Recommended first integration, if later approved: `get_market_data` only.
+- Recommended feature flag: `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0` for first integration.
+
+### Boundary
+
+- No business code changes.
+- No provider-chain changes.
+- No Web UI changes.
+- No `a-stock-data` integration.
+- No ignored runtime or secret files committed.

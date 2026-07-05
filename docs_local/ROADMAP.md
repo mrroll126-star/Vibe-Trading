@@ -86,9 +86,12 @@ Recommended order:
 Phase 1 foundation update:
 
 * Symbol normalization design is now a high-priority foundation task because it directly affects natural user inputs, tool routing, data-source selection, and future A-share adapter safety.
+* The pure symbol normalizer helper and unittest coverage are implemented.
+* Tool integration is not yet approved and should not be broad. The recommended first integration is a feature-flagged `get_market_data` entry-point change after A-share trading-day evidence is reviewed.
 * Design documents:
   * `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
   * `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`
+  * `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`
 
 See:
 

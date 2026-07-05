@@ -448,3 +448,21 @@ Supported now:
 Important boundary:
 
 Existing product behavior is unchanged until this helper is explicitly connected to tools or UI in a later approved task.
+
+## 9. Integration Planning Status
+
+Date: 2026-07-05.
+
+Integration design has been documented in:
+
+* `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`
+
+Current recommendation:
+
+* Do not broadly connect the normalizer yet.
+* Review A-share trading-day usage before deciding whether natural bare-code input is frequent enough to justify tool integration.
+* If implementation is approved, start with `get_market_data` only.
+* Use a disabled-by-default feature flag such as `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0` for the first integration.
+* Keep explicit symbols such as `SPY.US`, `600519.SH`, `300750.SZ`, and `00700.HK` working exactly as before.
+* Keep `get_stock_news` as the likely second integration.
+* Defer A-share specialty tools, Chinese-name resolution, and Web UI hints until the first tool integration is proven safe.

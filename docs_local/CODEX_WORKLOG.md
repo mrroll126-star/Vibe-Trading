@@ -375,3 +375,29 @@ What was not done:
 - No `a-stock-data` integration.
 - No yfinance fix.
 - No network calls from the normalizer.
+
+## 2026-07-05 Symbol Normalizer Integration Plan
+
+User requested a design-only integration plan before any tool-layer changes.
+
+Actions performed:
+
+1. Confirmed branch, Git status, helper files, and ignored sensitive/runtime paths.
+2. Read the Web UI prompt submission path, backend session flow, tool registry, and Agent tool execution path.
+3. Read symbol behavior in `get_market_data`, `get_stock_profile`, `get_stock_news`, and A-share specialty tools.
+4. Added `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+5. Updated roadmap, next tasks, backlog, symbol design, and changelog.
+
+Key conclusion:
+
+* Do not broadly connect the normalizer yet.
+* If approved after A-share trading-day evidence is reviewed, start with `get_market_data` only.
+* Use a disabled-by-default feature flag for the first integration.
+
+What was not done:
+
+* No `get_market_data` code was changed.
+* No `get_stock_news` code was changed.
+* No provider chain was changed.
+* No Web UI code was changed.
+* No `a-stock-data` integration was attempted.

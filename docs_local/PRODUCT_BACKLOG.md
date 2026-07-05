@@ -66,10 +66,13 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Impact area: data source routing, Agent tool calling, report consistency.
 * Priority: high.
 * Suggested phase: Phase 1 foundation task.
-* Requires business code change: design first; implementation later.
-* Current status: pure helper and acceptance-style tests implemented; not yet integrated into tools.
+* Requires business code change: yes for tool integration; design/helper already complete.
+* Current status: pure helper, acceptance-style tests, and integration plan implemented; not yet integrated into tools.
 * Acceptance focus: natural inputs such as `QQQ`, `600519`, `00700`, `贵州茅台`, and ambiguous multi-listing names.
 * Implementation files: `agent/src/symbols/normalizer.py`, `agent/tests/test_symbol_normalizer.py`.
+* Integration plan: `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+* Recommended next step: after A-share trading-day review, integrate only `get_market_data` behind a disabled-by-default feature flag.
+* Main risk: ambiguous inputs such as `000001` and accidental changes to currently working explicit symbols.
 
 ### 2. A-Share Data Source Enhancement
 

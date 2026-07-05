@@ -38,7 +38,7 @@ Boundary:
 
 ## Recommended Task 2: Review Symbol Normalizer Helper Before Integration
 
-Priority: high.
+Priority: high. Current status: integration plan completed; code integration still requires explicit approval.
 
 Business value:
 
@@ -57,16 +57,18 @@ See:
 * `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
 * `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`
 
-Current helper files:
+Current helper and planning files:
 
 * `agent/src/symbols/normalizer.py`
 * `agent/tests/test_symbol_normalizer.py`
+* `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`
 
-Potential next integration order:
+Recommended next integration order, after trading-day evidence is reviewed:
 
-1. Add a diagnostic CLI/helper usage path.
-2. Connect to `get_market_data` with pass-through for already-valid symbols.
-3. Connect to `get_stock_news` after confirming suffix behavior.
+1. Add feature flag `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0`.
+2. Connect only `get_market_data` first, with pass-through for already-valid symbols.
+3. Connect `get_stock_news` second if missing suffixes remain a real problem.
+4. Delay specialty A-share tools until the first integration is proven safe.
 
 ## Recommended Task 3: Plan `a-stock-data` Adapter From Real Gaps
 
