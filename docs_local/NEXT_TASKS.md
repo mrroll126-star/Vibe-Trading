@@ -1,6 +1,6 @@
 # Next Tasks
 
-Status: Phase 0 completed. Phase 1 is ready for user confirmation.
+Status: Phase 0 completed. Trading-day readiness checks completed on 2026-07-05.
 
 Basic local deployment works:
 
@@ -10,79 +10,75 @@ Basic local deployment works:
 * DeepSeek provider: verified
 * Minimal native Agent research task: completed
 
-## Phase 1 Recommended Task 1: Full US Data Source Smoke Test
+## Recommended Task 1: Execute A-Share Trading-Day Real Usage Test
 
 Priority: high.
 
 Business value:
 
-* Validates US data-source reliability with explicit project-style symbols.
-* Produces a baseline before changing provider architecture.
-* Helps decide which providers should be preferred for US research.
-
-Suggested symbols:
-
-* `AAPL.US`
-* `SPY.US`
-* `MSFT.US`
-* `NVDA.US`
-* `TSLA.US`
-* `QQQ.US`
-
-Suggested command:
-
-```bash
-.venv/bin/python scripts/smoke_test_us_data_sources.py --symbols AAPL.US,SPY.US,MSFT.US,NVDA.US,TSLA.US,QQQ.US --timeout 15 --output-dir local_reports
-```
-
-Boundary:
-
-* Test only.
-* Do not modify provider chain.
-* Results stay under ignored `local_reports/`.
-
-## Phase 1 Recommended Task 2: A-Share Trading-Day Validation
-
-Priority: high.
-
-Business value:
-
-* Confirms whether the original Vibe-Trading A-share workflow works on a real trading day.
-* Tests current-day data freshness and A-share tool behavior before adding any new provider.
-* Gives a safer baseline before planning `a-stock-data`.
+* Confirms whether the original Vibe-Trading A-share workflow is useful on a real trading day.
+* Produces evidence for whether `a-stock-data` is actually needed and where.
+* Captures data freshness, report quality, and missing-field gaps before code changes.
 
 Suggested symbols:
 
 * `600519.SH`
 * `300750.SZ`
-* `000001.SZ`
-
-Boundary:
-
-* Test only.
-* Use existing providers.
-* Do not integrate `a-stock-data`.
-* Do not ask for buy/sell advice.
 
 See:
 
 * `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`
 
-## Phase 1 Recommended Task 3: Symbol Normalization Design
+Boundary:
+
+* Test only.
+* Do not ask for buy/sell advice.
+* Do not integrate new providers.
+* Keep shell tools disabled.
+
+## Recommended Task 2: Symbol Normalization Design
 
 Priority: high.
 
 Business value:
 
-* Fixes a real issue exposed by the minimal SPY task: bare `SPY` caused partial data-tool routing failures.
-* Creates a stable convention for A-share, US, HK, ETF, and index symbols.
+* Builds on the SPY/SPY.US and A-share preflight findings.
+* Reduces tool-routing ambiguity across US, A-share, HK, ETF, and index symbols.
+* Creates a safer base before provider changes.
 
-Output:
+Boundary:
 
-* Design document first.
+* Design first.
 * No code changes without approval.
 
-## Phase 1 Recommended Task 4: Custom Provider Plugin Framework Design
+## Recommended Task 3: Plan `a-stock-data` Adapter From Real Gaps
+
+Priority: high.
+
+Business value:
+
+* Uses tomorrow's records to target the adapter where the original project is weak.
+* Avoids adding a large new source before we know the missing fields.
+
+Boundary:
+
+* Planning only unless separately approved.
+* Do not replace original providers.
+
+## Recommended Task 4: Fix Reports Loading / Runs Unknown If It Affects Use
+
+Priority: medium.
+
+Business value:
+
+* Improves daily usability and auditability.
+* Makes run history less confusing.
+
+Boundary:
+
+* Investigate only after user confirms bugfix work.
+
+## Recommended Task 5: Custom Provider Plugin Framework Design
 
 Priority: medium.
 
@@ -97,21 +93,7 @@ Boundary:
 * Do not replace original providers.
 * Do not change fallback chain yet.
 
-## Phase 1 Recommended Task 5: `a-stock-data` Adapter Planning
-
-Priority: medium.
-
-Business value:
-
-* Prepares A-share enhancement while keeping original Vibe-Trading providers intact.
-
-Boundary:
-
-* Planning only.
-* No implementation yet.
-* No trading functionality.
-
-## Phase 1 Recommended Task 6: LLM Router Design
+## Recommended Task 6: LLM Router Design
 
 Priority: medium.
 
@@ -124,6 +106,18 @@ Boundary:
 
 * Design only.
 * Do not implement before data-source and symbol basics are cleaner.
+
+## Recommended Task 7: yfinance TLS Fix
+
+Priority: low-medium.
+
+Business value:
+
+* Helps US/HK profile and yfinance-backed workflows.
+
+Boundary:
+
+* Diagnose before changing dependencies or provider code.
 
 ## Deferred / Later
 

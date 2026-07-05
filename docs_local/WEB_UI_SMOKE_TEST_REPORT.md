@@ -153,3 +153,16 @@ Recommended next product validation order:
 1. Run full US data-source smoke test with explicit `.US` symbols.
 2. Run an A-share trading-day validation plan using `600519.SH` and one additional liquid A-share symbol.
 3. Design symbol normalization before adding or changing any provider.
+
+## 8. CLI A-Share Preflight Follow-Up
+
+Date: 2026-07-05.
+
+After the Web UI smoke test, two lightweight CLI research tasks were run to prepare for the next trading day:
+
+| Symbol | Run ID | Result | Notes |
+| -- | -- | -- | -- |
+| `600519.SH` | `20260705_170327_44_d10190` | success | Output separated facts and inference and avoided buy/sell advice. |
+| `300750.SZ` | `20260705_170559_16_fc55fe` | success | Output separated facts and inference and avoided buy/sell advice. |
+
+This follow-up was not a Web UI test. It was run through CLI to reduce UI overhead and confirm that the original Agent workflow can handle two A-share names before a real trading-day trial.

@@ -259,6 +259,83 @@ See:
 * `docs_local/WEB_UI_SMOKE_TEST_REPORT.md`
 * `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`
 
+## 15. Full US Smoke Test And A-Share Preflight
+
+Date: 2026-07-05.
+
+### Full US data-source smoke test
+
+Command:
+
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --symbols AAPL.US,MSFT.US,NVDA.US,TSLA.US,SPY.US,QQQ.US --timeout 15 --output-dir local_reports
+```
+
+Result:
+
+| Status | Count |
+| -- | --: |
+| success | 40 |
+| failed | 68 |
+| skipped | 90 |
+| unsupported | 330 |
+
+Daily OHLCV provider results:
+
+| Provider | Result |
+| -- | -- |
+| yahoo | 18/18 daily checks succeeded. |
+| sina | 18/18 daily checks succeeded. |
+| eastmoney | 4/18 daily checks succeeded; unstable for this symbol set. |
+| stooq | 0/18 daily checks succeeded; returned no rows. |
+| yfinance | 0/18 daily checks succeeded; curl/OpenSSL/TLS issue remains. |
+| akshare | 0/18 daily checks succeeded for this US symbol set. |
+| tiingo/fmp/finnhub/alphavantage | skipped because keys are not configured. |
+| local | skipped because local data bridge is not configured. |
+
+Short-term US provider recommendation:
+
+1. `yahoo`
+2. `sina`
+3. `eastmoney` as opportunistic fallback only
+4. key-gated providers after real keys are configured and tested
+5. avoid relying on `yfinance` until TLS is fixed
+
+### A-share Level 1 preflight
+
+Symbols:
+
+* `600519.SH`
+* `300750.SZ`
+* `000001.SZ`
+* `601318.SH`
+* `510300.SH`
+* `159915.SZ`
+
+Result:
+
+* `tencent` returned 31 daily OHLCV rows for all six symbols.
+* `akshare` returned 31 daily OHLCV rows for `510300.SH` and `159915.SZ`.
+* `mootdx` and `baostock` dependencies are missing.
+* `tushare` token is not configured.
+* `eastmoney` returned no rows or connection interruptions in this lightweight loader test.
+* `local` has no config for these symbols.
+
+### A-share Level 2 minimal research tasks
+
+| Symbol | Command Pattern | Run ID | Result | Provider/Tool Notes |
+| -- | -- | -- | -- | -- |
+| `600519.SH` | `.venv/bin/vibe-trading run -p "...600519.SH..."` | `20260705_170327_44_d10190` | success | A-share tools and web search succeeded; yfinance/Tushare preflight remained degraded. |
+| `300750.SZ` | `.venv/bin/vibe-trading run -p "...300750.SZ..."` | `20260705_170559_16_fc55fe` | success | Market/news/research/financial/sector/margin/shareholder tools succeeded; yfinance/Tushare preflight remained degraded. |
+
+Security and boundary:
+
+* No shell tools were enabled.
+* No remote service was exposed.
+* No provider chain was changed.
+* No `a-stock-data` integration was attempted.
+* `local_reports/`, `agent/runs/`, and `agent/sessions/` remain ignored and were not committed.
+
 ## 11. US Data Source Smoke Test
 
 Date: 2026-07-05.

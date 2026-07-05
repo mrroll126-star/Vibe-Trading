@@ -248,3 +248,60 @@ Interpretation:
 * yfinance remains unreliable in this environment until the curl/OpenSSL issue is fixed.
 * Key-gated providers are ready to test later after the user provides real keys in ignored local environment files.
 * The smoke test script is suitable as a repeatable baseline before any future US data-source changes.
+
+## 11. Full US Smoke Test With Explicit Symbols
+
+Date: 2026-07-05.
+
+Command executed:
+
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --symbols AAPL.US,MSFT.US,NVDA.US,TSLA.US,SPY.US,QQQ.US --timeout 15 --output-dir local_reports
+```
+
+Result files:
+
+* JSON: `local_reports/us_data_sources_smoke_20260705_090237.json`
+* Markdown: `local_reports/us_data_sources_smoke_20260705_090237.md`
+
+These files are ignored by Git and were not committed.
+
+Overall result:
+
+| Status | Count |
+| -- | --: |
+| success | 40 |
+| failed | 68 |
+| skipped | 90 |
+| unsupported | 330 |
+
+Provider summary:
+
+| Provider | Success | Failed | Skipped | Unsupported | Interpretation |
+| -- | --: | --: | --: | --: | -- |
+| yahoo | 18 | 0 | 0 | 30 | Best no-key US OHLCV provider in this run. |
+| sina | 18 | 0 | 0 | 30 | Fastest successful no-key US OHLCV provider in this run. |
+| eastmoney | 4 | 14 | 0 | 30 | Partially usable but unstable for explicit US symbols. |
+| stooq | 0 | 18 | 0 | 30 | Returned no rows in this run. |
+| yfinance | 0 | 18 | 0 | 30 | Still failed with curl/OpenSSL/TLS style errors. |
+| akshare | 0 | 18 | 0 | 30 | Returned no usable US rows in this run. |
+| tiingo | 0 | 0 | 18 | 30 | Skipped because key is not configured. |
+| fmp | 0 | 0 | 18 | 30 | Skipped because key is not configured. |
+| finnhub | 0 | 0 | 18 | 30 | Skipped because key is not configured. |
+| alphavantage | 0 | 0 | 18 | 30 | Skipped because key is not configured. |
+| local | 0 | 0 | 18 | 30 | Skipped because local data bridge is not configured. |
+
+Daily OHLCV result:
+
+* `yahoo`: 18/18 success across 1-month, 1-year, and 5-year daily checks.
+* `sina`: 18/18 success across 1-month, 1-year, and 5-year daily checks.
+* `eastmoney`: 4/18 success; AAPL succeeded for all three windows, MSFT 1-month succeeded, most others failed or returned no rows.
+* `stooq`, `yfinance`, `akshare`: 0/18 success in this run.
+
+Recommended short-term US provider order:
+
+1. `yahoo` for default no-key US OHLCV.
+2. `sina` as first fallback for no-key US OHLCV.
+3. `eastmoney` only as opportunistic fallback, not primary.
+4. Key-gated providers later after real keys are configured and tested.
+5. Avoid relying on `yfinance` until TLS/curl issue is fixed.

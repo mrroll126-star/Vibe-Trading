@@ -307,3 +307,26 @@ What was not done:
 - No yfinance fix was attempted.
 - No model configuration was changed.
 - No ignored runtime files were committed.
+
+## 2026-07-05 Trading-Day Readiness Tests
+
+User requested trading-day preparation without business-code changes.
+
+Actions performed:
+
+1. Confirmed repository state and sensitive-file ignore rules.
+2. Ran full US data-source smoke test with explicit `.US` symbols.
+3. Ran A-share Level 1 lightweight OHLCV preflight for six symbols.
+4. Ran A-share Level 2 minimal research tasks for `600519.SH` and `300750.SZ`.
+5. Created `PRODUCT_BACKLOG.md`.
+6. Updated data-source, test, Web UI smoke, A-share trading-day plan, and next-task documentation.
+
+What was not done:
+
+- No business code was modified.
+- No provider chain was changed.
+- No `a-stock-data` integration was attempted.
+- No yfinance fix was attempted.
+- No shell tools were enabled.
+- No remote service was exposed.
+- No ignored reports/runs/sessions were committed.

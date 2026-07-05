@@ -188,6 +188,34 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - Shell tools remained disabled.
 - No provider chain was changed.
 - No business code was modified.
+
+## 2026-07-05 Trading-Day Readiness Tests
+
+### Added
+
+- Added `docs_local/PRODUCT_BACKLOG.md`.
+
+### Updated
+
+- Updated `DATA_SOURCE_TEST_REPORT.md` with full US smoke test results.
+- Updated `A_SHARE_TRADING_DAY_TEST_PLAN.md` with preflight results and a real trading-day recording template.
+- Updated `WEB_UI_SMOKE_TEST_REPORT.md` with CLI A-share preflight follow-up.
+- Updated `TEST_REPORT.md`, `NEXT_TASKS.md`, and `CODEX_WORKLOG.md`.
+
+### Validation
+
+- Full US smoke test completed with explicit `.US` symbols.
+- A-share lightweight OHLCV preflight completed for six symbols.
+- A-share minimal research tasks completed for `600519.SH` and `300750.SZ`.
+
+### Security
+
+- No real key was printed.
+- `agent/.env` was not committed.
+- `local_reports/`, `agent/runs/`, and `agent/sessions/` were not committed.
+- Shell tools remained disabled.
+- No remote service was exposed.
+- No business code was modified.
 - No authentication logic was changed.
 - `agent/.env` remains untracked and must not be committed.
 

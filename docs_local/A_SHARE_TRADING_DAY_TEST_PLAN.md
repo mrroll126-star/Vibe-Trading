@@ -137,3 +137,88 @@ Stop and document if:
 * The task attempts trading/broker actions.
 * The report gives direct buy/sell recommendations.
 * Any secret appears in logs or UI.
+
+## 10. Preflight Result Before Trading Day
+
+Date: 2026-07-05.
+
+Level 1 lightweight market-data test:
+
+* Symbols: `600519.SH`, `300750.SZ`, `000001.SZ`, `601318.SH`, `510300.SH`, `159915.SZ`.
+* Providers checked: `tencent`, `mootdx`, `eastmoney`, `baostock`, `akshare`, `tushare`, `local`.
+* Local JSON report: `local_reports/a_share_preflight_20260705.json`.
+* The local report is ignored by Git and was not committed.
+
+Result summary:
+
+| Symbol | Basic OHLCV Result | Working Provider(s) | Notes |
+| -- | -- | -- | -- |
+| `600519.SH` | success | `tencent` | 31 rows returned. |
+| `300750.SZ` | success | `tencent` | 31 rows returned. |
+| `000001.SZ` | success | `tencent` | 31 rows returned. |
+| `601318.SH` | success | `tencent` | 31 rows returned. |
+| `510300.SH` | success | `tencent`, `akshare` | 31 rows returned from both. |
+| `159915.SZ` | success | `tencent`, `akshare` | 31 rows returned from both. |
+
+Provider observations:
+
+* `tencent`: succeeded for all six symbols and is the most reliable basic A-share OHLCV source in this preflight.
+* `akshare`: succeeded for the two ETF symbols, failed or returned no rows for the four stock symbols in this run.
+* `eastmoney`: failed or returned no rows in the lightweight loader test; previous Agent tasks still used some Eastmoney-backed A-share tools successfully.
+* `mootdx`: dependency missing in this local environment.
+* `baostock`: dependency missing in this local environment.
+* `tushare`: token is not configured.
+* `local`: no local data bridge config for these symbols.
+
+Level 2 minimal research tasks:
+
+| Symbol | Run ID | Result | Elapsed | Tool Summary | Main Errors |
+| -- | -- | -- | -- | -- | -- |
+| `600519.SH` | `20260705_170327_44_d10190` | success | about 2m20s | market data, financial statements, news, research reports, fund flow, margin trading, shareholder count, sector info, northbound flow, block trades, web search, URL reading | yfinance preflight still failed; Tushare token not set; Yahoo profile SSL appeared but did not fail the run. |
+| `300750.SZ` | `20260705_170559_16_fc55fe` | success | about 2m57s | market data, news, research reports, financial statements, sector info, margin trading, shareholder count, web search, URL reading | yfinance preflight still failed; Tushare token not set. |
+
+Interpretation:
+
+* The original Vibe-Trading A-share workflow is usable enough for a real trading-day trial.
+* Current basic OHLCV fallback appears heavily dependent on `tencent` in this environment.
+* A-share secondary tools can enrich reports, but provider reliability is uneven.
+* Tomorrow's test should focus on usefulness, data freshness, and missing information before planning `a-stock-data`.
+
+## 11. Real Trading-Day Recording Template
+
+Use this table on 2026-07-06:
+
+| 时间 | 标的 | 场景 | Prompt | 是否成功 | Run ID | 调用工具 | 数据源 | 错误摘要 | 输出是否有用 | 需要改造 |
+|---|---|---|---|---|---|---|---|---|---|---|
+| 开盘前 | `600519.SH` | 基础概览 |  |  |  |  |  |  |  |  |
+| 开盘前 | `300750.SZ` | 基础概览 |  |  |  |  |  |  |  |  |
+| 盘中 |  | 盘中观察 |  |  |  |  |  |  |  |  |
+| 收盘后 |  | 总结复盘 |  |  |  |  |  |  |  |  |
+
+## 12. Suggested Test Rhythm For 2026-07-06
+
+### Before Market Open
+
+* Test `600519.SH` basic overview.
+* Test `300750.SZ` basic overview.
+* Confirm whether the report clearly says data is from the latest prior trading day.
+
+### During Market Hours
+
+* Observe only; do not ask for trading advice.
+* Focus on whether data is real-time, near-real-time, delayed, or stale.
+* Record whether fund flow, news, and sector information update.
+
+### After Market Close
+
+* Run one summary-style task.
+* Evaluate whether the report is useful as a daily review note.
+* Compare the report date/price/fund-flow claims against an external market-data page manually.
+
+### Key Judgments For Tomorrow
+
+* Is the original A-share data good enough for daily research?
+* When does `a-stock-data` become necessary?
+* Which information is most missing: fund flow, announcements, news, research reports, sector data, or sentiment?
+* Is the Agent output too generic?
+* Is a fixed research report template needed?
