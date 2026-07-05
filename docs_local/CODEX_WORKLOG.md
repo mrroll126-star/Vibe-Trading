@@ -330,3 +330,25 @@ What was not done:
 - No shell tools were enabled.
 - No remote service was exposed.
 - No ignored reports/runs/sessions were committed.
+
+## 2026-07-05 Symbol Normalization Design
+
+User requested Phase 1 symbol normalization design only.
+
+Actions performed:
+
+1. Confirmed branch, Git status, and ignored sensitive/runtime paths.
+2. Read current symbol handling in market data helpers, fallback registry, loaders, tools, and Web UI Agent flow.
+3. Documented that the project has provider-specific symbol mapping but no unified user-input normalizer.
+4. Designed natural input rules for US, A-share, HK, ETF/index, and Chinese names.
+5. Defined a structured normalization result format.
+6. Added acceptance test cases for future implementation.
+7. Updated backlog, roadmap, next tasks, and changelog.
+
+What was not done:
+
+- No business code was modified.
+- No provider chain was changed.
+- No `a-stock-data` integration was attempted.
+- No yfinance fix was attempted.
+- No runtime task was started.

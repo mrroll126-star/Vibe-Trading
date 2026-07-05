@@ -216,6 +216,26 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - Shell tools remained disabled.
 - No remote service was exposed.
 - No business code was modified.
+
+## 2026-07-05 Symbol Normalization Design
+
+### Added
+
+- Added `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`.
+- Added `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`.
+
+### Updated
+
+- Updated `PRODUCT_BACKLOG.md` to mark Symbol Normalization as a Phase 1 foundation item.
+- Updated `NEXT_TASKS.md`, `ROADMAP.md`, and `CODEX_WORKLOG.md`.
+
+### Security / Boundary
+
+- Documentation only.
+- No business code was modified.
+- No provider chain was changed.
+- No `a-stock-data` integration was attempted.
+- No ignored local runtime artifacts were committed.
 - No authentication logic was changed.
 - `agent/.env` remains untracked and must not be committed.
 

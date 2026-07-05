@@ -83,6 +83,13 @@ Recommended order:
 5. `a-stock-data` adapter planning.
 6. LLM router design.
 
+Phase 1 foundation update:
+
+* Symbol normalization design is now a high-priority foundation task because it directly affects natural user inputs, tool routing, data-source selection, and future A-share adapter safety.
+* Design documents:
+  * `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
+  * `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`
+
 See:
 
 * `docs_local/PHASE_1_PLAN.md`

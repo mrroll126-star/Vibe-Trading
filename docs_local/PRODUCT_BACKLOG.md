@@ -65,8 +65,10 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Type: improvement.
 * Impact area: data source routing, Agent tool calling, report consistency.
 * Priority: high.
-* Suggested phase: Phase 1, after 2026-07-06 real usage records.
+* Suggested phase: Phase 1 foundation task.
 * Requires business code change: design first; implementation later.
+* Current status: design and acceptance plan created in `SYMBOL_NORMALIZATION_DESIGN.md` and `SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`.
+* Acceptance focus: natural inputs such as `QQQ`, `600519`, `00700`, `贵州茅台`, and ambiguous multi-listing names.
 
 ### 2. A-Share Data Source Enhancement
 

@@ -36,20 +36,26 @@ Boundary:
 * Do not integrate new providers.
 * Keep shell tools disabled.
 
-## Recommended Task 2: Symbol Normalization Design
+## Recommended Task 2: Symbol Normalization Implementation Plan Review
 
 Priority: high.
 
 Business value:
 
-* Builds on the SPY/SPY.US and A-share preflight findings.
-* Reduces tool-routing ambiguity across US, A-share, HK, ETF, and index symbols.
-* Creates a safer base before provider changes.
+* The design is now drafted; review it before implementation.
+* Reduces tool-routing ambiguity across US, A-share, HK, ETF, index, and Chinese-name inputs.
+* Creates a safer base before provider changes or `a-stock-data`.
 
 Boundary:
 
-* Design first.
-* No code changes without approval.
+* Review docs first.
+* Implementation requires explicit approval.
+* No provider chain changes.
+
+See:
+
+* `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
+* `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`
 
 ## Recommended Task 3: Plan `a-stock-data` Adapter From Real Gaps
 
