@@ -158,6 +158,32 @@ What was not done:
 - No fallback chain was modified.
 - No new data source was added.
 - No `a-stock-data` integration was attempted.
+
+## 2026-07-05 Web UI Product Smoke Test And A-Share Plan
+
+User requested product-style validation after DeepSeek and the minimal research workflow had already passed.
+
+Actions performed:
+
+1. Confirmed repository state and security boundaries.
+2. Started backend on `127.0.0.1:8899`.
+3. Started frontend on `127.0.0.1:5899`.
+4. Checked Web UI Home, Settings, Agent, Runtime, Reports, and session history.
+5. Ran a Web UI research task for `SPY.US`.
+6. Ran a Web UI research task for `600519.SH`.
+7. Confirmed both reports were visible in Web UI session pages.
+8. Summarized trace/tool behavior from ignored local session and run files.
+9. Added Web UI smoke test report.
+10. Added A-share trading-day test plan for the next validation round.
+
+What was not done:
+
+- No business code was modified.
+- No `a-stock-data` integration was attempted.
+- No yfinance fix was attempted.
+- No shell tools were enabled.
+- No remote service was exposed.
+- No real key was printed or committed.
 - No real `.env`, token, API key, or OAuth file was created.
 - No remote service was exposed.
 - No shell tools were enabled.

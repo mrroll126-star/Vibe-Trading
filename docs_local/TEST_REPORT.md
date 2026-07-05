@@ -219,6 +219,46 @@ After validation:
 | Docker | Not available | `docker: command not found` | Optional: install Docker Desktop later if Docker path is desired |
 | Remote access | Not tested | intentionally not exposed | Configure `API_AUTH_KEY` and CORS before Tailscale access |
 
+## 11. Web UI Product Smoke Test
+
+Date: 2026-07-05.
+
+Commands:
+
+```bash
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+cd frontend
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Result:
+
+* Backend started on `127.0.0.1:8899`.
+* Frontend started on `127.0.0.1:5899`.
+* Web UI Home, Settings, Agent, Runtime, and session history were checked.
+* DeepSeek provider was shown as configured in Settings without exposing the key.
+* Shell tools remained disabled.
+
+Research tasks:
+
+| Target | Prompt Channel | Run ID | Result | Notes |
+| -- | -- | -- | -- | -- |
+| `SPY.US` | Web UI Agent page | `20260705_164326_08_79a439` | success | Report visible in UI; trace ended success. |
+| `600519.SH` | Web UI Agent page | `20260705_164700_99_303723` | success in detail endpoint and trace | Report visible in UI; `/runs` list showed `unknown`, so status-list consistency needs follow-up. |
+
+Issues:
+
+* `/reports` page stayed on `Loading...` during this smoke test.
+* No obvious trace viewer or export/copy control was found in the quick UI pass.
+* One web-reader call for the A-share task hit a remote-reader block, but the task still completed.
+* Backend logs showed one A-share fund-flow connection interruption and Yahoo profile SSL failures; these did not prevent the final Web reports from being generated.
+* Backend and frontend were stopped after the smoke test; ports `8899` and `5899` were clear.
+
+See:
+
+* `docs_local/WEB_UI_SMOKE_TEST_REPORT.md`
+* `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`
+
 ## 11. US Data Source Smoke Test
 
 Date: 2026-07-05.

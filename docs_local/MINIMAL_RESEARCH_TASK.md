@@ -219,6 +219,39 @@ Next minimal rerun recommendation:
 
 The minimal native research workflow is verified.
 
+## 11. Web UI Follow-Up Result
+
+Date: 2026-07-05.
+
+After the CLI minimal task, the same product workflow was also checked through the Web UI.
+
+SPY.US Web task:
+
+* Prompt: `请生成 SPY.US 的简短市场概览，包括近期趋势、主要风险和后续关注点。不要给买卖建议。`
+* Web session: `884ecc8115d1`.
+* Run ID: `20260705_164326_08_79a439`.
+* Result: success.
+* Report visible in Web UI: yes.
+* Tool calls included market data, stock profile, web search, and URL reading.
+
+A-share Web task:
+
+* Prompt: `请生成 600519.SH 的简短研究摘要，包括近期走势、主要风险和后续关注点。不要给买卖建议。`
+* Web session: `bd1bbb81c6fc`.
+* Run ID: `20260705_164700_99_303723`.
+* Result: success in detailed run endpoint and session trace.
+* Report visible in Web UI: yes.
+* Tool calls included A-share oriented data tools such as financial statements, fund flow, margin trading, northbound flow, sector info, block trades, and lockup expiry.
+
+Product issues found:
+
+* Reports page remained on `Loading...` during the smoke test.
+* The `/runs` list showed the A-share run status as `unknown`, while the detailed endpoint and session trace showed success.
+
+See:
+
+* `docs_local/WEB_UI_SMOKE_TEST_REPORT.md`
+
 Conclusion:
 
 * DeepSeek can power the Agent.

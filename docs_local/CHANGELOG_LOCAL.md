@@ -158,6 +158,36 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No real LLM provider key was configured.
 - No shell tools were enabled.
 - No remote service was exposed.
+
+## 2026-07-05 Web UI Product Smoke Test
+
+### Added
+
+- Added `docs_local/WEB_UI_SMOKE_TEST_REPORT.md`.
+- Added `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`.
+
+### Updated
+
+- Updated Phase 0 summary with Web UI validation results.
+- Updated roadmap and next tasks with A-share trading-day validation.
+- Updated minimal research task notes with Web UI SPY.US and 600519.SH results.
+- Updated test report and worklog.
+
+### Validation
+
+- Backend started on `127.0.0.1:8899`.
+- Frontend started on `127.0.0.1:5899`.
+- Web UI generated reports for `SPY.US` and `600519.SH`.
+- Runtime page stayed read-only and did not start broker connectors.
+
+### Security
+
+- No real key was printed.
+- `agent/.env` was not committed.
+- Ignored run/session artifacts were not committed.
+- Shell tools remained disabled.
+- No provider chain was changed.
+- No business code was modified.
 - No authentication logic was changed.
 - `agent/.env` remains untracked and must not be committed.
 

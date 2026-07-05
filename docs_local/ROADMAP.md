@@ -61,12 +61,14 @@ Completed:
 6. US data-source smoke test script.
 7. DeepSeek provider verification.
 8. Minimal native Agent research task.
+9. Web UI product smoke test with `SPY.US` and `600519.SH`.
 
 See:
 
 * `docs_local/PHASE_0_BOOTSTRAP_SUMMARY.md`
 * `docs_local/TEST_REPORT.md`
 * `docs_local/MINIMAL_RESEARCH_TASK.md`
+* `docs_local/WEB_UI_SMOKE_TEST_REPORT.md`
 
 ## Phase 1 Plan
 
@@ -75,12 +77,14 @@ Status: proposed.
 Recommended order:
 
 1. Full US data-source smoke test with explicit `.US` symbols.
-2. Symbol normalization design.
-3. Custom provider plugin framework design.
-4. `a-stock-data` adapter planning.
-5. LLM router design.
+2. A-share trading-day validation using existing providers.
+3. Symbol normalization design.
+4. Custom provider plugin framework design.
+5. `a-stock-data` adapter planning.
+6. LLM router design.
 
 See:
 
 * `docs_local/PHASE_1_PLAN.md`
 * `docs_local/NEXT_TASKS.md`
+* `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`

@@ -95,6 +95,14 @@ Verified:
 * The task completed successfully.
 * The answer was generated in Chinese and included a no-investment-advice disclaimer.
 
+### Web UI Product Smoke Test
+
+* Started backend and frontend on localhost.
+* Verified Home, Settings, Agent, Runtime, and session-history surfaces.
+* Ran `SPY.US` through the Web UI and generated a visible report.
+* Ran `600519.SH` through the Web UI and generated a visible A-share report.
+* Confirmed shell tools remained disabled.
+
 ## 3. Unfinished Items
 
 * Tailscale dry run: deferred.
@@ -143,6 +151,17 @@ Run result:
 * Report generated: yes.
 * Advice boundary: output stated it was not investment advice.
 
+Web UI product smoke test:
+
+* Backend: `127.0.0.1:8899`.
+* Frontend: `127.0.0.1:5899`.
+* SPY.US session: `884ecc8115d1`.
+* SPY.US run ID: `20260705_164326_08_79a439`.
+* 600519.SH session: `bd1bbb81c6fc`.
+* 600519.SH run ID: `20260705_164700_99_303723`.
+* Both reports were visible in the Agent page session history.
+* Runtime page loaded in read-only mode; broker connectors were not authorized or started.
+
 ## 5. Issues Exposed
 
 * Bare symbols such as `SPY` can cause partial tool-routing failures; future prompts/tests should prefer `SPY.US` or `AAPL.US`.
@@ -151,6 +170,8 @@ Run result:
 * No multi-model LLM router exists yet.
 * No unified A-share symbol convention exists yet.
 * No `a-stock-data` adapter exists yet.
+* Reports page stayed on `Loading...` during the Web UI smoke test.
+* A-share detailed run status was success, but the `/runs` list showed `unknown`; this status consistency issue needs follow-up.
 
 ## 6. Security Status
 

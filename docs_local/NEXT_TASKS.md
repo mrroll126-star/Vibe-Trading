@@ -41,7 +41,34 @@ Boundary:
 * Do not modify provider chain.
 * Results stay under ignored `local_reports/`.
 
-## Phase 1 Recommended Task 2: Symbol Normalization Design
+## Phase 1 Recommended Task 2: A-Share Trading-Day Validation
+
+Priority: high.
+
+Business value:
+
+* Confirms whether the original Vibe-Trading A-share workflow works on a real trading day.
+* Tests current-day data freshness and A-share tool behavior before adding any new provider.
+* Gives a safer baseline before planning `a-stock-data`.
+
+Suggested symbols:
+
+* `600519.SH`
+* `300750.SZ`
+* `000001.SZ`
+
+Boundary:
+
+* Test only.
+* Use existing providers.
+* Do not integrate `a-stock-data`.
+* Do not ask for buy/sell advice.
+
+See:
+
+* `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`
+
+## Phase 1 Recommended Task 3: Symbol Normalization Design
 
 Priority: high.
 
@@ -55,7 +82,7 @@ Output:
 * Design document first.
 * No code changes without approval.
 
-## Phase 1 Recommended Task 3: Custom Provider Plugin Framework Design
+## Phase 1 Recommended Task 4: Custom Provider Plugin Framework Design
 
 Priority: medium.
 
@@ -70,7 +97,7 @@ Boundary:
 * Do not replace original providers.
 * Do not change fallback chain yet.
 
-## Phase 1 Recommended Task 4: `a-stock-data` Adapter Planning
+## Phase 1 Recommended Task 5: `a-stock-data` Adapter Planning
 
 Priority: medium.
 
@@ -84,7 +111,7 @@ Boundary:
 * No implementation yet.
 * No trading functionality.
 
-## Phase 1 Recommended Task 5: LLM Router Design
+## Phase 1 Recommended Task 6: LLM Router Design
 
 Priority: medium.
 
