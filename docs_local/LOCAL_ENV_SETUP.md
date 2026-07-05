@@ -207,3 +207,46 @@ Web UI:
 4. Confirm the provider and model are shown.
 
 Do not run a real research task until the user confirms the provider key has been added locally.
+
+## 9. DeepSeek Verification Result
+
+Date: 2026-07-05.
+
+Configured local values in ignored `agent/.env`:
+
+```bash
+LANGCHAIN_PROVIDER=deepseek
+LANGCHAIN_MODEL_NAME=deepseek-v4-pro
+DEEPSEEK_BASE_URL=https://api.deepseek.com/v1
+DEEPSEEK_API_KEY=<stored locally only>
+VIBE_TRADING_DEEPSEEK_ADAPTER=auto
+VIBE_TRADING_ENABLE_SHELL_TOOLS=0
+```
+
+Security:
+
+* Full key was not printed.
+* Full key was not written to docs.
+* `agent/.env` remains ignored by Git.
+* Shell tools remain disabled.
+
+Provider doctor result:
+
+* Provider: `deepseek`
+* Model: `deepseek-v4-pro`
+* Base URL: `https://api.deepseek.com`
+* API key: set
+* `langchain-deepseek`: not installed
+* Adapter: OpenAI-compatible fallback, mode `auto`
+
+Minimal direct tests:
+
+| Test | Result |
+| -- | -- |
+| Hello text | Success: model replied that connection succeeded |
+| JSON output | Success: returned JSON-like response |
+
+Current recommendation:
+
+* This DeepSeek setup is good enough for minimal Agent workflow verification.
+* Native `langchain-deepseek` is optional later; do not add it until there is a concrete reason.

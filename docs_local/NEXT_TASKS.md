@@ -8,48 +8,66 @@ Basic local deployment now works:
 * Frontend: `127.0.0.1:5899`
 * CLI: executable
 
-## Recommended Next Step 1: Configure One Main LLM Provider
+## Completed: Configure One Main LLM Provider
+
+Status: completed with DeepSeek on 2026-07-05.
+
+Result:
+
+* Provider: `deepseek`.
+* Model: `deepseek-v4-pro`.
+* Direct hello test passed.
+* JSON-output prompt test passed.
+* Minimal research task completed.
+
+## Completed: Run Minimal Research Task
+
+Status: completed with caveats.
+
+Result:
+
+* Run ID: `20260705_162441_99_2b6f81`.
+* Prompt used bare `SPY`.
+* Agent completed successfully and produced a readable Chinese market overview.
+* Data tools were called.
+* Some data calls failed due to bare symbol format and Yahoo/yfinance network issues.
+
+Next small follow-up:
+
+* Repeat with explicit project-style symbol `SPY.US` or `AAPL.US`.
+
+## Recommended Next Step 1: Run Full US Data Source Smoke Test
 
 Priority: high.
 
 Business value:
 
-* Gives the Agent a working reasoning model so the original Vibe-Trading research workflow can be tested.
+* Now that the original Agent workflow works, validate US data sources more thoroughly with explicit `.US` symbols.
+* Expands the quick AAPL/MSFT check to all planned symbols and windows.
+* Gives a better baseline before changing provider architecture.
 
-Options:
+Suggested command:
 
-* Direct DeepSeek as the preferred main text-reasoning model for Chinese investment research.
-* Qwen/DashScope as a strong domestic alternative and future low-cost summary route.
-* OpenRouter if one account should route multiple models.
-* Ollama only as a local fallback or privacy-first test route.
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --timeout 15 --output-dir local_reports
+```
 
 Boundary:
 
-* Create only local ignored config such as `agent/.env`.
-* Do not commit real keys.
-* See `docs_local/LOCAL_ENV_SETUP.md` for placeholder-only examples.
-* Do not configure vision routing yet.
-* Do not edit business code.
+* Results stay under ignored `local_reports/`.
+* Missing API-key providers should remain skipped.
 
-## Recommended Next Step 2: Run Minimal Research Task
+## Recommended Next Step 2: Fix Or Isolate yfinance TLS
 
 Priority: high.
 
 Business value:
 
-* Confirms the unmodified Agent can start, use tools/data, and produce one useful research result.
+* yfinance and Yahoo-related paths are still noisy and can degrade US/HK research.
 
-Suggested test:
+Boundary:
 
-* Use `AAPL` or `SPY`.
-* Use the prompt in `docs_local/MINIMAL_RESEARCH_TASK.md`.
-* Do not ask for buy/sell advice.
-* Keep shell tools disabled.
-
-Why this comes first:
-
-* The most important next proof is that the unmodified Agent can start, use tools/data, and write a useful research answer.
-* After that baseline works, custom A-share integration will be much safer and easier to evaluate.
+* Diagnose before changing dependency versions or provider code.
 
 ## Recommended Next Step 3: Design LLM Router
 
@@ -81,26 +99,6 @@ Boundary:
 
 * Planning document only until the user approves implementation.
 * Do not replace existing provider chain.
-
-## Recommended Next Step 5: Run Full US Data Source Smoke Test
-
-Priority: high.
-
-Business value:
-
-* Expands the quick AAPL/MSFT check to all planned symbols and windows.
-* Gives a better baseline before changing provider architecture.
-
-Suggested command:
-
-```bash
-.venv/bin/python scripts/smoke_test_us_data_sources.py --timeout 15 --output-dir local_reports
-```
-
-Boundary:
-
-* Results stay under ignored `local_reports/`.
-* Missing API-key providers should remain skipped.
 
 ## Optional Later: Design Custom Provider Plugin Framework
 

@@ -178,3 +178,32 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - Shell tools remain disabled.
 - No remote Web UI exposure was attempted.
 - No business code was changed.
+
+## 2026-07-05 DeepSeek Minimal Research Verification
+
+### Validation
+
+- Verified DeepSeek provider configuration from ignored `agent/.env`.
+- Ran provider doctor with redacted output.
+- Ran direct hello and JSON-output tests.
+- Started backend and frontend locally.
+- Ran one minimal SPY research task.
+
+### Result
+
+- DeepSeek `deepseek-v4-pro` is usable in this local setup.
+- The original Vibe-Trading Agent workflow completed a minimal research task.
+- Run output is stored under ignored `agent/runs/20260705_162441_99_2b6f81`.
+
+### Notes
+
+- Some data-tool calls failed because the prompt used bare `SPY`; next prompt should use `SPY.US`.
+- Yahoo/yfinance network/TLS issues remain.
+
+### Security
+
+- No full API key was printed.
+- `agent/.env` was not committed.
+- Shell tools remained disabled.
+- No remote access was exposed.
+- No business code was changed.

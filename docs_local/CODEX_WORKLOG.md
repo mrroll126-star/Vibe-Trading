@@ -223,3 +223,39 @@ What was not done:
 - No business code was modified.
 - No provider chain was modified.
 - No `a-stock-data` integration was attempted.
+
+## 2026-07-05 DeepSeek Minimal Research Task Verification
+
+User manually added DeepSeek credentials to ignored `agent/.env`.
+
+Actions performed:
+
+1. Confirmed `agent/.env` is ignored by Git.
+2. Confirmed `LANGCHAIN_PROVIDER=deepseek`.
+3. Confirmed `DEEPSEEK_API_KEY` exists without printing the full value.
+4. Confirmed `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+5. Ran `vibe-trading provider doctor`.
+6. Ran a direct DeepSeek hello test.
+7. Ran a direct JSON-output prompt test.
+8. Started backend on `127.0.0.1:8899`.
+9. Started frontend on `127.0.0.1:5899`.
+10. Verified backend `/health`, backend `/api`, and frontend HTML.
+11. Ran minimal research prompt for SPY.
+12. Stopped backend and frontend.
+13. Confirmed ports `8899` and `5899` were no longer listening.
+
+Result:
+
+* DeepSeek provider works.
+* Minimal Agent research task completed successfully.
+* Run ID: `20260705_162441_99_2b6f81`.
+* Data tools were called, but some SPY calls failed due to bare symbol format or Yahoo/yfinance network issues.
+
+What was not done:
+
+- No full key was printed.
+- No business code was modified.
+- No provider chain was changed.
+- No shell tools were enabled.
+- No remote service was exposed.
+- No `a-stock-data` integration was attempted.

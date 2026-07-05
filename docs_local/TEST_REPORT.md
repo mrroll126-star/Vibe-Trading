@@ -437,3 +437,98 @@ Recommendation:
 * Do not change provider code yet.
 * Before relying on yfinance, run a focused follow-up on `curl_cffi`, certificate configuration, and macOS/Homebrew OpenSSL linkage.
 * A future US provider smoke test should treat yfinance as one provider only; its failure should not fail the whole report.
+
+## 13. DeepSeek Provider And Minimal Research Task Verification
+
+Date: 2026-07-05.
+
+Security boundary:
+
+* No full DeepSeek key was printed.
+* `agent/.env` remains ignored by Git.
+* `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+* Backend and frontend were bound only to `127.0.0.1`.
+* No `a-stock-data` integration.
+* No provider chain changes.
+
+DeepSeek config found:
+
+| Item | Result |
+| -- | -- |
+| `LANGCHAIN_PROVIDER` | `deepseek` |
+| `LANGCHAIN_MODEL_NAME` | `deepseek-v4-pro` |
+| `DEEPSEEK_BASE_URL` | `https://api.deepseek.com/v1` |
+| `DEEPSEEK_API_KEY` | present, redacted |
+| Adapter | OpenAI-compatible fallback, mode `auto` |
+
+Commands:
+
+```bash
+.venv/bin/vibe-trading provider doctor
+.venv/bin/python - <<'PY'
+from src.providers.llm import build_llm
+from langchain_core.messages import HumanMessage
+llm = build_llm()
+print(llm.invoke([HumanMessage(content='用一句话回答：你已连接成功。')]).content)
+print(llm.invoke([HumanMessage(content='只输出 JSON，不要解释：{"status":"ok","task":"health_check"}')]).content)
+PY
+```
+
+Provider test results:
+
+| Test | Result |
+| -- | -- |
+| Provider doctor | Success |
+| Hello text request | Success |
+| JSON output prompt | Success |
+| Auth error | None observed |
+| Model-name error | None observed |
+| Rate limit | None observed |
+
+Local service commands:
+
+```bash
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+cd frontend
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Local service results:
+
+| Check | Result |
+| -- | -- |
+| Backend startup | Success |
+| Backend `/health` | Success |
+| Backend `/api` | Success |
+| Frontend startup | Success |
+| Frontend HTML | Success |
+| Ports after stop | 8899 and 5899 no longer listening |
+
+Minimal research task:
+
+```bash
+.venv/bin/vibe-trading run -p "请生成 SPY 的简短市场概览，包括近期趋势、主要风险和后续关注点。不要给买卖建议。"
+```
+
+Result:
+
+* Status: success.
+* Run ID: `20260705_162441_99_2b6f81`.
+* Run directory: `agent/runs/20260705_162441_99_2b6f81`.
+* Runtime: about 1 minute 12 seconds.
+* Provider/model: DeepSeek `deepseek-v4-pro`.
+* Provider-reported total tokens: 169,015.
+* The answer included a no-investment-advice disclaimer.
+
+Data-source notes:
+
+* Agent called data tools.
+* Some SPY data calls failed or returned unresolved because the prompt used bare `SPY`; next test should use `SPY.US`.
+* Yahoo profile/options paths showed SSL or connection-reset errors.
+* yfinance TLS issue remains unresolved.
+
+Conclusion:
+
+* DeepSeek provider is usable.
+* Original Vibe-Trading Agent workflow can complete a minimal research task.
+* Data-source routing/reliability needs a follow-up test with explicit `.US` symbols.

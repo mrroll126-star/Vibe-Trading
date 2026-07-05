@@ -156,3 +156,61 @@ After the first approved run, record:
 * Any provider/data errors.
 * Whether Web UI showed the result.
 * Whether logs exposed any secret. They should not.
+
+## 9. First Run Result
+
+Date: 2026-07-05.
+
+Prompt:
+
+```text
+请生成 SPY 的简短市场概览，包括近期趋势、主要风险和后续关注点。不要给买卖建议。
+```
+
+Run method:
+
+```bash
+.venv/bin/vibe-trading run -p "请生成 SPY 的简短市场概览，包括近期趋势、主要风险和后续关注点。不要给买卖建议。"
+```
+
+Result:
+
+* Status: success.
+* Run ID: `20260705_162441_99_2b6f81`.
+* Run directory: `agent/runs/20260705_162441_99_2b6f81`.
+* Runtime: about 1 minute 12 seconds.
+* Provider: DeepSeek.
+* Model: `deepseek-v4-pro`.
+* LLM calls: 5.
+* Total provider-reported tokens: 169,015.
+* Output language: Chinese.
+* The final answer included a clear statement that it was not investment advice.
+
+Generated report summary:
+
+* SPY was described as near an upper range with key resistance around 750 and support around 740.
+* The answer highlighted technology/semiconductor leadership, macro/geopolitical context, inflation and Fed policy risk, concentration risk, and technical overheat risk.
+* It provided a scenario table and follow-up watchlist.
+* It avoided direct buy/sell instructions.
+
+Data/tool observations:
+
+* Agent task started and completed.
+* Trace shows tool calls including `get_market_data`, `get_stock_profile`, and `get_stock_news`.
+* `get_market_data` returned `_unresolved` for `SPY`; likely because the tool expected a suffix such as `SPY.US`.
+* `get_stock_news` reported unsupported market for `SPY`; expected suffixes include `SH`, `SZ`, `BJ`, `US`, `HK`.
+* Yahoo profile/options paths hit SSL or connection-reset failures.
+* The known yfinance/curl TLS issue still appears in preflight and remains unresolved.
+
+Interpretation:
+
+* LLM provider verification passed.
+* Native Vibe-Trading Agent workflow can run end-to-end with DeepSeek.
+* The first prompt should use explicit project-style symbols next time, for example `SPY.US` or `AAPL.US`, to improve data tool routing.
+* Data-source reliability still needs follow-up; do not treat this first report as a data-quality benchmark.
+
+Next minimal rerun recommendation:
+
+```text
+请生成 SPY.US 的简短市场概览，包括近期趋势、主要风险和后续关注点。不要给买卖建议。
+```
