@@ -336,6 +336,54 @@ Security and boundary:
 * No `a-stock-data` integration was attempted.
 * `local_reports/`, `agent/runs/`, and `agent/sessions/` remain ignored and were not committed.
 
+## 16. Symbol Normalizer Helper Tests
+
+Date: 2026-07-05.
+
+Implementation files:
+
+* `agent/src/symbols/__init__.py`
+* `agent/src/symbols/normalizer.py`
+* `agent/tests/test_symbol_normalizer.py`
+
+Primary test command attempted:
+
+```bash
+.venv/bin/python -m pytest agent/tests/test_symbol_normalizer.py
+```
+
+Result:
+
+* Failed because `pytest` is not installed in the current `.venv`.
+* No new dependency was installed.
+
+Fallback test command:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer
+```
+
+Result:
+
+* Success.
+* 12 tests ran.
+* Output: `OK`.
+
+Coverage summary:
+
+* US: `QQQ`, `SPY`, `AAPL`, `NVDA`, `QQQ.US`, invalid long ticker.
+* A-share: prefix inference, explicit suffixes, exchange-prefix forms, ETF prefixes, `000001` ambiguity, `prefer_index`.
+* HK: common HK codes, `.HK`, `HK.` prefix, HK context.
+* Chinese names: deferred with confirmation.
+* Boundary: empty input, whitespace, ambiguous short numeric, invalid mixed input.
+
+Boundary:
+
+* Helper is not connected to `get_market_data`.
+* Helper is not connected to `get_stock_news`.
+* Provider chain is unchanged.
+* Existing business behavior is unchanged.
+
 ## 11. US Data Source Smoke Test
 
 Date: 2026-07-05.

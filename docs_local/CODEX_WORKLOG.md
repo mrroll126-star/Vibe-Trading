@@ -352,3 +352,26 @@ What was not done:
 - No `a-stock-data` integration was attempted.
 - No yfinance fix was attempted.
 - No runtime task was started.
+
+## 2026-07-05 Symbol Normalizer Helper
+
+User approved the minimal Phase 1 implementation of a pure symbol normalizer helper.
+
+Actions performed:
+
+1. Confirmed branch, Git status, and ignored sensitive/runtime paths.
+2. Added `agent/src/symbols/`.
+3. Implemented `NormalizedSymbol`, `normalize_symbol`, and `normalize_many`.
+4. Added acceptance-style tests in `agent/tests/test_symbol_normalizer.py`.
+5. Attempted pytest; current `.venv` does not include pytest.
+6. Ran the tests with standard-library unittest.
+7. Updated documentation.
+
+What was not done:
+
+- No tool-layer integration.
+- No Web UI change.
+- No provider-chain change.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No network calls from the normalizer.

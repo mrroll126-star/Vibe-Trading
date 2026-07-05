@@ -236,6 +236,32 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No provider chain was changed.
 - No `a-stock-data` integration was attempted.
 - No ignored local runtime artifacts were committed.
+
+## 2026-07-05 Symbol Normalizer Helper
+
+### Added
+
+- Added `agent/src/symbols/__init__.py`.
+- Added `agent/src/symbols/normalizer.py`.
+- Added `agent/tests/test_symbol_normalizer.py`.
+
+### Updated
+
+- Updated symbol normalization design and acceptance-test docs with implementation status.
+- Updated `TEST_REPORT.md`, `CODEX_WORKLOG.md`, `NEXT_TASKS.md`, and `PRODUCT_BACKLOG.md`.
+
+### Validation
+
+- `pytest` was not available in the current `.venv`.
+- Ran `.venv/bin/python -m unittest agent.tests.test_symbol_normalizer`.
+- Result: 12 tests passed.
+
+### Boundary
+
+- No existing tool behavior changed.
+- No provider chain changed.
+- No Web UI changed.
+- No network/data-source calls added.
 - No authentication logic was changed.
 - `agent/.env` remains untracked and must not be committed.
 

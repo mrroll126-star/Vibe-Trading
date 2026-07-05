@@ -1,6 +1,6 @@
 # Symbol Normalization Acceptance Tests
 
-Status: design only.
+Status: implemented for pure helper tests.
 
 These are acceptance cases for a future symbol normalization implementation. They should be runnable without network for deterministic rules. Name-resolution cases can use a local security master fixture.
 
@@ -81,3 +81,43 @@ Optional later integration tests:
 ```text
 agent/tests/integration/test_symbol_search_resolution.py
 ```
+
+## 5. Minimal Helper Test Result
+
+Date: 2026-07-05.
+
+Implemented test file:
+
+```text
+agent/tests/test_symbol_normalizer.py
+```
+
+Primary command attempted:
+
+```bash
+.venv/bin/python -m pytest agent/tests/test_symbol_normalizer.py
+```
+
+Result:
+
+* Failed because `pytest` is not installed in the current `.venv`.
+* `pyproject.toml` declares pytest under the `dev` optional extra, but this environment was installed without dev extras.
+
+Fallback command used:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer
+```
+
+Result:
+
+* Passed.
+* 12 unittest test methods ran.
+* The test methods cover the acceptance categories above using subtests.
+
+Boundary:
+
+* No dependency was installed.
+* No network was used.
+* No provider was called.
+* Existing tools/loaders were not changed.

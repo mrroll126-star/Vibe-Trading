@@ -67,8 +67,9 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Priority: high.
 * Suggested phase: Phase 1 foundation task.
 * Requires business code change: design first; implementation later.
-* Current status: design and acceptance plan created in `SYMBOL_NORMALIZATION_DESIGN.md` and `SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`.
+* Current status: pure helper and acceptance-style tests implemented; not yet integrated into tools.
 * Acceptance focus: natural inputs such as `QQQ`, `600519`, `00700`, `贵州茅台`, and ambiguous multi-listing names.
+* Implementation files: `agent/src/symbols/normalizer.py`, `agent/tests/test_symbol_normalizer.py`.
 
 ### 2. A-Share Data Source Enhancement
 

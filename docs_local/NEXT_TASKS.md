@@ -36,26 +36,37 @@ Boundary:
 * Do not integrate new providers.
 * Keep shell tools disabled.
 
-## Recommended Task 2: Symbol Normalization Implementation Plan Review
+## Recommended Task 2: Review Symbol Normalizer Helper Before Integration
 
 Priority: high.
 
 Business value:
 
-* The design is now drafted; review it before implementation.
+* The pure helper is now implemented; review it before tool integration.
 * Reduces tool-routing ambiguity across US, A-share, HK, ETF, index, and Chinese-name inputs.
 * Creates a safer base before provider changes or `a-stock-data`.
 
 Boundary:
 
-* Review docs first.
-* Implementation requires explicit approval.
+* Review helper behavior and test cases first.
+* Tool integration requires explicit approval.
 * No provider chain changes.
 
 See:
 
 * `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
 * `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`
+
+Current helper files:
+
+* `agent/src/symbols/normalizer.py`
+* `agent/tests/test_symbol_normalizer.py`
+
+Potential next integration order:
+
+1. Add a diagnostic CLI/helper usage path.
+2. Connect to `get_market_data` with pass-through for already-valid symbols.
+3. Connect to `get_stock_news` after confirming suffix behavior.
 
 ## Recommended Task 3: Plan `a-stock-data` Adapter From Real Gaps
 

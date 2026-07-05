@@ -1,10 +1,10 @@
 # Symbol Normalization Design
 
-Status: design only.
+Status: helper implemented, not integrated into tools.
 
 Date: 2026-07-05.
 
-Scope: design a user-friendly symbol normalization layer for future Phase 1 implementation. This document does not approve code changes.
+Scope: design a user-friendly symbol normalization layer for Phase 1. A pure helper now exists, but it is not wired into `get_market_data`, `get_stock_news`, Web UI, or any provider chain.
 
 ## 1. Why This Matters
 
@@ -410,3 +410,41 @@ Rollout sequence:
 | Bare 1-5 digit numeric default | Ask for context unless known HK mapping exists. |
 | Chinese names | Design now; implement later with security master. |
 | User confirmation | Required for multi-listing and known ambiguous symbols. |
+
+## 8. Minimal Helper Implementation
+
+Date: 2026-07-05.
+
+Implemented files:
+
+* `agent/src/symbols/__init__.py`
+* `agent/src/symbols/normalizer.py`
+
+What exists now:
+
+* `NormalizedSymbol` dataclass.
+* `normalize_symbol(raw, context=None)`.
+* `normalize_many(inputs, context=None)`.
+* `NormalizedSymbol.to_dict()`.
+* `NormalizedSymbol.is_valid`.
+
+What this implementation does:
+
+* Pure rule-based normalization only.
+* No network.
+* No LLM.
+* No data-source calls.
+* No provider-chain changes.
+* No Web UI changes.
+* No tool-layer integration.
+
+Supported now:
+
+* US symbols such as `QQQ`, `SPY`, `AAPL`, `NVDA`, `QQQ.US`.
+* A-share symbols such as `600519`, `300750`, `000001`, `SH600519`, `sh.600519`, `SZ300750`.
+* HK symbols such as `700`, `0700`, `00700`, `9988`, `09988`, `00700.HK`, `HK.00700`.
+* Chinese names are intentionally deferred and return `normalized_symbol=None` with `needs_confirmation=True`.
+
+Important boundary:
+
+Existing product behavior is unchanged until this helper is explicitly connected to tools or UI in a later approved task.
