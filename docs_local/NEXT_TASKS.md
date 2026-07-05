@@ -1,6 +1,6 @@
 # Next Tasks
 
-Status: updated after basic local deployment on 2026-07-05.
+Status: updated after US data-source smoke test on 2026-07-05.
 
 Basic local deployment now works:
 
@@ -68,22 +68,31 @@ Boundary:
 * First create placeholder-only `.env.example.local` if approved.
 * Then configure real `API_AUTH_KEY` only in ignored local `agent/.env`.
 
-## Optional Next Step: US Data Source Smoke Test
+## Completed: US Data Source Smoke Test
 
-Priority: medium.
+Status: completed as a low-risk feature.
 
-Readiness:
+What exists now:
 
-* Backend dependencies are installed, so a script can be written and run next.
-* yfinance is currently expected to fail.
-* The script should isolate providers and continue after individual failures.
+* Script: `scripts/smoke_test_us_data_sources.py`.
+* Local ignored reports: `local_reports/`.
+* Quick command:
 
-Recommended scope:
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --quick --timeout 10 --output-dir local_reports
+```
 
-* `yahoo`, `stooq`, `sina`, `eastmoney`, `yfinance`, optional key-gated providers, and `local` if configured.
-* Skip missing-key providers.
-* Record provider status, elapsed time, row count, fields, and error summary.
-* Do not alter provider chain or add `a-stock-data`.
+Latest quick result:
+
+* Working in quick test: `yahoo`, `sina`, `eastmoney`.
+* Failed or empty in quick test: `stooq`, `akshare`, `yfinance`.
+* Skipped because keys/config are missing: `tiingo`, `fmp`, `finnhub`, `alphavantage`, `local`.
+
+Recommended follow-up:
+
+* Keep the script as a baseline.
+* Do not change provider logic until repeated runs confirm which failures are stable.
+* Fix yfinance TLS separately if yfinance is important for US/HK coverage.
 
 ## Not Approved Yet
 

@@ -136,3 +136,34 @@ What was not done:
 - No provider chain was changed.
 - No remote access was exposed.
 - No smoke test script was created.
+
+## 2026-07-05 US Data Source Smoke Test
+
+User approved the first low-risk feature: a US data-source smoke test.
+
+Actions performed:
+
+1. Confirmed previous documentation-only changes had been committed before starting feature work.
+2. Reviewed the existing US loader registry and provider files.
+3. Added `scripts/smoke_test_us_data_sources.py`.
+4. Added `local_reports/` to `.gitignore` so generated JSON/Markdown reports remain local.
+5. Ran a syntax check.
+6. Ran the quick smoke test:
+   - command: `.venv/bin/python scripts/smoke_test_us_data_sources.py --quick --timeout 10 --output-dir local_reports`
+7. Updated local project documentation with the test results and interpretation.
+
+What was not done:
+
+- No provider logic was modified.
+- No fallback chain was modified.
+- No new data source was added.
+- No `a-stock-data` integration was attempted.
+- No real `.env`, token, API key, or OAuth file was created.
+- No remote service was exposed.
+- No shell tools were enabled.
+
+Key result:
+
+- Direct Yahoo, Sina, and Eastmoney returned AAPL/MSFT 1-month daily bars.
+- yfinance remained degraded with the known curl/OpenSSL TLS behavior.
+- Key-gated providers were skipped safely because no keys are configured.

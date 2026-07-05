@@ -13,6 +13,7 @@ node_modules/
 
 # Backtest output artifacts
 results/
+local_reports/
 
 .env
 agent/.env

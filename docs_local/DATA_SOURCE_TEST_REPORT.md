@@ -152,3 +152,99 @@ Not recommended:
 * Do not integrate `a-stock-data` yet.
 * Do not replace the existing provider chain.
 * Do not change yfinance or curl dependency versions as part of the smoke test.
+
+## 9. US Data Source Smoke Test Implementation
+
+Date: 2026-07-05.
+
+Scope:
+
+* Added independent script: `scripts/smoke_test_us_data_sources.py`.
+* The script calls existing loader classes directly.
+* It does not change provider logic, provider order, fallback chains, symbol detection, or auth behavior.
+* It writes local-only JSON and Markdown reports under `local_reports/`.
+* `local_reports/` is ignored by Git and should not be committed.
+
+Supported command:
+
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --quick --timeout 10 --output-dir local_reports
+```
+
+Script behavior:
+
+* Default symbols: `AAPL`, `MSFT`, `NVDA`, `TSLA`, `SPY`, `QQQ`.
+* Bare US tickers are normalized to project-style `.US` symbols, for example `AAPL` becomes `AAPL.US`.
+* Default providers: `yahoo`, `stooq`, `sina`, `eastmoney`, `yfinance`, `tiingo`, `fmp`, `finnhub`, `alphavantage`, `akshare`, `local`.
+* Missing API keys are recorded as `skipped`, not `failed`.
+* Unsupported data types are recorded as `unsupported`.
+* Each daily OHLCV fetch uses an explicit timeout.
+
+Fields captured per record:
+
+* market
+* provider
+* symbol
+* normalized_symbol
+* test_type
+* status
+* elapsed_ms
+* rows_count
+* returned_fields
+* requires_api_key
+* error_type
+* error_summary
+* timestamp
+
+## 10. Quick Run Result
+
+Command executed:
+
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --quick --timeout 10 --output-dir local_reports
+```
+
+Result:
+
+* Script completed successfully.
+* JSON report generated locally under `local_reports/`.
+* Markdown report generated locally under `local_reports/`.
+* Reports are intentionally ignored by Git.
+
+Quick mode tested:
+
+* Symbols: `AAPL.US`, `MSFT.US`
+* Test type: `daily_1mo`
+* Quote/latest was recorded as `unsupported` because the existing loader interface exposes historical OHLCV, not a quote API.
+
+Summary:
+
+| Status | Count |
+| -- | --: |
+| success | 6 |
+| failed | 6 |
+| skipped | 10 |
+| unsupported | 22 |
+
+Provider result summary:
+
+| Provider | Result |
+| -- | -- |
+| yahoo | Success for AAPL/MSFT 1-month daily bars. |
+| sina | Success for AAPL/MSFT 1-month daily bars. |
+| eastmoney | Success for AAPL/MSFT 1-month daily bars. |
+| stooq | Failed with empty result for AAPL/MSFT in this run. |
+| yfinance | Failed with empty result; stderr also reproduced curl/OpenSSL TLS errors. |
+| akshare | Failed with empty result for AAPL/MSFT in this run. |
+| tiingo | Skipped because `TIINGO_API_KEY` is not set. |
+| fmp | Skipped because `FMP_API_KEY` is not set. |
+| finnhub | Skipped because `FINNHUB_API_KEY` is not set. |
+| alphavantage | Skipped because `ALPHAVANTAGE_API_KEY` is not set. |
+| local | Skipped because `~/.vibe-trading/data-bridge/config.yaml` is not configured. |
+
+Interpretation:
+
+* The existing no-key US data path has at least three currently working options on this machine: direct Yahoo, Sina, and Eastmoney.
+* yfinance remains unreliable in this environment until the curl/OpenSSL issue is fixed.
+* Key-gated providers are ready to test later after the user provides real keys in ignored local environment files.
+* The smoke test script is suitable as a repeatable baseline before any future US data-source changes.

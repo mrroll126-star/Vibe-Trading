@@ -219,6 +219,87 @@ After validation:
 | Docker | Not available | `docker: command not found` | Optional: install Docker Desktop later if Docker path is desired |
 | Remote access | Not tested | intentionally not exposed | Configure `API_AUTH_KEY` and CORS before Tailscale access |
 
+## 11. US Data Source Smoke Test
+
+Date: 2026-07-05.
+
+Purpose:
+
+* Validate existing US data loaders provider-by-provider.
+* Keep the test independent from core provider logic.
+* Produce a repeatable local report before future data-source changes.
+
+Files changed for this test:
+
+* Added `scripts/smoke_test_us_data_sources.py`.
+* Added `local_reports/` to `.gitignore`.
+* Updated local documentation under `docs_local/`.
+
+Commands:
+
+```bash
+.venv/bin/python -m py_compile scripts/smoke_test_us_data_sources.py
+.venv/bin/python scripts/smoke_test_us_data_sources.py --quick --timeout 10 --output-dir local_reports
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Script syntax check | Success |
+| Smoke test command | Success |
+| Output JSON | Generated under ignored `local_reports/` |
+| Output Markdown | Generated under ignored `local_reports/` |
+| Core business code changed | No |
+| Provider chain changed | No |
+| Real API key required | No |
+
+Quick run summary:
+
+| Status | Count |
+| -- | --: |
+| success | 6 |
+| failed | 6 |
+| skipped | 10 |
+| unsupported | 22 |
+
+Successful provider checks:
+
+* `yahoo`: AAPL/MSFT daily 1-month bars returned.
+* `sina`: AAPL/MSFT daily 1-month bars returned.
+* `eastmoney`: AAPL/MSFT daily 1-month bars returned.
+
+Expected skips:
+
+* `tiingo`: missing `TIINGO_API_KEY`.
+* `fmp`: missing `FMP_API_KEY`.
+* `finnhub`: missing `FINNHUB_API_KEY`.
+* `alphavantage`: missing `ALPHAVANTAGE_API_KEY`.
+* `local`: no local Data Bridge config at `~/.vibe-trading/data-bridge/config.yaml`.
+
+Failures captured:
+
+* `stooq`: returned no rows for AAPL/MSFT in this quick run.
+* `akshare`: returned no rows for AAPL/MSFT in this quick run.
+* `yfinance`: returned no usable rows and reproduced existing curl/OpenSSL TLS error messages.
+
+How to rerun:
+
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --quick --timeout 10 --output-dir local_reports
+```
+
+Fuller run, when the user approves:
+
+```bash
+.venv/bin/python scripts/smoke_test_us_data_sources.py --timeout 15 --output-dir local_reports
+```
+
+Important boundary:
+
+* This test does not prove data quality or trading usefulness.
+* It only checks provider availability, basic daily OHLCV shape, runtime behavior, and failure modes.
+
 ## 11. Reproduction Commands
 
 Backend:

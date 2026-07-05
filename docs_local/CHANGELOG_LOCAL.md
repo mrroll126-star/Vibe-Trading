@@ -103,3 +103,31 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - Shell tools remain disabled.
 - No authentication logic was changed.
 - No provider chain was changed.
+
+## 2026-07-05 US Data Source Smoke Test
+
+### Added
+
+- Added `scripts/smoke_test_us_data_sources.py`, an independent diagnostic script for existing US data loaders.
+- Added `local_reports/` to `.gitignore` so generated local JSON/Markdown reports are not committed.
+
+### Updated
+
+- Updated `DATA_SOURCE_TEST_REPORT.md` with implementation details and quick-run results.
+- Updated `TEST_REPORT.md` with commands, results, failures, and rerun instructions.
+- Updated `CODEX_WORKLOG.md`, `NEXT_TASKS.md`, and `CURRENT_ARCHITECTURE.md`.
+
+### Validation
+
+- Script syntax check passed.
+- Quick smoke test completed successfully.
+- Direct Yahoo, Sina, and Eastmoney returned AAPL/MSFT 1-month daily bars.
+
+### Security
+
+- No real `.env` was created.
+- No token/API key/OAuth file was created.
+- Missing API-key providers were skipped.
+- Shell tools remain disabled.
+- Authentication logic was not changed.
+- Provider chain was not changed.

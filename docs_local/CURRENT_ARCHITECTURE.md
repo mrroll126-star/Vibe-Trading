@@ -208,15 +208,17 @@ Data sources are organized as loaders under `agent/backtest/loaders/`. The centr
   * `vibe-uploads`
 * Files ignored by git:
   * `.env`, `agent/.env`, `.venv/`, `agent/.venv/`, `node_modules/`
+  * `local_reports/`
   * `agent/sessions/`, `agent/runs/`, `agent/uploads/`, `agent/.swarm/runs/`
   * `.cache/`, `.vibe-dev/`, `data/*.duckdb`, `data/parquet/`, logs under `data/`
   * `frontend/dist/`, build artifacts, test result JSON.
-* Gap noted: `.env.*`, generic `*.sqlite`, `*.duckdb`, and `local_reports/` are not broadly covered yet. Add ignore rules before generating local reports or databases.
+* Gap noted: `.env.*`, generic `*.sqlite`, and generic `*.duckdb` are not broadly covered yet. Add ignore rules before generating local databases.
 
 ## 8. Modified Files
 
 * Files intentionally modified from upstream: none in business code.
-* Files added locally: `docs_local/*`.
+* Files added locally: `docs_local/*`, `scripts/smoke_test_us_data_sources.py`.
+* Local ignore addition: `.gitignore` now ignores `local_reports/`.
 * Files that should avoid modification without approval:
   * `agent/backtest/loaders/registry.py`
   * existing provider files under `agent/backtest/loaders/`
