@@ -1,6 +1,6 @@
 # Next Tasks
 
-Status: updated after Tailscale dry run was deferred and LLM setup planning was prepared on 2026-07-05.
+Status: updated after LLM provider strategy design on 2026-07-05.
 
 Basic local deployment now works:
 
@@ -8,33 +8,81 @@ Basic local deployment now works:
 * Frontend: `127.0.0.1:5899`
 * CLI: executable
 
-## Recommended Next Step 1: Configure LLM Provider And Run Minimal Research Task
+## Recommended Next Step 1: Configure One Main LLM Provider
 
 Priority: high.
 
 Business value:
 
-* Confirms the original Vibe-Trading Agent workflow can complete one real research task before we add more data-source customization.
+* Gives the Agent a working reasoning model so the original Vibe-Trading research workflow can be tested.
 
 Options:
 
-* OpenRouter as the simplest first cloud option.
-* Local Ollama as the no-cloud option, if a suitable local model is installed.
-* OpenAI Codex ChatGPT OAuth using `vibe-trading provider login openai-codex`.
+* Direct DeepSeek as the preferred main text-reasoning model for Chinese investment research.
+* Qwen/DashScope as a strong domestic alternative and future low-cost summary route.
+* OpenRouter if one account should route multiple models.
+* Ollama only as a local fallback or privacy-first test route.
 
 Boundary:
 
 * Create only local ignored config such as `agent/.env`.
 * Do not commit real keys.
 * See `docs_local/LOCAL_ENV_SETUP.md` for placeholder-only examples.
-* See `docs_local/MINIMAL_RESEARCH_TASK.md` for the first approved test.
+* Do not configure vision routing yet.
+* Do not edit business code.
+
+## Recommended Next Step 2: Run Minimal Research Task
+
+Priority: high.
+
+Business value:
+
+* Confirms the unmodified Agent can start, use tools/data, and produce one useful research result.
+
+Suggested test:
+
+* Use `AAPL` or `SPY`.
+* Use the prompt in `docs_local/MINIMAL_RESEARCH_TASK.md`.
+* Do not ask for buy/sell advice.
+* Keep shell tools disabled.
 
 Why this comes first:
 
 * The most important next proof is that the unmodified Agent can start, use tools/data, and write a useful research answer.
 * After that baseline works, custom A-share integration will be much safer and easier to evaluate.
 
-## Recommended Next Step 2: Run Full US Data Source Smoke Test
+## Recommended Next Step 3: Design LLM Router
+
+Priority: medium.
+
+Business value:
+
+* Separates main reasoning, cheap summaries, vision/chart OCR, long report reading, structured JSON, and local fallback.
+* Keeps cost and quality auditable.
+
+Reference:
+
+* See `docs_local/LLM_PROVIDER_STRATEGY.md`.
+
+Boundary:
+
+* Design before implementation.
+* Do not assume current project has already validated vision model calls.
+
+## Recommended Next Step 4: Plan `a-stock-data` Adapter
+
+Priority: medium.
+
+Business value:
+
+* Improves future A-share coverage after the original Agent workflow is proven.
+
+Boundary:
+
+* Planning document only until the user approves implementation.
+* Do not replace existing provider chain.
+
+## Recommended Next Step 5: Run Full US Data Source Smoke Test
 
 Priority: high.
 
@@ -54,7 +102,7 @@ Boundary:
 * Results stay under ignored `local_reports/`.
 * Missing API-key providers should remain skipped.
 
-## Recommended Next Step 3: Design Custom Provider Plugin Framework
+## Optional Later: Design Custom Provider Plugin Framework
 
 Priority: medium.
 
@@ -69,19 +117,7 @@ Boundary:
 * Do not implement `a-stock-data` yet.
 * Do not change existing provider chain without explicit approval.
 
-## Recommended Next Step 4: Plan `a-stock-data` Adapter
-
-Priority: medium.
-
-Business value:
-
-* Improves future A-share coverage after the original workflow is proven.
-
-Boundary:
-
-* Planning document only until the user approves implementation.
-
-## Recommended Next Step 5: Choose Whether To Fix yfinance TLS
+## Optional Later: Choose Whether To Fix yfinance TLS
 
 Priority: high for US/HK equity research.
 
