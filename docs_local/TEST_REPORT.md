@@ -300,6 +300,66 @@ Important boundary:
 * This test does not prove data quality or trading usefulness.
 * It only checks provider availability, basic daily OHLCV shape, runtime behavior, and failure modes.
 
+## 12. Tailscale Dry Run And API Auth Setup
+
+Date: 2026-07-05.
+
+Purpose:
+
+* Prepare safe local API authentication for future Tailnet access.
+* Confirm whether Tailscale is available.
+* Avoid exposing services until Tailscale is installed and verified.
+
+Commands:
+
+```bash
+pwd
+git branch --show-current
+git status --short
+git log --oneline -5
+test -f agent/.env
+git check-ignore -v agent/.env
+tailscale version
+tailscale status
+tailscale ip -4
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Repo path | Correct |
+| Branch | `feature/bootstrap-local-setup` |
+| Git status before env setup | Clean |
+| `agent/.env` before setup | Missing |
+| `agent/.env` ignored by Git | Yes, via `agent/.gitignore` |
+| `VIBE_TRADING_ENABLE_SHELL_TOOLS` in current shell | Not set |
+| Common real LLM/API key env vars | Not found |
+| Tailscale command | Not found |
+
+Local `agent/.env` setup:
+
+* Created ignored local file `agent/.env`.
+* Generated a strong random `API_AUTH_KEY`.
+* Did not print or store the full key in documentation.
+* Set `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+* Added local frontend CORS origins for `5899`.
+* Did not add any real LLM provider key.
+
+Actual Tailnet dry run:
+
+* Not executed.
+* Reason: `tailscale` command is not installed or not available on `PATH`.
+* No backend/frontend service was started on a Tailscale IP.
+* No public exposure occurred.
+
+Security result:
+
+* `agent/.env` is ignored by Git and must remain uncommitted.
+* Shell tools remain disabled.
+* API auth is prepared for future remote access.
+* Next remote run requires Tailscale installation/login first.
+
 ## 11. Reproduction Commands
 
 Backend:

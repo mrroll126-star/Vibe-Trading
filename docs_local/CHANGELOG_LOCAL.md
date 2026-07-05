@@ -131,3 +131,32 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - Shell tools remain disabled.
 - Authentication logic was not changed.
 - Provider chain was not changed.
+
+## 2026-07-05 Tailscale Runbook And API Auth Prep
+
+### Added
+
+- Added `docs_local/REMOTE_ACCESS_RUNBOOK.md` for future Tailnet startup and access.
+- Created local ignored `agent/.env` with a generated `API_AUTH_KEY`.
+
+### Updated
+
+- Updated `DEPLOYMENT_TAILSCALE.md` with current Tailscale status and binding recommendations.
+- Updated `TEST_REPORT.md` with Tailscale/environment checks.
+- Updated `CODEX_WORKLOG.md`, `NEXT_TASKS.md`, and `CURRENT_ARCHITECTURE.md`.
+
+### Validation
+
+- Confirmed `agent/.env` is ignored by Git.
+- Confirmed `agent/.env` contains `API_AUTH_KEY`.
+- Confirmed `agent/.env` contains `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+- Confirmed Tailscale is not installed or not on `PATH`, so remote dry run was not executed.
+
+### Security
+
+- The full API auth key was not printed in documentation.
+- No real LLM provider key was configured.
+- No shell tools were enabled.
+- No remote service was exposed.
+- No authentication logic was changed.
+- `agent/.env` remains untracked and must not be committed.

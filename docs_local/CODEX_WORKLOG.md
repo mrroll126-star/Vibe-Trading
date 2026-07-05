@@ -167,3 +167,33 @@ Key result:
 - Direct Yahoo, Sina, and Eastmoney returned AAPL/MSFT 1-month daily bars.
 - yfinance remained degraded with the known curl/OpenSSL TLS behavior.
 - Key-gated providers were skipped safely because no keys are configured.
+
+## 2026-07-05 Tailscale Dry Run Prep And API Auth Setup
+
+User requested the final basic-deployment stage: prepare safe remote access through Tailscale.
+
+Actions performed:
+
+1. Confirmed the repository was clean on `feature/bootstrap-local-setup`.
+2. Confirmed `agent/.env` did not exist and is ignored by Git.
+3. Confirmed the current shell did not have `VIBE_TRADING_ENABLE_SHELL_TOOLS` set.
+4. Checked common LLM/API-key environment variables without printing secrets.
+5. Checked Tailscale availability.
+6. Created local ignored `agent/.env` with:
+   - generated `API_AUTH_KEY`
+   - `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`
+   - local frontend CORS origins
+7. Confirmed Tailscale is not installed or not on `PATH`.
+8. Added `docs_local/REMOTE_ACCESS_RUNBOOK.md`.
+9. Updated Tailscale, test, changelog, next-task, and architecture documentation.
+
+What was not done:
+
+- No full API auth key was printed.
+- No real LLM provider key was configured.
+- No service was exposed remotely.
+- No backend or frontend was started on a Tailnet address.
+- No shell tools were enabled.
+- No business code was modified.
+- No provider chain was modified.
+- No push was performed.

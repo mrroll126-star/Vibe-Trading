@@ -182,6 +182,7 @@ Data sources are organized as loaders under `agent/backtest/loaders/`. The centr
   * For Tailnet access, bind intentionally and set `API_AUTH_KEY`.
   * Add explicit CORS origins for the Tailscale URL if using a separate frontend origin.
   * Do not expose the same port to the public internet.
+  * Current machine status on 2026-07-05: `tailscale` command not found, so no Tailnet dry run has been executed.
 
 ## 7. Storage / Cache
 
@@ -219,6 +220,7 @@ Data sources are organized as loaders under `agent/backtest/loaders/`. The centr
 * Files intentionally modified from upstream: none in business code.
 * Files added locally: `docs_local/*`, `scripts/smoke_test_us_data_sources.py`.
 * Local ignore addition: `.gitignore` now ignores `local_reports/`.
+* Local untracked sensitive config: `agent/.env` exists, is ignored by Git, and must not be committed.
 * Files that should avoid modification without approval:
   * `agent/backtest/loaders/registry.py`
   * existing provider files under `agent/backtest/loaders/`

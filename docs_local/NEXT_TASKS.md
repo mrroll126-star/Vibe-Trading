@@ -1,6 +1,6 @@
 # Next Tasks
 
-Status: updated after US data-source smoke test on 2026-07-05.
+Status: updated after Tailscale/API auth preparation on 2026-07-05.
 
 Basic local deployment now works:
 
@@ -62,11 +62,17 @@ Business value:
 
 * Moves toward remote access from the user's own devices.
 
-Boundary:
+Current status:
 
-* Do not expose services yet.
-* First create placeholder-only `.env.example.local` if approved.
-* Then configure real `API_AUTH_KEY` only in ignored local `agent/.env`.
+* Local ignored `agent/.env` now exists.
+* `API_AUTH_KEY` has been generated.
+* Shell tools are explicitly disabled.
+* Tailscale is not installed or not available on `PATH`, so Tailnet dry run has not been executed.
+
+Next action:
+
+* Install and log in to Tailscale on the Mac mini.
+* Then follow `docs_local/REMOTE_ACCESS_RUNBOOK.md`.
 
 ## Completed: US Data Source Smoke Test
 

@@ -1,6 +1,6 @@
 # Tailscale Deployment Plan
 
-Status: plan plus local-port verification. No service has been exposed remotely, no `.env` was created, and no remote access was enabled.
+Status: plan plus local-port verification. A local ignored `agent/.env` with `API_AUTH_KEY` has been created. Tailscale is not installed on this Mac yet, so no Tailnet service was started and no remote access was enabled.
 
 ## 1. Recommended Local Run Mode
 
@@ -84,7 +84,15 @@ VIBE_TRADING_ENABLE_SHELL_TOOLS=0
 CORS_ORIGINS=http://localhost:5899,http://127.0.0.1:5899,http://<tailscale-device-name>:5899
 ```
 
-Do not create or commit a real `agent/.env`.
+Current local setup:
+
+* `agent/.env` exists.
+* It is ignored by Git.
+* It contains a generated `API_AUTH_KEY`.
+* It contains `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+* It does not contain real LLM provider keys.
+
+Do not commit `agent/.env`.
 
 ## 4. Frontend API URL
 
@@ -261,3 +269,42 @@ API_AUTH_KEY=replace_with_strong_random_key
 VIBE_TRADING_ENABLE_SHELL_TOOLS=0
 CORS_ORIGINS=http://127.0.0.1:5899,http://localhost:5899,http://replace-device-name:5899,http://replace-tailscale-ip:5899
 ```
+
+## 11. 2026-07-05 Tailscale Environment Check
+
+Command result:
+
+```text
+tailscale: command not found
+```
+
+Conclusion:
+
+* Tailscale is not installed or not available on `PATH`.
+* No Tailscale IP was available.
+* No MagicDNS name was available.
+* No Tailnet device list was available.
+* Actual remote dry run was not executed.
+
+Next manual prerequisite:
+
+1. Install Tailscale on the Mac mini.
+2. Log in to the correct Tailnet.
+3. Confirm:
+
+```bash
+tailscale status
+tailscale ip -4
+```
+
+Then follow `docs_local/REMOTE_ACCESS_RUNBOOK.md`.
+
+## 12. Recommended Binding Choice
+
+When Tailscale is installed, prefer this order:
+
+1. Bind backend and frontend to the Mac mini Tailscale IP.
+2. If direct Tailscale-IP binding fails, bind to `0.0.0.0` only while the Mac is protected by Tailnet/firewall rules and `API_AUTH_KEY` is configured.
+3. For local-only work, keep using `127.0.0.1`.
+
+Do not expose ports `8899` or `5899` to the public internet.
