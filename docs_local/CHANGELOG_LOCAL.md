@@ -384,3 +384,35 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No backend restart.
 - No real research task.
 - No business code changes.
+
+## 2026-07-06 Data Freshness & Anti-Hallucination Guardrails Design
+
+### Added
+
+- Added `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
+- Added ADR for “LLM must not invent market data”.
+
+### Updated
+
+- Updated `docs_local/ARCHITECTURE_DECISIONS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/ROADMAP.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/PHASE_1_PLAN.md`.
+- Updated `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`.
+
+### Decision
+
+- Data Freshness & Anti-Hallucination Guardrails are now a high-priority Phase 1 safety foundation.
+- Guardrails must be implemented before `a-stock-data` is integrated into production research workflows.
+- Reports should separate data facts, model interpretation, missing data, source failures, assumptions, and not-investment-advice boundaries.
+
+### Boundary
+
+- No business code changes.
+- No provider-chain changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No real research task.
+- No ignored runtime or secret files committed.

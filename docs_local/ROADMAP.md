@@ -76,15 +76,22 @@ Status: proposed.
 
 Recommended order:
 
-1. Full US data-source smoke test with explicit `.US` symbols.
-2. A-share trading-day validation using existing providers.
-3. Symbol normalization design.
-4. Custom provider plugin framework design.
-5. `a-stock-data` adapter planning.
-6. LLM router design.
+1. A-share trading-day validation using existing providers.
+2. Data Freshness & Anti-Hallucination Guardrails implementation planning.
+3. `get_market_data` freshness wrapper.
+4. Data Source Summary / Missing Data / Source Failures in reports.
+5. Symbol normalizer integration for `get_market_data`.
+6. `a-stock-data` adapter planning.
+7. Custom provider plugin framework design.
+8. LLM router design.
 
 Phase 1 foundation update:
 
+* Data Freshness & Anti-Hallucination Guardrails are now the highest-priority Phase 1 safety foundation.
+* Data freshness and anti-hallucination work must happen before `a-stock-data` is integrated into production research workflows.
+* The core principle is: LLM must not invent market data.
+* Design document:
+  * `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`
 * Symbol normalization design is now a high-priority foundation task because it directly affects natural user inputs, tool routing, data-source selection, and future A-share adapter safety.
 * The pure symbol normalizer helper and unittest coverage are implemented.
 * Tool integration is not yet approved and should not be broad. The recommended first integration is a feature-flagged `get_market_data` entry-point change after A-share trading-day evidence is reviewed.

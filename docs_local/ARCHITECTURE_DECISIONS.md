@@ -66,3 +66,17 @@ Today should not include large-scale refactoring.
 
 Boundary:
 Keep changes small, documented, and reversible.
+
+## ADR-008: LLM Must Not Invent Market Data
+
+Decision:
+LLM-generated research reports must not invent prices, volumes, turnover, dates, financial metrics, fund-flow numbers, announcements, news, or research-report facts. Factual market claims must be grounded in tool-returned data or explicitly marked as unavailable.
+
+Reason:
+Investment research is highly sensitive to data freshness and factual accuracy. Fabricated market data can make the product unusable or dangerous for short-term research.
+
+Boundary:
+If tool data is missing, stale, failed, delayed, ambiguous, or timestamp-unknown, the system must disclose that state instead of filling gaps with model guesses.
+
+Implementation priority:
+Freshness and anti-hallucination guardrails must be implemented before integrating `a-stock-data` into production research workflows.

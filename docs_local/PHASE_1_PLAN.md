@@ -39,7 +39,38 @@ Boundary:
 * Do not change provider code.
 * Test only.
 
-## Task 2: Symbol Normalization Design
+## Task 2: Data Freshness & Anti-Hallucination Guardrails
+
+Goal:
+
+Design and implement safeguards so the Agent does not invent market data when tools fail, return stale data, or return timestamp-unknown data.
+
+Purpose:
+
+* Prevent fabricated prices, close values, percent changes, turnover, volume, fund-flow numbers, news, announcements, and financial metrics.
+* Require source failures and missing data to be visible in reports.
+* Create a freshness contract that future providers, including `a-stock-data`, must satisfy.
+
+Boundary:
+
+* Design first.
+* No new data source.
+* No provider-chain replacement.
+* No `a-stock-data` production integration until this guardrail path is planned.
+
+Recommended implementation sequence:
+
+1. `get_market_data` freshness wrapper.
+2. Data Source Summary / Missing Data / Source Failures in reports.
+3. Report gate for time-sensitive questions.
+4. Extend freshness metadata to A-share specialty tools.
+5. Require `a-stock-data` adapter to satisfy freshness contract.
+
+Design document:
+
+* `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`
+
+## Task 3: Symbol Normalization Design
 
 Goal:
 
@@ -77,7 +108,7 @@ Phase 1 boundary:
 * No code changes until the user approves.
 * Include examples, ambiguous cases, and failure behavior.
 
-## Task 3: Custom Provider Plugin Framework Design
+## Task 4: Custom Provider Plugin Framework Design
 
 Goal:
 
@@ -101,7 +132,7 @@ Design questions:
 * How should custom providers report health/status?
 * How should local-only providers stay easy to rebase against upstream?
 
-## Task 4: `a-stock-data` Adapter Planning
+## Task 5: `a-stock-data` Adapter Planning
 
 Goal:
 
@@ -115,6 +146,7 @@ Boundary:
 * Start read-only.
 * Focus on research data, not trading.
 * Avoid major frontend changes.
+* Do not integrate into production research workflows before freshness and anti-hallucination guardrails are implemented.
 
 Recommended planning output:
 
@@ -125,7 +157,7 @@ Recommended planning output:
 * Failure and timeout behavior.
 * Test plan.
 
-## Task 5: LLM Router Design
+## Task 6: LLM Router Design
 
 Goal:
 
@@ -147,12 +179,15 @@ Boundary:
 
 ## Recommended Phase 1 Order
 
-1. Full US data-source smoke test.
-2. Symbol normalization design.
-3. Custom provider plugin framework design.
-4. `a-stock-data` adapter planning.
-5. LLM router design.
+1. A-share trading-day real usage test.
+2. Data Freshness & Anti-Hallucination Guardrails implementation planning.
+3. `get_market_data` freshness wrapper.
+4. Source summary in reports.
+5. Symbol normalizer `get_market_data` integration.
+6. `a-stock-data` adapter planning.
+7. Custom provider plugin framework design.
+8. LLM router design.
 
 Reason:
 
-The native Agent workflow now works. The next highest-value improvement is to understand data-source stability and symbol normalization before adding new A-share data providers or multi-model routing.
+The native Agent workflow now works. The next highest-value improvement is to prevent factual market-data hallucination before adding new A-share data providers or multi-model routing. More sources are useful only if their success, failure, staleness, and timestamps are carried into reports.

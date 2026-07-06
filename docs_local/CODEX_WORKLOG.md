@@ -427,3 +427,35 @@ What was not done:
 * No real research task.
 * No business code change.
 * No API key printed or committed.
+
+## 2026-07-06 Data Freshness & Anti-Hallucination Guardrails Design
+
+User raised a high-priority product risk: the LLM may fabricate today's market data when tools cannot retrieve it.
+
+Actions performed:
+
+1. Confirmed branch, Git status, recent commits, and ignored sensitive/runtime paths.
+2. Read current market-data, news, profile, research report, fund-flow, margin, shareholder, sector, northbound, and block-trade tools.
+3. Read Agent loop trace and tool-result recording behavior.
+4. Added `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
+5. Added ADR for the rule that LLM must not invent market data.
+6. Updated roadmap, backlog, next tasks, Phase 1 plan, and A-share trading-day test plan.
+
+Key findings:
+
+* Many tools return some date or timestamp fields, but there is no unified freshness contract.
+* Several tools return `source`, but `get_market_data` does not expose a standardized per-symbol source summary.
+* Tool failures are recorded in trace, but final reports are not forced to disclose failures.
+* The LLM can still generate factual-sounding conclusions after missing, stale, failed, or timestamp-unknown data.
+
+Decision:
+
+* Data Freshness & Anti-Hallucination Guardrails now rank ahead of `a-stock-data` production integration.
+
+What was not done:
+
+* No business code was changed.
+* No new data source was added.
+* No provider chain was changed.
+* No yfinance fix was attempted.
+* No research task was run.

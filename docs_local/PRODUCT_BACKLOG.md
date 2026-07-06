@@ -60,7 +60,22 @@ This backlog records observed defects, product gaps, and future improvement cand
 
 ## Improvement
 
-### 1. Symbol Normalization
+### 1. Data Freshness & Anti-Hallucination Guardrails
+
+* Type: improvement / safety guardrail.
+* Impact area: all market-data-backed research reports.
+* Priority: highest.
+* Suggested phase: Phase 1 before `a-stock-data` production integration.
+* Requires business code change: yes for implementation; design completed first.
+* Current status: design document and ADR added; not yet implemented.
+* Design document: `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
+* ADR: `ADR-008: LLM Must Not Invent Market Data`.
+* Core principle: LLM must not invent market data.
+* Acceptance focus: if today's data is missing, stale, failed, delayed, or timestamp-unknown, the report must disclose that instead of inventing price, volume, turnover, fund-flow, news, or financial facts.
+* Recommended next step: implementation planning, then `get_market_data` freshness wrapper.
+* Main risk if not done: adding more data sources can still leave the LLM free to fabricate missing facts.
+
+### 2. Symbol Normalization
 
 * Type: improvement.
 * Impact area: data source routing, Agent tool calling, report consistency.
@@ -74,23 +89,25 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Recommended next step: after A-share trading-day review, integrate only `get_market_data` behind a disabled-by-default feature flag.
 * Main risk: ambiguous inputs such as `000001` and accidental changes to currently working explicit symbols.
 
-### 2. A-Share Data Source Enhancement
+### 3. A-Share Data Source Enhancement
 
 * Type: improvement / research.
 * Impact area: A-share market data, fund flow, announcements, news, research reports.
 * Priority: high.
-* Suggested phase: after proving gaps with real trading-day records.
+* Suggested phase: after proving gaps with real trading-day records and after freshness guardrails are planned.
 * Requires business code change: yes if adapter is implemented.
+* Important dependency: any `a-stock-data` adapter should follow the freshness metadata and source-failure contract before production research use.
 
-### 3. Custom Provider Plugin Framework
+### 4. Custom Provider Plugin Framework
 
 * Type: improvement.
 * Impact area: maintainability, upstream compatibility, safer local extensions.
 * Priority: medium.
 * Suggested phase: Phase 1 design.
 * Requires business code change: design first; implementation later.
+* Dependency: provider framework should inherit the freshness contract.
 
-### 4. LLM Router
+### 5. LLM Router
 
 * Type: improvement.
 * Impact area: model cost, quality, task specialization.
@@ -98,15 +115,16 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Suggested phase: after data-source and symbol basics are clearer.
 * Requires business code change: yes if implemented.
 
-### 5. Data Source Call Visualization
+### 6. Data Source Call Visualization
 
 * Type: improvement.
 * Impact area: user trust, auditability, debugging.
 * Priority: medium.
 * Suggested phase: product stabilization.
 * Requires business code change: likely yes.
+* Dependency: should display freshness status and source failures when available.
 
-### 6. Research Report Export Experience
+### 7. Research Report Export Experience
 
 * Type: improvement.
 * Impact area: daily workflow, archiving, sharing with the user's own notes.

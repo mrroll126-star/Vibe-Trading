@@ -1,6 +1,6 @@
 # Next Tasks
 
-Status: Phase 0 completed. Trading-day readiness checks completed on 2026-07-05.
+Status: Phase 0 completed. Phase 1 foundation work is in progress.
 
 Basic local deployment works:
 
@@ -8,22 +8,40 @@ Basic local deployment works:
 * Frontend: `127.0.0.1:5899`
 * CLI: executable
 * DeepSeek provider: verified
+* Current local DeepSeek model: `deepseek-v4-flash`
 * Minimal native Agent research task: completed
 
-## Recommended Task 1: Execute A-Share Trading-Day Real Usage Test
+## Priority Rule
+
+Data Freshness & Anti-Hallucination Guardrails have higher priority than data-source expansion.
+
+Reason:
+
+* Adding more data sources does not solve hallucination by itself.
+* If the LLM can still invent today's close, volume, turnover, fund flow, news, or financial metrics when data is missing, the product remains risky.
+* Every future provider, including `a-stock-data`, should follow a freshness and source-failure contract.
+
+Highest principle:
+
+* LLM must not invent market data.
+
+## Recommended Task 1: A-Share Trading-Day Real Usage Test
 
 Priority: high.
 
 Business value:
 
 * Confirms whether the original Vibe-Trading A-share workflow is useful on a real trading day.
-* Produces evidence for whether `a-stock-data` is actually needed and where.
-* Captures data freshness, report quality, and missing-field gaps before code changes.
+* Captures data freshness, report quality, missing-field gaps, and hallucination risk before code changes.
+* Produces evidence for whether `a-stock-data` is needed and where.
 
-Suggested symbols:
+Extra records to capture:
 
-* `600519.SH`
-* `300750.SZ`
+* Whether current-day data was retrieved.
+* Data timestamp or data date.
+* Which providers succeeded or failed.
+* Whether the report disclosed missing data.
+* Whether the report made factual claims without returned data.
 
 See:
 
@@ -36,118 +54,127 @@ Boundary:
 * Do not integrate new providers.
 * Keep shell tools disabled.
 
-## Recommended Task 2: Review Symbol Normalizer Helper Before Integration
-
-Priority: high. Current status: integration plan completed; code integration still requires explicit approval.
-
-Business value:
-
-* The pure helper is now implemented; review it before tool integration.
-* Reduces tool-routing ambiguity across US, A-share, HK, ETF, index, and Chinese-name inputs.
-* Creates a safer base before provider changes or `a-stock-data`.
-
-Boundary:
-
-* Review helper behavior and test cases first.
-* Tool integration requires explicit approval.
-* No provider chain changes.
-
-See:
-
-* `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
-* `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`
-
-Current helper and planning files:
-
-* `agent/src/symbols/normalizer.py`
-* `agent/tests/test_symbol_normalizer.py`
-* `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`
-
-Recommended next integration order, after trading-day evidence is reviewed:
-
-1. Add feature flag `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0`.
-2. Connect only `get_market_data` first, with pass-through for already-valid symbols.
-3. Connect `get_stock_news` second if missing suffixes remain a real problem.
-4. Delay specialty A-share tools until the first integration is proven safe.
-
-## Recommended Task 3: Plan `a-stock-data` Adapter From Real Gaps
+## Recommended Task 2: Data Freshness & Anti-Hallucination Implementation Planning
 
 Priority: high.
 
 Business value:
 
-* Uses tomorrow's records to target the adapter where the original project is weak.
-* Avoids adding a large new source before we know the missing fields.
+* Prevents fabricated prices, volume, turnover, percent changes, fund-flow numbers, news, announcements, and financial facts.
+* Defines a product safety contract before expanding A-share data.
+* Makes reports auditable and safer for short-term research.
+
+Design source:
+
+* `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`
+* `docs_local/ARCHITECTURE_DECISIONS.md`
+
+Boundary:
+
+* Planning first.
+* No provider-chain replacement.
+* No `a-stock-data` integration until freshness guardrails are designed for production workflows.
+
+## Recommended Task 3: `get_market_data` Freshness Wrapper
+
+Priority: high.
+
+Business value:
+
+* Market data is the highest-risk hallucination surface.
+* Adds `requested_at`, `data_date`, `data_timestamp`, source summary, row count, and freshness status.
+* Creates the first concrete implementation of the data freshness contract.
+
+Boundary:
+
+* Do not change provider fallback order.
+* Do not add new data sources.
+* Keep explicit symbols working.
+
+## Recommended Task 4: Source Summary In Reports
+
+Priority: high.
+
+Business value:
+
+* Ensures provider failures are visible to the user, not hidden only in trace.
+* Adds report sections such as Data Source Summary, Missing Data, and Source Failures.
+* Reduces risk that the LLM turns missing data into a normal-looking conclusion.
+
+Boundary:
+
+* Start with report structure and prompt/gate behavior.
+* Do not rewrite the entire Web UI.
+
+## Recommended Task 5: Symbol Normalizer `get_market_data` Integration
+
+Priority: medium-high.
+
+Business value:
+
+* Helps natural inputs like `600519`, `QQQ`, and `00700`.
+* Should be integrated after freshness wrapper design so normalized symbols carry `raw_input` and warnings into the data contract.
+
+Current files:
+
+* `agent/src/symbols/normalizer.py`
+* `agent/tests/test_symbol_normalizer.py`
+* `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`
+
+Boundary:
+
+* Feature flag recommended.
+* Start with `get_market_data` only.
+* Do not broadly connect all tools.
+
+## Recommended Task 6: `a-stock-data` Adapter Planning
+
+Priority: medium-high, but after freshness guardrails.
+
+Business value:
+
+* Enhances A-share datasets where existing providers are weak.
+* Should be planned from real trading-day gaps.
 
 Boundary:
 
 * Planning only unless separately approved.
 * Do not replace original providers.
-
-## Recommended Task 4: Fix Reports Loading / Runs Unknown If It Affects Use
-
-Priority: medium.
-
-Business value:
-
-* Improves daily usability and auditability.
-* Makes run history less confusing.
-
-Boundary:
-
-* Investigate only after user confirms bugfix work.
-
-## Recommended Task 5: Custom Provider Plugin Framework Design
-
-Priority: medium.
-
-Business value:
-
-* Creates a safe extension path for local providers while preserving upstream compatibility.
-* Reduces future merge/rebase pain.
-
-Boundary:
-
-* Design only.
-* Do not replace original providers.
-* Do not change fallback chain yet.
-
-## Recommended Task 6: LLM Router Design
-
-Priority: medium.
-
-Business value:
-
-* Defines future task routing for DeepSeek, Qwen, Kimi, vision models, and Ollama.
-* Keeps model cost and quality auditable.
-
-Boundary:
-
-* Design only.
-* Do not implement before data-source and symbol basics are cleaner.
-
-## Recommended Task 7: yfinance TLS Fix
-
-Priority: low-medium.
-
-Business value:
-
-* Helps US/HK profile and yfinance-backed workflows.
-
-Boundary:
-
-* Diagnose before changing dependencies or provider code.
+* Any adapter must follow the freshness contract before production research use.
 
 ## Deferred / Later
 
-### yfinance TLS
+### Custom Provider Plugin Framework Design
 
-Status: unresolved.
+Priority: medium.
 
 Why later:
 
-* It is important for US/HK research, but quick smoke test showed Yahoo direct, Sina, and Eastmoney already provide some coverage.
-* Diagnose before changing dependencies or provider code.
+* Useful for maintainability, but freshness guardrails define the contract custom providers must satisfy.
+
+### LLM Router Design
+
+Priority: medium.
+
+Why later:
+
+* Important for cost and quality, but does not directly prevent data hallucination.
+
+### Reports Loading / Runs Unknown
+
+Priority: medium.
+
+Why later:
+
+* Product usability issue, but not the highest factual-risk item unless it blocks auditability.
+
+### yfinance TLS Fix
+
+Priority: low-medium.
+
+Why later:
+
+* Important for US/HK profile paths, but source failure disclosure is needed before fixing one provider.
 
 ### Tailscale Web Dry Run
 

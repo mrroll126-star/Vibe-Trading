@@ -93,7 +93,10 @@ Data quality checks:
 * Symbol is recognized as A-share.
 * Latest price/date is plausible.
 * If current-day data is unavailable, the report says so clearly.
+* If data timestamp is missing or unknown, the report says freshness is unknown.
+* The report does not invent today's close, percent change, volume, turnover, fund flow, news, announcements, or financial facts.
 * Fund flow/news/financial statement tools either return data or fail with understandable errors.
+* Provider failures are visible in the report or source summary, not only in trace.
 * The run-list status matches the detailed run status.
 
 ## 7. Evidence To Record
@@ -108,8 +111,13 @@ For each test, record:
 * Status shown in `/runs`.
 * Status shown in `/runs/<run_id>`.
 * Tool calls from local trace.
+* Whether current-day data was obtained.
+* Data date or timestamp shown by each tool.
+* Provider/source success, skipped, failed, empty, or timestamp-unknown status.
 * Error summaries.
 * Short report summary.
+* Whether missing data was disclosed clearly.
+* Whether the report made factual claims without returned data.
 * Whether the output includes a no-investment-advice boundary.
 
 Do not commit ignored run artifacts. Summarize results in `docs_local/WEB_UI_SMOKE_TEST_REPORT.md` or a future A-share test report.
@@ -121,6 +129,7 @@ Do not commit ignored run artifacts. Summarize results in `docs_local/WEB_UI_SMO
 * A-share symbol normalization is not yet formally designed.
 * Detailed run status and run-list status may disagree, as seen in the Phase 0 `600519.SH` test.
 * Data freshness should be treated as unverified until compared with an external market data page manually.
+* The Agent may still produce factual-sounding conclusions if a tool fails; this is the reason Data Freshness & Anti-Hallucination Guardrails are now a Phase 1 priority before `a-stock-data`.
 
 ## 9. Go / No-Go Rule
 
@@ -136,6 +145,7 @@ Stop and document if:
 * The Agent asks for shell tools.
 * The task attempts trading/broker actions.
 * The report gives direct buy/sell recommendations.
+* The report invents current-day price, change, volume, turnover, fund-flow, news, or financial facts that are not present in tool outputs.
 * Any secret appears in logs or UI.
 
 ## 10. Preflight Result Before Trading Day
@@ -188,12 +198,12 @@ Interpretation:
 
 Use this table on 2026-07-06:
 
-| 时间 | 标的 | 场景 | Prompt | 是否成功 | Run ID | 调用工具 | 数据源 | 错误摘要 | 输出是否有用 | 需要改造 |
-|---|---|---|---|---|---|---|---|---|---|---|
-| 开盘前 | `600519.SH` | 基础概览 |  |  |  |  |  |  |  |  |
-| 开盘前 | `300750.SZ` | 基础概览 |  |  |  |  |  |  |  |  |
-| 盘中 |  | 盘中观察 |  |  |  |  |  |  |  |  |
-| 收盘后 |  | 总结复盘 |  |  |  |  |  |  |  |  |
+| 时间 | 标的 | 场景 | Prompt | 是否成功 | Run ID | 调用工具 | 数据源 | 是否拿到当天数据 | 数据 timestamp/date | provider 成功/失败 | 错误摘要 | 是否披露缺失数据 | 是否无数据却下结论 | 输出是否有用 | 需要改造 |
+|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|---|
+| 开盘前 | `600519.SH` | 基础概览 |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| 开盘前 | `300750.SZ` | 基础概览 |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| 盘中 |  | 盘中观察 |  |  |  |  |  |  |  |  |  |  |  |  |  |
+| 收盘后 |  | 总结复盘 |  |  |  |  |  |  |  |  |  |  |  |  |  |
 
 ## 12. Suggested Test Rhythm For 2026-07-06
 
@@ -218,7 +228,12 @@ Use this table on 2026-07-06:
 ### Key Judgments For Tomorrow
 
 * Is the original A-share data good enough for daily research?
+* Does the Agent clearly state whether it has today's data?
+* Does the Agent expose provider success/failure and data timestamps?
+* Does the Agent clearly disclose missing or stale data?
+* Does the Agent ever make factual market claims without tool-returned data?
 * When does `a-stock-data` become necessary?
 * Which information is most missing: fund flow, announcements, news, research reports, sector data, or sentiment?
 * Is the Agent output too generic?
 * Is a fixed research report template needed?
+* Which freshness guardrails are needed before any A-share data-source expansion?
