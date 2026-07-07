@@ -223,3 +223,60 @@ Product conclusion:
 * The Phase 1 anti-hallucination MVP is active in the real Web UI final report path.
 * Next hardening option: upgrade No Estimate Guard from warning-only to a stricter rewrite/block mode for prompts that explicitly say no estimates.
 * Next feature option, if warning-only behavior is acceptable for now: proceed to feature-flagged Symbol Normalizer integration for `get_market_data`.
+
+## 10. Web UI Bare Symbol Retest With Symbol Normalizer Enabled
+
+Date: 2026-07-07 17:50-17:58 local time.
+
+Backend was started with the feature flag enabled only for this local test:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+```
+
+Frontend was started locally:
+
+```bash
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Services were bound to `127.0.0.1`; no public or Tailscale exposure was used.
+
+### Summary
+
+| Input | Run ID | Result | Tool argument observed | Normalization metadata | Data quality | Key finding |
+| -- | -- | -- | -- | -- | -- | -- |
+| `600519` | `20260707_175004_29_e1ff41` | completed | `600519.SH` | present | fresh, 2026-07-07, tencent | Compatible path passed, but the LLM changed the bare code before the tool call. |
+| `QQQ` | `20260707_175103_82_517a2b` | completed | `QQQ.US` | present | stale, 2026-07-06, yahoo | Search/LLM normalized before `get_market_data`; Source Summary disclosed stale market data. |
+| `00700` | `20260707_175432_05_eb20f8` | completed | `00700.HK` | present | fresh, 2026-07-07, yahoo | Compatible path passed, but raw bare input did not reach the tool. |
+| `000001` | `20260707_175623_17_caf048` | completed | `000001.SZ` | present with ambiguous warning | fresh, 2026-07-07, tencent | Boundary issue: the Agent silently chose `000001.SZ` before the tool entry guard could require confirmation. |
+| `贵州茅台` | `20260707_175745_30_b963eb` | completed | `600519.SH` | present | fresh, 2026-07-07, tencent | Boundary issue: the Agent mapped the Chinese name to `600519.SH` before the normalizer could request confirmation. |
+
+### Observed Metadata
+
+For successful market-data calls, `_symbol_normalization` and `_data_quality` both appeared in the `get_market_data` result. This confirms that enabling the feature flag does not remove the data-quality guardrails.
+
+Observed `_data_quality` examples:
+
+| Input | normalized_symbol | freshness_status | latest_data_date | provider |
+| -- | -- | -- | -- | -- |
+| `600519` | `600519.SH` | fresh | 2026-07-07 | tencent |
+| `QQQ` | `QQQ.US` | stale | 2026-07-06 | yahoo |
+| `00700` | `00700.HK` | fresh | 2026-07-07 | yahoo |
+| `000001` | `000001.SZ` | fresh | 2026-07-07 | tencent |
+| `贵州茅台` | `600519.SH` | fresh | 2026-07-07 | tencent |
+
+### Guardrail Findings
+
+* `Data Source Summary` appeared in all five final reports.
+* `Source Warnings` appeared where relevant.
+* `No Estimate Warning` appeared in four of the five reports.
+* `_data_quality` remained present after symbol normalization metadata was added.
+* The Web UI path often lets the LLM or `search_symbol` convert the user's natural input before `get_market_data` sees it.
+
+### Product Conclusion
+
+The feature-flagged normalizer is compatible with the Web UI `get_market_data` path, but this retest does not prove that the tool-entry normalizer safely handles all raw Web UI input. In real Agent runs, the model can pre-normalize ambiguous or named symbols before tool execution.
+
+Do not enable the Symbol Normalizer by default yet. The next design task should address pre-tool symbol intent, especially ambiguous inputs like `000001` and Chinese names like `贵州茅台`.

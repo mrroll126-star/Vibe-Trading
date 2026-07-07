@@ -627,3 +627,33 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No `a-stock-data` integration.
 - No yfinance fix.
 - No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-07 Web UI Bare Symbol Retest
+
+### Updated
+
+- Updated `docs_local/WEB_UI_SMOKE_TEST_REPORT.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/ROADMAP.md`.
+
+### Findings
+
+- `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1` was tested through the Web UI.
+- `_symbol_normalization` and `_data_quality` both appeared in `get_market_data` results.
+- `Data Source Summary` appeared in final reports.
+- The Web UI Agent path may normalize or guess symbols before `get_market_data` receives the original user input.
+- Ambiguous `000001` and Chinese name `贵州茅台` should not be considered safe for default-enable behavior yet.
+
+### Boundary
+
+- No business code changes.
+- No provider-chain changes.
+- No Web UI code changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No sensitive or runtime files committed.

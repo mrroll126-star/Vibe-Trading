@@ -408,3 +408,35 @@ Recommended next action:
 * If missing suffixes are a real pain point, implement a feature-flagged `get_market_data` integration first.
 * Keep `get_stock_news` as the second small integration.
 * Keep A-share specialty tools for later, after the first integration proves safe.
+
+## 12. Web UI Bare Symbol Retest Findings
+
+Date: 2026-07-07.
+
+The feature flag was enabled only for local testing:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
+```
+
+Results:
+
+| User input | Tool argument observed | Metadata result | Finding |
+| -- | -- | -- | -- |
+| `600519` | `600519.SH` | `_symbol_normalization` present; `_data_quality` fresh | Compatible, but raw bare input was not observed at the tool boundary. |
+| `QQQ` | `QQQ.US` | `_symbol_normalization` present; `_data_quality` stale | Compatible, but `search_symbol` / LLM normalized before `get_market_data`. |
+| `00700` | `00700.HK` | `_symbol_normalization` present; `_data_quality` fresh | Compatible, but raw bare input was not observed at the tool boundary. |
+| `000001` | `000001.SZ` | ambiguous warning present; `_data_quality` fresh | Not safe enough: the Agent selected the stock before confirmation. |
+| `贵州茅台` | `600519.SH` | `_symbol_normalization` present; `_data_quality` fresh | Not safe enough: the Agent guessed the code before the normalizer could ask for confirmation. |
+
+Conclusion:
+
+* The current `get_market_data` integration is compatible with Web UI reports.
+* `_data_quality` remains intact.
+* The feature flag should remain off by default.
+* A tool-entry normalizer is not enough to handle all natural Web UI inputs, because the LLM may rewrite the symbol before calling the tool.
+
+Next design requirement:
+
+* Add a pre-tool symbol intent guard, or change tool contracts so the original user-facing symbol/query is passed into the tool alongside the normalized symbol.
+* Ambiguous inputs should not be silently converted in Agent reasoning before confirmation.

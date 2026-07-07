@@ -96,7 +96,9 @@ Phase 1 foundation update:
 * The pure symbol normalizer helper and unittest coverage are implemented.
 * First tool integration is now implemented only for `get_market_data`, behind disabled-by-default `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`.
 * Broad integration is still not approved. `get_stock_news`, `get_fund_flow`, and `get_research_reports` are not connected to the normalizer yet.
-* The next recommended validation is a Web UI bare-symbol retest with the flag enabled only for the test run.
+* Web UI bare-symbol retest has been completed with the flag enabled only for the test run.
+* Result: `get_market_data` compatibility passed and `_data_quality` remained intact, but the Agent can pre-normalize ambiguous or named inputs before the tool-entry normalizer sees the raw input.
+* The next recommended design task is a pre-tool symbol intent guard before any default-enable decision.
 * Design documents:
   * `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
   * `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`

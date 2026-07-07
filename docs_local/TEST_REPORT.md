@@ -1217,3 +1217,45 @@ Known limitations:
 * This is not enabled by default.
 * Web UI was not retested with bare symbols in this round.
 * Other tools still expect explicit symbols unless the LLM normalizes them itself.
+
+## 24. Web UI Bare Symbol Retest
+
+Date: 2026-07-07.
+
+Purpose:
+
+* Test the real Web UI path with `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`.
+* Confirm whether bare inputs reach `get_market_data`.
+* Confirm whether `_data_quality` survives alongside `_symbol_normalization`.
+
+Commands:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+
+cd frontend
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Result:
+
+| Test | Run ID | Status | get_market_data argument | normalized_symbol | freshness_status | Notes |
+| -- | -- | -- | -- | -- | -- | -- |
+| `600519` | `20260707_175004_29_e1ff41` | completed | `600519.SH` | `600519.SH` | fresh | LLM converted input before tool call. |
+| `QQQ` | `20260707_175103_82_517a2b` | completed | `QQQ.US` | `QQQ.US` | stale | Search/LLM converted input before tool call; market data latest date was 2026-07-06. |
+| `00700` | `20260707_175432_05_eb20f8` | completed | `00700.HK` | `00700.HK` | fresh | LLM converted input before tool call. |
+| `000001` | `20260707_175623_17_caf048` | completed | `000001.SZ` | `000001.SZ` | fresh | Ambiguous warning existed in metadata, but provider was still called. |
+| `贵州茅台` | `20260707_175745_30_b963eb` | completed | `600519.SH` | `600519.SH` | fresh | Chinese name was mapped by the Agent before the normalizer could require confirmation. |
+
+Validation:
+
+* `_symbol_normalization` appeared in `get_market_data` results.
+* `_data_quality` appeared in `get_market_data` results.
+* `Data Source Summary` appeared in final reports.
+* Services were local only.
+* Shell tools stayed disabled.
+
+Important limitation:
+
+The Web UI Agent chain can rewrite the user's raw symbol before the tool-entry normalizer sees it. This means the current feature-flagged integration is compatible and useful, but it is not sufficient to enforce confirmation for ambiguous or Chinese-name inputs in real Web UI use.

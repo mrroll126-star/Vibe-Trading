@@ -103,6 +103,18 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Main risk: ambiguous inputs such as `000001` and accidental changes to currently working explicit symbols.
 * Current mitigation: feature flag defaults off; bare `000001` and Chinese names require confirmation and do not force provider calls.
 
+### 2a. Pre-Tool Symbol Intent Guard
+
+* Type: bug / safety improvement.
+* Impact area: Web UI Agent tool calling, ambiguous symbols, Chinese-name inputs.
+* Priority: high.
+* Suggested phase: before default-enabling Symbol Normalizer.
+* Requires business code change: yes.
+* Observed in Web UI retest: the Agent converted `000001` into `000001.SZ` and `贵州茅台` into `600519.SH` before `get_market_data` saw the original user text.
+* Why it matters: a tool-entry normalizer cannot require confirmation if the raw ambiguous input has already been rewritten into an explicit symbol.
+* Candidate solution: capture raw symbol intent from the user prompt, pass `raw_input` or `original_query` into tools, or add a pre-tool guard that blocks ambiguous/name-based conversions until confirmed.
+* Current mitigation: keep `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0` by default and prefer explicit symbols for production-like tests.
+
 ### 3. A-Share Data Source Enhancement
 
 * Type: improvement / research.

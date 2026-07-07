@@ -668,3 +668,29 @@ Key implementation decision:
 * Bare ambiguous `000001` and Chinese names do not force provider calls.
 * Explicit standard symbols are preserved.
 * No provider chain, loader, Web UI, yfinance, or `a-stock-data` change was made.
+
+## 2026-07-07 Web UI Bare Symbol Retest
+
+User requested a real Web UI retest with `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`.
+
+Actions performed:
+
+1. Confirmed branch, clean status, and ignored secret/runtime paths.
+2. Started backend on `127.0.0.1:8899` with `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`.
+3. Started frontend on `127.0.0.1:5899`.
+4. Submitted Web UI prompts for `600519`, `QQQ`, `00700`, `000001`, and `贵州茅台`.
+5. Read `agent/sessions/*/messages.jsonl` and `trace.jsonl` to verify tool arguments and final-report sections.
+6. Updated docs_local reports and backlog.
+
+Observed result:
+
+* `_symbol_normalization` appeared in `get_market_data` results.
+* `_data_quality` remained present.
+* `Data Source Summary` appeared in final reports.
+* `600519`, `QQQ`, and `00700` completed, but the Agent normalized them before the tool boundary.
+* `000001` and `贵州茅台` exposed a Web UI safety gap: the LLM can pick an explicit symbol before the tool-entry normalizer sees the raw input.
+
+Decision:
+
+* Do not default-enable Symbol Normalizer yet.
+* Next recommended design task is a pre-tool symbol intent guard.

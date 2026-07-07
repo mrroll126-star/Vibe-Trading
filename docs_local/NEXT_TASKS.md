@@ -311,3 +311,24 @@ Future re-enable conditions:
 * Do not enable shell tools.
 * Do not expose services remotely.
 * Do not develop trading execution features.
+
+## Current Recommended Order After Web UI Bare Symbol Retest
+
+1. **Design pre-tool symbol intent guard**
+   * Reason: Web UI retest showed the LLM can convert `000001` to `000001.SZ` and `贵州茅台` to `600519.SH` before `get_market_data` sees the raw input.
+   * Business value: prevents silent misidentification in natural-language research tasks.
+   * Risk: must be scoped carefully so explicit symbols like `600519.SH` continue to work.
+
+2. **Keep Symbol Normalizer feature flag off by default**
+   * Reason: direct helper tests pass, but real Web UI ambiguous/name handling is not safe enough for default enablement.
+   * Business value: preserves stable explicit-symbol workflows while allowing controlled tests.
+
+3. **Consider a small `get_market_data` hardening pass**
+   * Reason: if a normalized result has `needs_confirmation=true`, final reports should surface that warning more prominently.
+   * Business value: improves auditability without changing provider chains.
+
+4. **Then revisit broader Symbol Normalizer rollout**
+   * Reason: only after raw-input ambiguity is controlled should normalization expand to more tools.
+
+5. **Keep `a-stock-data` adapter planning deferred**
+   * Reason: input identity and data-quality contracts should stay ahead of new data-source integration.
