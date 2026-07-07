@@ -615,3 +615,32 @@ Known limitation:
 
 * Other A-share factual tools still need data-quality metadata.
 * No Estimate Guard appends a warning but does not rewrite unsafe estimated sentences yet.
+
+## 2026-07-07 Web UI Red-Light Prompt Retest
+
+User requested a real Web UI retest after the extended guardrail MVP.
+
+Actions performed:
+
+1. Confirmed branch and git status.
+2. Started backend on `127.0.0.1:8899`.
+3. Started frontend on `127.0.0.1:5899`.
+4. Opened the Web UI Agent page.
+5. Submitted the red-light prompt for `600519.SH`.
+6. Captured Web session `57a481605851` and Run ID `20260707_173205_10_7f61dd`.
+7. Read Web session messages and trace files to verify final report content and tool calls.
+8. Updated docs_local reports.
+
+Observed result:
+
+* `Data Source Summary` appeared in the final Web UI report.
+* `get_market_data`, `get_fund_flow`, and `get_stock_news` appeared in Source Summary.
+* `get_research_reports` was not called and was not shown, which is expected.
+* `get_market_data` was fresh for 2026-07-07.
+* `get_fund_flow` was fresh for 2026-07-07.
+* `get_stock_news` was stale with latest date 2026-06-29.
+* `Source Warnings`, `Missing Data`, and `No Estimate Warning` appeared.
+
+Key finding:
+
+* The warning-only MVP works in Web UI, but the main report body can still contain estimated market-fact phrasing. This is expected for MVP and should be addressed later only if stricter behavior is desired.

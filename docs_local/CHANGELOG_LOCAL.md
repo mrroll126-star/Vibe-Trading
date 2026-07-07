@@ -562,3 +562,31 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No yfinance fix.
 - No full research task.
 - No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-07 Web UI Red-Light Prompt Retest
+
+### Updated
+
+- Updated `docs_local/WEB_UI_SMOKE_TEST_REPORT.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+
+### Validation
+
+- Real Web UI prompt submitted through `http://127.0.0.1:5899/agent`.
+- Backend served on `127.0.0.1:8899`.
+- Web session: `57a481605851`.
+- Run ID: `20260707_173205_10_7f61dd`.
+- Final report included Data Source Summary, Missing Data, Source Warnings, and No Estimate Warning.
+
+### Boundary
+
+- No business code changes in this retest round.
+- No provider-chain changes.
+- No Web UI code changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.

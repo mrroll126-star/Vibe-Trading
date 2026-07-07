@@ -75,6 +75,18 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Acceptance focus: if today's data is missing, stale, failed, delayed, or timestamp-unknown, the report must disclose that instead of inventing price, volume, turnover, fund-flow, news, or financial facts.
 * Recommended next step: retest the Web UI red-light prompt and then extend metadata to remaining tools if gaps persist.
 * Main remaining risk: the hard gate only covers `get_market_data`; No Estimate Guard warns but does not rewrite unsafe estimated sentences.
+* 2026-07-07 Web UI retest: passed for Source Summary, multi-tool metadata display, stale-news disclosure, and No Estimate Warning. Main body still contained estimated market-fact phrasing, confirming warning-only behavior.
+
+### 1a. Stricter No Estimate Guard
+
+* Type: improvement / safety guardrail.
+* Impact area: explicit no-estimate prompts in final reports.
+* Priority: medium-high if warning-only behavior is not acceptable.
+* Suggested phase: after Symbol Normalizer decision, or before it if the product requirement becomes strict body-level prevention.
+* Requires business code change: yes.
+* Current behavior: appends `No Estimate Warning` but does not rewrite the report body.
+* Candidate next behavior: move estimated market-fact sentences into an `Invalid Estimated Claims` section, or block with a Data Insufficient-style report when explicit no-estimate prompts produce estimated market numbers.
+* Main risk: overly aggressive rewrite may remove valid tool-returned facts that merely contain approximate wording.
 
 ### 2. Symbol Normalization
 

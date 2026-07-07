@@ -27,15 +27,15 @@ Highest principle:
 
 ## Current Recommended Order After Extended Guardrail MVP
 
-1. **Retest Web UI red-light prompt**
-   * Business value: verifies the real Web UI final report path after Source Summary, Report Gate, and No Estimate Guard are active.
-   * Risk: consumes a small amount of LLM tokens.
-   * Boundary: test and record only; do not fix code during the retest.
-
-2. **Symbol Normalizer integration into `get_market_data`**
+1. **Symbol Normalizer integration into `get_market_data`**
    * Business value: supports natural inputs like `600519`, `QQQ`, and `00700`.
    * Risk: symbol ambiguity, especially `000001`.
    * Boundary: start with `get_market_data` only, ideally behind a feature flag.
+
+2. **Optional stricter No Estimate Guard**
+   * Business value: prevents estimated market-fact phrases from remaining in the main report body when the user explicitly says no estimates.
+   * Risk: automatic rewrite can overcorrect or remove useful context.
+   * Boundary: design first; consider block/rewrite only for explicit no-estimate prompts.
 
 3. **`a-stock-data` adapter planning**
    * Business value: prepares richer A-share data after guardrails exist.
@@ -46,6 +46,20 @@ Highest principle:
    * Business value: brings northbound flow, margin trading, shareholder count, sector info, and financial statements into the same audit model.
    * Risk: each tool has a different date/error shape.
    * Boundary: continue additive `_data_quality` only.
+
+## Completed Phase 1 Validation: Web UI Red-Light Prompt Retest
+
+Status: completed on 2026-07-07.
+
+Result:
+
+* Web session: `57a481605851`.
+* Run ID: `20260707_173205_10_7f61dd`.
+* Data Source Summary appeared in the final Web UI report.
+* `get_market_data`, `get_fund_flow`, and `get_stock_news` appeared.
+* `get_stock_news` stale status was disclosed.
+* No Estimate Warning appeared.
+* Main body still contained estimated market-fact phrasing, which is expected for the warning-only MVP.
 
 ## Recommended Task 1: A-Share Trading-Day Real Usage Test
 

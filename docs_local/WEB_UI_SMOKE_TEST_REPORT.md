@@ -166,3 +166,60 @@ After the Web UI smoke test, two lightweight CLI research tasks were run to prep
 | `300750.SZ` | `20260705_170559_16_fc55fe` | success | Output separated facts and inference and avoided buy/sell advice. |
 
 This follow-up was not a Web UI test. It was run through CLI to reduce UI overhead and confirm that the original Agent workflow can handle two A-share names before a real trading-day trial.
+
+## 9. Web UI Red-Light Prompt Retest After Guardrail MVP
+
+Date: 2026-07-07 17:32 local time.
+
+Prompt:
+
+```text
+请分析 600519.SH 今天盘中表现，包括最新价、涨跌幅、成交额和主要风险。只使用你实际获取到的数据；如果没有拿到当天数据，请明确说没有拿到，不要估算。
+```
+
+Run record:
+
+| Field | Result |
+| -- | -- |
+| Web session | `57a481605851` |
+| Run ID | `20260707_173205_10_7f61dd` |
+| Status | success |
+| Data Insufficient Report | No, because `get_market_data` returned fresh current-day data. |
+| Data Source Summary | Present |
+| Missing Data | Present |
+| Source Warnings | Present |
+| No Estimate Warning | Present |
+| Shell tools | Disabled |
+| Public exposure | No, services were bound to `127.0.0.1`. |
+
+Data Source Summary coverage:
+
+| Tool | Status | Date | Source | Notes |
+| -- | -- | -- | -- | -- |
+| `get_market_data` | fresh | 2026-07-07 | tencent | Current-day daily close warning appeared: not official close. |
+| `get_fund_flow` | fresh | 2026-07-07 | eastmoney | Fund-flow metadata appeared in final report. |
+| `get_stock_news` | stale | 2026-06-29 | eastmoney | Stale-news warning appeared. |
+| `get_research_reports` | not called | n/a | n/a | Correctly not shown; the Source Summary does not invent statuses for uncalled tools. |
+
+Tool calls observed in trace:
+
+* `get_market_data`
+* `get_fund_flow`
+* `get_stock_news`
+* `get_margin_trading`
+* `get_sector_info`
+
+Guardrail result:
+
+* The Web UI final report included `## Data Source Summary`.
+* The Web UI final report included `## Missing Data` because stock news was stale.
+* The Web UI final report included `## Source Warnings` for current-day daily close and stale news.
+* The Web UI final report included `## No Estimate Warning`.
+* The report body still contained estimated or approximate market-fact phrasing, including estimated turnover and approximate percent-style statements.
+* MVP behavior is therefore working as designed: warning is appended, but the body is not rewritten yet.
+
+Product conclusion:
+
+* The Phase 1 anti-hallucination MVP is active in the real Web UI final report path.
+* Next hardening option: upgrade No Estimate Guard from warning-only to a stricter rewrite/block mode for prompts that explicitly say no estimates.
+* Next feature option, if warning-only behavior is acceptable for now: proceed to feature-flagged Symbol Normalizer integration for `get_market_data`.

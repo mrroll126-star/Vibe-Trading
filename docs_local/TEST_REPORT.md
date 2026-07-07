@@ -1108,3 +1108,60 @@ Known limitations:
 * No Estimate Guard only appends a warning; it does not rewrite or delete estimated sentences in MVP.
 * The hard report gate still uses `get_market_data` only.
 * Other A-share tools such as northbound flow, margin trading, shareholder count, sector info, and financial statements do not yet have this expanded contract.
+
+## 22. Web UI Red-Light Prompt Retest
+
+Date: 2026-07-07.
+
+Purpose:
+
+* Verify that the extended data-quality and No Estimate Guard MVPs reach the real Web UI final report path.
+* Use the same A-share red-light prompt that previously exposed estimated market facts.
+
+Prompt:
+
+```text
+请分析 600519.SH 今天盘中表现，包括最新价、涨跌幅、成交额和主要风险。只使用你实际获取到的数据；如果没有拿到当天数据，请明确说没有拿到，不要估算。
+```
+
+Result:
+
+| Check | Result |
+| -- | -- |
+| Web session | `57a481605851` |
+| Run ID | `20260707_173205_10_7f61dd` |
+| Status | success |
+| Data Insufficient Report | No |
+| Reason not blocked | `get_market_data` returned fresh current-day data. |
+| Data Source Summary | Present |
+| Source Warnings | Present |
+| Missing Data | Present |
+| No Estimate Warning | Present |
+
+Data quality observed:
+
+| Tool | freshness_status | latest_data_date | Notes |
+| -- | -- | -- | -- |
+| `get_market_data` | fresh | 2026-07-07 | Current-day daily close warning: not official close. |
+| `get_fund_flow` | fresh | 2026-07-07 | Fund-flow rows were disclosed in Source Summary. |
+| `get_stock_news` | stale | 2026-06-29 | Stale-news warning disclosed. |
+| `get_research_reports` | not called | n/a | Not shown, as expected. |
+
+Trace-observed tools:
+
+* `get_market_data`
+* `get_fund_flow`
+* `get_stock_news`
+* `get_margin_trading`
+* `get_sector_info`
+
+Important finding:
+
+* The report body still contained estimated or approximate market-fact phrasing.
+* `No Estimate Warning` correctly appeared at the end of the report and listed the detected estimated market-fact statements.
+* This confirms the MVP is active in Web UI, but also confirms warning-only mode does not prevent estimated text from appearing in the main body.
+
+Conclusion:
+
+* Web UI integration passed for Source Summary, multi-tool `_data_quality`, and No Estimate Warning.
+* If the product requirement becomes “estimated market facts must never appear in the body,” the next task should be a stricter no-estimate rewrite/block gate.
