@@ -459,3 +459,42 @@ What was not done:
 * No provider chain was changed.
 * No yfinance fix was attempted.
 * No research task was run.
+
+## 2026-07-07 get_market_data Freshness Wrapper MVP
+
+User approved the highest-priority Phase 1 implementation task: add freshness metadata to `get_market_data` before expanding data sources.
+
+Actions performed:
+
+1. Confirmed branch, Git status, recent commits, and ignored sensitive/runtime paths.
+2. Read `get_market_data` local tool, MCP wrapper, and shared `agent/src/market_data.py` path.
+3. Added `agent/src/data_quality/freshness.py` as a network-free helper.
+4. Integrated additive `_data_quality` metadata in shared market-data output.
+5. Added `agent/tests/test_data_freshness.py`.
+6. Ran unittest, compile check, and a direct `fetch_market_data_json` validation.
+7. Updated docs_local records.
+
+Key implementation decision:
+
+* Keep original per-symbol data unchanged.
+* Add metadata under reserved top-level `_data_quality`.
+* Do not change provider chains or loader interfaces.
+
+Validation:
+
+* `.venv/bin/python -m unittest agent.tests.test_data_freshness` passed with 8 tests.
+* Compile check passed.
+* Direct validation confirmed `_data_quality` exists and original symbol data remains a list.
+
+Known limitation:
+
+* The final Agent report is not yet forced to disclose freshness metadata. That should be handled in the next report/source-summary task.
+
+What was not done:
+
+* No Web UI changes.
+* No `a-stock-data` integration.
+* No yfinance fix.
+* No provider-chain modification.
+* No full research task.
+* No ignored secret/runtime files committed.

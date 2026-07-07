@@ -54,15 +54,15 @@ Boundary:
 * Do not integrate new providers.
 * Keep shell tools disabled.
 
-## Recommended Task 2: Data Freshness & Anti-Hallucination Implementation Planning
+## Recommended Task 2: Source Summary In Reports
 
 Priority: high.
 
 Business value:
 
-* Prevents fabricated prices, volume, turnover, percent changes, fund-flow numbers, news, announcements, and financial facts.
-* Defines a product safety contract before expanding A-share data.
-* Makes reports auditable and safer for short-term research.
+* Makes freshness metadata visible to the user instead of leaving it only in tool JSON.
+* Forces reports to disclose stale, missing, failed, or timestamp-unknown data.
+* Reduces the exact risk observed in A-share Web UI testing: a report claiming intraday facts when only older data was available.
 
 Design source:
 
@@ -71,25 +71,43 @@ Design source:
 
 Boundary:
 
-* Planning first.
-* No provider-chain replacement.
-* No `a-stock-data` integration until freshness guardrails are designed for production workflows.
+* Start with prompt/report-source-summary behavior.
+* Do not rewrite the entire Web UI.
+* Do not block all reports yet; first make source failures and freshness warnings visible.
 
-## Recommended Task 3: `get_market_data` Freshness Wrapper
+## Recommended Task 3: Report Gate For Time-Sensitive Questions
 
 Priority: high.
 
 Business value:
 
-* Market data is the highest-risk hallucination surface.
-* Adds `requested_at`, `data_date`, `data_timestamp`, source summary, row count, and freshness status.
-* Creates the first concrete implementation of the data freshness contract.
+* Prevents normal factual reports when critical current-day data is missing, stale, or unknown.
+* Converts unsafe cases into a Data Insufficient Report.
+* Protects questions about today, intraday, latest price, close, turnover, and percent change.
 
 Boundary:
 
-* Do not change provider fallback order.
-* Do not add new data sources.
-* Keep explicit symbols working.
+* Needs careful acceptance tests.
+* Start with market-data facts before expanding to fund flow, news, announcements, and financials.
+
+## Completed Phase 1 Item: `get_market_data` Freshness Wrapper MVP
+
+Status: completed on 2026-07-07.
+
+Implemented:
+
+* `agent/src/data_quality/freshness.py`
+* `_data_quality` metadata in `agent/src/market_data.py`
+* `agent/tests/test_data_freshness.py`
+
+Validation:
+
+* Unittest passed with 8 tests.
+* Direct validation confirmed original per-symbol data is preserved.
+
+Remaining gap:
+
+* Reports do not yet consistently surface or obey `_data_quality`.
 
 ## Recommended Task 4: Source Summary In Reports
 

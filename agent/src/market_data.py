@@ -7,7 +7,10 @@ import logging
 import math
 import re
 from collections.abc import Callable
+from datetime import datetime
 from typing import Any
+
+from src.data_quality import assess_freshness
 
 logger = logging.getLogger(__name__)
 
@@ -86,6 +89,10 @@ def fetch_market_data(
 ) -> dict[str, Any]:
     """Fetch normalized OHLCV data through the repository loader layer."""
     results: dict[str, Any] = {}
+    data_quality: dict[str, Any] = {}
+    requested_at = datetime.now().astimezone()
+    requested_date_text = requested_at.date().isoformat()
+    time_sensitive = end_date == requested_date_text
 
     if source == "auto":
         groups: dict[str, list[str]] = {}
@@ -98,25 +105,68 @@ def fetch_market_data(
     for src, src_codes in groups.items():
         loader_cls = loader_resolver(src)
         loader = loader_cls()
+        loader_error: str | None = None
         try:
             data_map = loader.fetch(src_codes, start_date, end_date, interval=interval)
-        except Exception:
+        except Exception as exc:
             logger.exception(
                 "market-data loader %r failed for %s; codes fall through to _unresolved",
                 src,
                 src_codes,
             )
+            loader_error = str(exc)
             data_map = {}
         for symbol, df in data_map.items():
             records = df.reset_index().to_dict(orient="records")
             for row in records:
                 for key, value in row.items():
                     row[key] = _json_safe(value)
-            results[symbol] = cap_rows(records, max_rows)
+            capped = cap_rows(records, max_rows)
+            results[symbol] = capped
+            data_quality[symbol] = assess_freshness(
+                capped,
+                tool_name="get_market_data",
+                raw_input=symbol,
+                normalized_symbol=symbol,
+                provider=src,
+                requested_at=requested_at,
+                interval=interval,
+                time_sensitive=time_sensitive,
+            ).to_dict()
+        if loader_error:
+            for code in src_codes:
+                if code not in results:
+                    data_quality[code] = assess_freshness(
+                        [],
+                        tool_name="get_market_data",
+                        raw_input=code,
+                        normalized_symbol=code,
+                        provider=src,
+                        requested_at=requested_at,
+                        interval=interval,
+                        time_sensitive=time_sensitive,
+                        source_error=loader_error,
+                    ).to_dict()
 
     unresolved = [code for code in codes if code not in results]
     if unresolved:
         results["_unresolved"] = unresolved
+        for code in unresolved:
+            if code not in data_quality:
+                provider = detect_source(code) if source == "auto" else source
+                data_quality[code] = assess_freshness(
+                    [],
+                    tool_name="get_market_data",
+                    raw_input=code,
+                    normalized_symbol=code,
+                    provider=provider,
+                    requested_at=requested_at,
+                    interval=interval,
+                    time_sensitive=time_sensitive,
+                ).to_dict()
+
+    if data_quality:
+        results["_data_quality"] = data_quality
 
     return results
 

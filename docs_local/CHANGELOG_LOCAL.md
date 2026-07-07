@@ -416,3 +416,37 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No yfinance fix.
 - No real research task.
 - No ignored runtime or secret files committed.
+
+## 2026-07-07 get_market_data Freshness Wrapper MVP
+
+### Added
+
+- Added `agent/src/data_quality/__init__.py`.
+- Added `agent/src/data_quality/freshness.py`.
+- Added `agent/tests/test_data_freshness.py`.
+
+### Updated
+
+- Updated `agent/src/market_data.py` to append per-symbol freshness metadata under `_data_quality`.
+- Updated `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+
+### Validation
+
+- `.venv/bin/python -m unittest agent.tests.test_data_freshness` passed with 8 tests.
+- Compile check passed.
+- Direct `fetch_market_data_json` validation passed.
+- Existing pytest regression command could not run because `pytest` is not installed in the current virtual environment.
+
+### Boundary
+
+- No provider-chain changes.
+- No Web UI changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No real research task.
+- No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.

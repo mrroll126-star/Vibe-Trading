@@ -66,14 +66,15 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Impact area: all market-data-backed research reports.
 * Priority: highest.
 * Suggested phase: Phase 1 before `a-stock-data` production integration.
-* Requires business code change: yes for implementation; design completed first.
-* Current status: design document and ADR added; not yet implemented.
+* Requires business code change: yes.
+* Current status: `get_market_data` freshness metadata MVP implemented; report/source-summary enforcement still pending.
 * Design document: `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
 * ADR: `ADR-008: LLM Must Not Invent Market Data`.
+* Implementation files: `agent/src/data_quality/freshness.py`, `agent/src/market_data.py`, `agent/tests/test_data_freshness.py`.
 * Core principle: LLM must not invent market data.
 * Acceptance focus: if today's data is missing, stale, failed, delayed, or timestamp-unknown, the report must disclose that instead of inventing price, volume, turnover, fund-flow, news, or financial facts.
-* Recommended next step: implementation planning, then `get_market_data` freshness wrapper.
-* Main risk if not done: adding more data sources can still leave the LLM free to fabricate missing facts.
+* Recommended next step: make final reports surface `_data_quality` in Data Facts / Missing Data / Source Failures.
+* Main remaining risk: adding metadata alone does not force the final LLM answer to use or disclose it.
 
 ### 2. Symbol Normalization
 

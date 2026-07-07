@@ -775,3 +775,106 @@ Conclusion:
 * No additional key was required.
 * Actual availability still depends on the user's DeepSeek account permissions and official DeepSeek model availability.
 * To switch back, set `LANGCHAIN_MODEL_NAME=deepseek-v4-pro` in `agent/.env`, then restart backend or rerun provider tests.
+
+## 18. get_market_data Freshness Wrapper MVP
+
+Date: 2026-07-07.
+
+Scope:
+
+* Add freshness metadata to `get_market_data` only.
+* Do not change provider fallback order.
+* Do not add data sources.
+* Do not fix yfinance.
+* Do not change Web UI.
+* Do not run a full research task.
+
+Implemented files:
+
+| File | Purpose |
+| -- | -- |
+| `agent/src/data_quality/__init__.py` | Exposes data-quality helper API. |
+| `agent/src/data_quality/freshness.py` | Computes serializable freshness metadata from existing tool payloads. |
+| `agent/src/market_data.py` | Adds reserved top-level `_data_quality` metadata to `get_market_data` output. |
+| `agent/tests/test_data_freshness.py` | Unit tests for freshness rules and wrapper shape. |
+
+Freshness fields added per symbol:
+
+* `tool_name`
+* `raw_input`
+* `normalized_symbol`
+* `market`
+* `asset_type`
+* `provider`
+* `requested_at`
+* `latest_data_date`
+* `latest_data_timestamp`
+* `freshness_status`
+* `is_intraday_like`
+* `is_official_close`
+* `row_count`
+* `source_success`
+* `source_error`
+* `warnings`
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness
+
+.venv/bin/python -m compileall -q agent/src/data_quality agent/src/market_data.py agent/tests/test_data_freshness.py
+
+.venv/bin/python - <<'PY'
+import json
+import pandas as pd
+from src.market_data import fetch_market_data_json
+
+class Loader:
+    def fetch(self, codes, start_date, end_date, interval='1D'):
+        df = pd.DataFrame({'close': [10.0]}, index=pd.to_datetime(['2026-07-07']))
+        df.index.name = 'trade_date'
+        return {codes[0]: df}
+
+parsed = json.loads(fetch_market_data_json(
+    codes=['600519.SH'],
+    start_date='2026-07-07',
+    end_date='2026-07-07',
+    source='tencent',
+    loader_resolver=lambda source: Loader,
+))
+assert isinstance(parsed['600519.SH'], list)
+assert parsed['600519.SH'][0]['close'] == 10.0
+assert parsed['_data_quality']['600519.SH']['freshness_status'] == 'fresh'
+print('direct validation ok')
+PY
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Freshness unittest | Passed, 8 tests. |
+| Compile check | Passed. |
+| Direct `fetch_market_data_json` validation | Passed. |
+| Original per-symbol data shape preserved | Yes. |
+| `_data_quality` added | Yes. |
+| Daily current-date close warning | Present. |
+
+Unable to run:
+
+```bash
+.venv/bin/python -m pytest agent/tests/test_market_data.py agent/tests/test_market_data_tool.py agent/tests/test_get_market_data_unresolved.py agent/tests/test_get_market_data_size.py
+```
+
+Result:
+
+* Failed before test collection because the current virtual environment does not have `pytest` installed.
+* Error summary: `No module named pytest`.
+* No dependency changes were made just to run this command.
+
+Conclusion:
+
+* `get_market_data` now returns additive freshness metadata under `_data_quality`.
+* Original symbol payloads are not wrapped or deleted.
+* This is a metadata MVP, not a full report gate.
+* Next step should make Agent reports surface `_data_quality` in Data Facts / Source Failures / Missing Data sections.

@@ -1,6 +1,6 @@
 # Data Freshness & Anti-Hallucination Guardrails Design
 
-Status: design only. No business code changed.
+Status: `get_market_data` freshness wrapper MVP implemented. Broader report guardrails are still pending.
 
 Date: 2026-07-06.
 
@@ -398,7 +398,7 @@ Suggested Chinese system prompt block:
 
 ### Phase A: Design Only
 
-Current phase.
+Completed.
 
 Deliverables:
 
@@ -419,6 +419,64 @@ Why first:
 
 * Price/volume/close/change claims are the most common hallucination risk.
 * `get_market_data` is the central market-data path.
+
+Implementation status:
+
+* Implemented on 2026-07-07.
+* Helper module: `agent/src/data_quality/freshness.py`.
+* Shared integration point: `agent/src/market_data.py`.
+* Output is additive: original per-symbol data remains under the original symbol key.
+* Freshness metadata is returned under reserved top-level key `_data_quality`.
+* Provider fallback order was not changed.
+* No new data source was added.
+
+Current wrapper shape:
+
+```json
+{
+  "600519.SH": [
+    {
+      "trade_date": "2026-07-07T00:00:00",
+      "close": 1234.5
+    }
+  ],
+  "_data_quality": {
+    "600519.SH": {
+      "tool_name": "get_market_data",
+      "raw_input": "600519.SH",
+      "normalized_symbol": "600519.SH",
+      "market": "a_share",
+      "asset_type": "equity",
+      "provider": "tencent",
+      "requested_at": "2026-07-07T11:10:00+08:00",
+      "latest_data_date": "2026-07-07",
+      "latest_data_timestamp": "2026-07-07T00:00:00",
+      "freshness_status": "fresh",
+      "is_intraday_like": true,
+      "is_official_close": false,
+      "row_count": 1,
+      "source_success": true,
+      "source_error": null,
+      "warnings": [
+        "Daily bar close on the current trading date may represent intraday last price, not official close."
+      ]
+    }
+  }
+}
+```
+
+MVP rules:
+
+* `missing`: no rows, row count is zero, loader error, unresolved symbol, or provider envelope says `ok=false`.
+* `unknown`: rows exist but no supported date or timestamp can be extracted.
+* `stale`: request is time-sensitive and latest data date is older than the requested local date.
+* `fresh`: latest extracted data date matches the requested date, or the request is not classified as stale/missing/unknown.
+* Daily bar close on the current requested date is marked `is_intraday_like=true` and `is_official_close=false`.
+
+Known MVP limitation:
+
+* The wrapper marks data freshness, but it does not yet force the final research report to disclose freshness or source failures.
+* The next product step is to make Agent prompts/report templates consume `_data_quality` explicitly.
 
 ### Phase C: Source Summary In Report
 
