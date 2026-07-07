@@ -425,3 +425,41 @@ Do not enable Symbol Normalizer by default until pre-tool symbol intent guard is
 在 pre-tool symbol intent guard 设计和测试完成前，不应默认开启 Symbol Normalizer。
 
 `a-stock-data` should remain deferred. The project should first make symbol identity auditable and safe, then add new data sources.
+
+## 13. Phase B Pure Function Implementation
+
+Date: 2026-07-08.
+
+Implemented:
+
+* `agent/src/symbols/intent_guard.py`
+* `evaluate_symbol_intent_guard(...)`
+* `agent/tests/test_symbol_intent_guard.py`
+
+Scope:
+
+* Pure function only.
+* No AgentLoop integration.
+* No tool execution changes.
+* No provider-chain changes.
+* No Web UI changes.
+* No network, LLM, or file I/O.
+
+Current behavior:
+
+| Scenario | Decision |
+| -- | -- |
+| Explicit symbol match | `allow` |
+| Safe bare symbol mapping | `allow` with audit warning |
+| Bare `000001` mapped to `000001.SZ` or `000001.SH` | `clarify` |
+| Chinese-name prompt mapped to ticker | `clarify` |
+| Explicit symbol mismatch | `block` |
+| Untraceable tool symbol | `block` |
+| Non-`get_market_data` tool | `allow`, reason `unsupported_tool_for_mvp` |
+| Multiple symbols | highest-risk detail decides overall decision |
+
+Next phase:
+
+* Feature-flagged AgentLoop integration for `get_market_data` only.
+* Use `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`.
+* Keep the flag off by default.

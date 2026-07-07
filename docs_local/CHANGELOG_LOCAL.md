@@ -691,3 +691,41 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No service startup.
 - No `a-stock-data` integration.
 - No sensitive or runtime files committed.
+
+## 2026-07-08 Pure Pre-tool Symbol Intent Guard Function
+
+### Added
+
+- Added `agent/src/symbols/intent_guard.py`.
+- Added `agent/tests/test_symbol_intent_guard.py`.
+
+### Updated
+
+- Updated `agent/src/symbols/__init__.py`.
+- Updated `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.
+- Updated `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`.
+- Updated `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+- Updated `docs_local/ROADMAP.md`.
+
+### Validation
+
+- Symbol-related unittest command passed with 43 tests.
+- Anti-hallucination regression unittest command passed with 46 tests.
+- Compile check passed.
+- Lightweight pure-function validation passed.
+
+### Boundary
+
+- Pure function only.
+- No AgentLoop integration.
+- No tool execution changes.
+- No provider-chain changes.
+- No Web UI changes.
+- No service startup.
+- No `a-stock-data` integration.
+- No sensitive or runtime files committed.

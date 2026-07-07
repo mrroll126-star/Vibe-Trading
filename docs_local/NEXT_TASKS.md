@@ -353,3 +353,20 @@ Future re-enable conditions:
 
 5. **Keep `a-stock-data` adapter deferred**
    * Reason: symbol identity must be auditable before adding new A-share data sources.
+
+## Current Recommended Order After Pure Guard Function
+
+1. **Feature-flagged AgentLoop integration**
+   * Scope: only intercept `get_market_data`.
+   * Flag: `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`.
+   * Default: off.
+
+2. **Web UI retest**
+   * Test `000001`, `贵州茅台`, `600519`, `QQQ`, and `00700`.
+   * Expected: ambiguous/name inputs clarify; safe bare symbols pass.
+
+3. **Default-enable decision**
+   * Only consider enabling Symbol Normalizer by default after guard integration and Web UI retest pass.
+
+4. **Keep `a-stock-data` deferred**
+   * Reason: new data sources should come after symbol identity is auditable.

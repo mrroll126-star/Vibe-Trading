@@ -504,3 +504,10 @@ New design document:
 Priority rule:
 
 The agent must not silently rewrite ambiguous user symbol intent.
+
+Implementation update:
+
+* Pure guard function is implemented in `agent/src/symbols/intent_guard.py`.
+* Unit tests are implemented in `agent/tests/test_symbol_intent_guard.py`.
+* It is not connected to AgentLoop or Web UI yet.
+* Symbol Normalizer should still remain disabled by default until the pre-tool guard is feature-flagged into `get_market_data` and Web UI retested.

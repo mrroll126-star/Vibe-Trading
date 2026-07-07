@@ -469,3 +469,26 @@ Default remains off.
 See:
 
 * `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`
+
+## 14. Pure Guard Function Implementation
+
+Date: 2026-07-08.
+
+Implemented:
+
+* `agent/src/symbols/intent_guard.py`
+* `agent/tests/test_symbol_intent_guard.py`
+
+Boundary:
+
+* Not integrated into `AgentLoop`.
+* Not called by `get_market_data`.
+* Does not affect provider calls.
+* Does not affect Web UI behavior.
+
+Next recommended implementation:
+
+1. Add feature flag config for `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`.
+2. Call the pure guard before `get_market_data` execution in AgentLoop.
+3. If decision is `clarify` or `block`, return a synthetic tool result instead of calling the provider.
+4. Retest Web UI with `000001`, `贵州茅台`, `600519`, `QQQ`, and `00700`.

@@ -108,9 +108,14 @@ Phase 1 foundation update:
 Pre-tool Symbol Intent Guard update:
 
 * Design is complete.
-* Next implementation should be a pure guard function with tests only.
+* Pure guard function with tests is complete.
 * AgentLoop integration should be feature-flagged and limited to `get_market_data`.
 * `a-stock-data` remains deferred until symbol identity and data quality are auditable.
+
+Current implementation files:
+
+* `agent/src/symbols/intent_guard.py`
+* `agent/tests/test_symbol_intent_guard.py`
 
 See:
 

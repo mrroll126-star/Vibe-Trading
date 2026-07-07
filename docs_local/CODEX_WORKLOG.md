@@ -721,3 +721,33 @@ Decision:
 * Keep Symbol Normalizer disabled by default.
 * Next recommended task is pure `evaluate_symbol_intent_guard(...)` plus tests.
 * `a-stock-data` remains deferred.
+
+## 2026-07-08 Pure Pre-tool Symbol Intent Guard Function
+
+User approved the first implementation step for Pre-tool Symbol Intent Guard.
+
+Actions performed:
+
+1. Confirmed branch, clean status, and ignored secret/runtime paths.
+2. Re-read `normalizer.py`, `config.py`, existing symbol tests, and the guard design document.
+3. Added `agent/src/symbols/intent_guard.py`.
+4. Exported `evaluate_symbol_intent_guard` from `src.symbols`.
+5. Added `agent/tests/test_symbol_intent_guard.py`.
+6. Ran symbol-related tests, anti-hallucination regression tests, compile check, and lightweight pure-function validation.
+7. Updated docs_local records.
+
+Key behavior:
+
+* `000001` without suffix returns `clarify`.
+* Chinese-name prompts mapped to tickers return `clarify`.
+* Safe bare symbols such as `600519`, `QQQ`, and `00700` can return `allow`.
+* Explicit symbol mismatch returns `block`.
+* Non-`get_market_data` tools return `allow` with `unsupported_tool_for_mvp`.
+
+Boundary:
+
+* No AgentLoop integration.
+* No tool execution changes.
+* No provider-chain changes.
+* No Web UI behavior changes.
+* No `a-stock-data` integration.

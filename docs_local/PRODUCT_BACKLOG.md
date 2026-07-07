@@ -116,6 +116,8 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Current mitigation: keep `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0` by default and prefer explicit symbols for production-like tests.
 * Design document: `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.
 * Recommended next step: implement pure `evaluate_symbol_intent_guard(...)` plus tests before any AgentLoop integration.
+* Current implementation status: pure function and tests are complete; AgentLoop integration is not started.
+* Implementation files: `agent/src/symbols/intent_guard.py`, `agent/tests/test_symbol_intent_guard.py`.
 
 ### 3. A-Share Data Source Enhancement
 

@@ -1286,3 +1286,54 @@ Findings:
 Design output:
 
 * Added `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.
+
+## 26. Pure Pre-tool Symbol Intent Guard Function
+
+Date: 2026-07-08.
+
+Scope:
+
+* Implement pure guard function.
+* Add unittest coverage.
+* Do not connect it to AgentLoop.
+* Do not change tool execution or provider chains.
+
+Files:
+
+* `agent/src/symbols/intent_guard.py`
+* `agent/tests/test_symbol_intent_guard.py`
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard
+
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Symbol normalizer + market-data normalization + intent guard tests | Passed, 43 tests. |
+| Anti-hallucination regression tests | Passed, 46 tests. |
+| Compile check | Passed. |
+
+Lightweight validation:
+
+| Prompt / Tool | Result |
+| -- | -- |
+| `000001` -> `get_market_data(000001.SZ)` | `clarify`, `ambiguous_000001_requires_confirmation` |
+| `贵州茅台` -> `get_market_data(600519.SH)` | `clarify`, `chinese_name_requires_confirmation` |
+| `600519` -> `get_market_data(600519.SH)` | `allow`, `safe_bare_symbol_mapping` |
+| `600519.SH` -> `get_market_data(300750.SZ)` | `block`, `tool_symbol_mismatch` |
+| non-`get_market_data` tool | `allow`, `unsupported_tool_for_mvp` |
+
+Boundary:
+
+* No AgentLoop integration.
+* No Web UI behavior change.
+* No provider-chain change.
+* No `a-stock-data` integration.
