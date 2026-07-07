@@ -29,11 +29,13 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime
 from typing import Any
 
 from backtest.loaders import eastmoney_client, yahoo_client
 
 from src.agent.tools import BaseTool
+from src.data_quality import assess_stock_news_quality
 
 logger = logging.getLogger(__name__)
 
@@ -317,7 +319,11 @@ class StockNewsTool(BaseTool):
             articles = _fetch_eastmoney_news(_GLOBAL_QUERY, limit)
         except Exception as exc:  # noqa: BLE001 - surface any fetch failure as envelope
             logger.warning("global news fetch failed: %s", exc)
-            return self._error(f"eastmoney news fetch failed: {exc}")
+            return self._error(
+                f"eastmoney news fetch failed: {exc}",
+                symbol="global",
+                source="eastmoney",
+            )
         return self._ok("global", "eastmoney", {"scope": "global", "articles": articles})
 
     def _run_stock(self, code_arg: Any, limit: int) -> str:
@@ -337,7 +343,7 @@ class StockNewsTool(BaseTool):
         suffix = _suffix_of(code)
         query = _bare_query(code)
         if not query:
-            return self._error(f"invalid code: {code!r}")
+            return self._error(f"invalid code: {code!r}", symbol=code)
 
         if suffix in _EM_SUFFIXES:
             return self._stock_via_eastmoney(code, query, limit)
@@ -345,7 +351,8 @@ class StockNewsTool(BaseTool):
             return self._stock_via_yahoo(code, query, limit)
         return self._error(
             f"unsupported market for code {code!r}; expected suffix in "
-            f"{_EM_SUFFIXES + _YAHOO_SUFFIXES}"
+            f"{_EM_SUFFIXES + _YAHOO_SUFFIXES}",
+            symbol=code,
         )
 
     def _stock_via_eastmoney(self, code: str, query: str, limit: int) -> str:
@@ -354,7 +361,11 @@ class StockNewsTool(BaseTool):
             articles = _fetch_eastmoney_news(query, limit)
         except Exception as exc:  # noqa: BLE001 - surface any fetch failure as envelope
             logger.warning("eastmoney news fetch failed for %s: %s", code, exc)
-            return self._error(f"eastmoney news fetch failed: {exc}")
+            return self._error(
+                f"eastmoney news fetch failed: {exc}",
+                symbol=code,
+                source="eastmoney",
+            )
         return self._ok(
             "a_share", "eastmoney", {"scope": "stock", "code": code, "articles": articles}
         )
@@ -371,7 +382,11 @@ class StockNewsTool(BaseTool):
             matches = _fetch_yahoo_matches(query, limit)
         except Exception as exc:  # noqa: BLE001 - surface any fetch failure as envelope
             logger.warning("yahoo search fetch failed for %s: %s", code, exc)
-            return self._error(f"yahoo search fetch failed: {exc}")
+            return self._error(
+                f"yahoo search fetch failed: {exc}",
+                symbol=code,
+                source="yahoo",
+            )
         return self._ok(
             market,
             "yahoo",
@@ -390,13 +405,21 @@ class StockNewsTool(BaseTool):
         Returns:
             ``{"ok": true, "market": ..., "source": ..., "data": ...}`` as JSON.
         """
-        return json.dumps(
-            {"ok": True, "market": market, "source": source, "data": data},
-            ensure_ascii=False,
-        )
+        symbol = str(data.get("code") or data.get("scope") or market)
+        envelope = {"ok": True, "market": market, "source": source, "data": data}
+        envelope["_data_quality"] = {
+            symbol: assess_stock_news_quality(
+                envelope,
+                raw_input=symbol,
+                symbol=symbol,
+                provider=source,
+                requested_at=datetime.now().astimezone(),
+            ).to_dict()
+        }
+        return json.dumps(envelope, ensure_ascii=False)
 
     @staticmethod
-    def _error(message: str) -> str:
+    def _error(message: str, *, symbol: str | None = None, source: str | None = None) -> str:
         """Render a failure envelope as a JSON string.
 
         Args:
@@ -405,4 +428,16 @@ class StockNewsTool(BaseTool):
         Returns:
             ``{"ok": false, "error": message}`` as a JSON string.
         """
-        return json.dumps({"ok": False, "error": message}, ensure_ascii=False)
+        envelope: dict[str, Any] = {"ok": False, "error": message}
+        if symbol:
+            envelope["_data_quality"] = {
+                symbol: assess_stock_news_quality(
+                    envelope,
+                    raw_input=symbol,
+                    symbol=symbol,
+                    provider=source,
+                    requested_at=datetime.now().astimezone(),
+                    source_error=message,
+                ).to_dict()
+            }
+        return json.dumps(envelope, ensure_ascii=False)

@@ -1039,3 +1039,72 @@ Conclusion:
 * Time-sensitive market-data reports are now blocked when `get_market_data` freshness is stale, missing, or unknown.
 * Blocked reports use a deterministic `Data Insufficient Report` and retain source summary details.
 * This MVP still covers only `get_market_data`; other factual tools need freshness metadata before they can be gated.
+
+## 21. Extend Data Quality Contract + No Estimate Guard MVP
+
+Date: 2026-07-07.
+
+Scope:
+
+* Extend `_data_quality` MVP to `get_fund_flow`, `get_stock_news`, and `get_research_reports`.
+* Keep each tool's original return envelope unchanged and only append top-level `_data_quality`.
+* Extend final report Source Summary to display multiple tools by group.
+* Add a rule-based No Estimate Guard for prompts that explicitly say not to estimate, guess, infer, or fabricate market facts.
+* Do not modify provider chains, loaders, Web UI, yfinance, or `a-stock-data`.
+
+Implementation summary:
+
+| Area | Result |
+| -- | -- |
+| `get_fund_flow` | Adds per-symbol metadata. Inner per-symbol `error` or empty rows become `missing`. Rows with timestamp/date are assessed as fresh/stale/unknown. |
+| `get_stock_news` | Adds metadata for articles/matches. Empty results become `missing`; old article dates beyond 3 calendar days become `stale` with warning; no date becomes `unknown`. |
+| `get_research_reports` | Adds metadata for report rows. `ok=false`, HTTP errors, or empty reports become `missing`; old reports warn but are not blocked by this MVP. |
+| Source Summary | Now groups captured `_data_quality` by `tool_name` and shows Missing Data / Source Warnings across tools. |
+| No Estimate Guard | Detects explicit no-estimate prompts, strengthens the system prompt, and appends `No Estimate Warning` when estimated market-fact numbers appear. It does not rewrite the body in MVP. |
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+
+.venv/bin/python -m compileall -q agent/src agent/tests
+
+.venv/bin/python - <<'PY'
+from datetime import datetime
+from src.data_quality import assess_fund_flow_quality, assess_stock_news_quality, append_no_estimate_warning, format_data_source_summary
+req = datetime(2026,7,7,11,10)
+quality = {
+  'get_fund_flow:600519.SH': assess_fund_flow_quality({'error':'Connection aborted'}, raw_input='600519.SH', symbol='600519.SH', provider='eastmoney', requested_at=req).to_dict(),
+  'get_stock_news:600519.SH': assess_stock_news_quality({'ok': True, 'data': {'articles': [{'published':'2026-07-01'}]}}, raw_input='600519.SH', symbol='600519.SH', provider='eastmoney', requested_at=req).to_dict(),
+}
+summary = format_data_source_summary(quality)
+print('fund_flow_missing=', 'Connection aborted' in summary and '### get_fund_flow' in summary)
+print('stale_news_warning=', 'News may be outdated' in summary and '### get_stock_news' in summary)
+warned = append_no_estimate_warning('成交额估算约 32.7 亿元。', '请分析 600519.SH，不要估算')
+print('no_estimate_warning=', '## No Estimate Warning' in warned)
+plain = append_no_estimate_warning('可能受行业情绪影响。', '请分析 600519.SH，不要估算')
+print('plain_maybe_no_warning=', '## No Estimate Warning' not in plain)
+PY
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Freshness unittest | Passed. |
+| Report summary unittest | Passed. |
+| Report gate unittest | Passed. |
+| Extended data quality unittest | Passed. |
+| No Estimate Guard unittest | Passed. |
+| Total unittest count | 46 tests passed. |
+| Compile check | Passed. |
+| Mock fund-flow error validation | Passed. |
+| Mock stale-news validation | Passed. |
+| Mock no-estimate validation | Passed. |
+| Full Web UI research task | Not run in this implementation round by design. |
+
+Known limitations:
+
+* No Estimate Guard only appends a warning; it does not rewrite or delete estimated sentences in MVP.
+* The hard report gate still uses `get_market_data` only.
+* Other A-share tools such as northbound flow, margin trading, shareholder count, sector info, and financial statements do not yet have this expanded contract.

@@ -23,6 +23,7 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime
 from typing import Any
 
 from backtest.loaders._http import (
@@ -32,6 +33,7 @@ from backtest.loaders._http import (
 )
 from backtest.loaders.eastmoney_client import get_json, resolve_secid
 from src.agent.tools import BaseTool
+from src.data_quality import assess_research_reports_quality
 
 logger = logging.getLogger(__name__)
 
@@ -109,10 +111,12 @@ class ResearchReportsTool(BaseTool):
         suffix = code.rpartition(".")[2]
         if suffix not in _A_SHARE_SUFFIXES:
             return _error(
-                f"research reports are China A-share only (.SH/.SZ/.BJ); got '{code}'"
+                f"research reports are China A-share only (.SH/.SZ/.BJ); got '{code}'",
+                symbol=code,
+                source="eastmoney+ths",
             )
         if resolve_secid(code) is None:
-            return _error(f"could not resolve A-share symbol '{code}'")
+            return _error(f"could not resolve A-share symbol '{code}'", symbol=code, source="eastmoney+ths")
 
         limit = _clamp_limit(kwargs.get("limit", _DEFAULT_LIMIT))
 
@@ -127,7 +131,11 @@ class ResearchReportsTool(BaseTool):
                 },
             )
         except Exception as exc:  # noqa: BLE001 - surface any fetch failure as envelope
-            return _error(f"eastmoney report list request failed: {exc}")
+            return _error(
+                f"eastmoney report list request failed: {exc}",
+                symbol=code,
+                source="eastmoney+ths",
+            )
 
         reports = _parse_reports(payload)
 
@@ -135,21 +143,32 @@ class ResearchReportsTool(BaseTool):
         consensus_eps = _fetch_consensus_eps(code)
 
         if not reports and not consensus_eps:
-            return _error(f"no research coverage found for '{code}'")
+            return _error(
+                f"no research coverage found for '{code}'",
+                symbol=code,
+                source="eastmoney+ths",
+            )
 
-        return json.dumps(
-            {
-                "ok": True,
-                "market": "CN",
-                "source": "eastmoney+ths",
-                "data": {
-                    "code": code,
-                    "reports": reports[:limit],
-                    "consensus_eps": consensus_eps,
-                },
+        envelope = {
+            "ok": True,
+            "market": "CN",
+            "source": "eastmoney+ths",
+            "data": {
+                "code": code,
+                "reports": reports[:limit],
+                "consensus_eps": consensus_eps,
             },
-            ensure_ascii=False,
-        )
+        }
+        envelope["_data_quality"] = {
+            code: assess_research_reports_quality(
+                envelope,
+                raw_input=code,
+                symbol=code,
+                provider="eastmoney+ths",
+                requested_at=datetime.now().astimezone(),
+            ).to_dict()
+        }
+        return json.dumps(envelope, ensure_ascii=False)
 
 
 def _bare_code(code: str) -> str:
@@ -327,6 +346,18 @@ def _to_number(value: Any) -> float | None:
         return None
 
 
-def _error(message: str) -> str:
+def _error(message: str, *, symbol: str | None = None, source: str | None = None) -> str:
     """Render a failure envelope as a JSON string."""
-    return json.dumps({"ok": False, "error": message}, ensure_ascii=False)
+    envelope: dict[str, Any] = {"ok": False, "error": message}
+    if symbol:
+        envelope["_data_quality"] = {
+            symbol: assess_research_reports_quality(
+                envelope,
+                raw_input=symbol,
+                symbol=symbol,
+                provider=source,
+                requested_at=datetime.now().astimezone(),
+                source_error=message,
+            ).to_dict()
+        }
+    return json.dumps(envelope, ensure_ascii=False)

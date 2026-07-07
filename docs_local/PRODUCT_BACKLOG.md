@@ -67,14 +67,14 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Priority: highest.
 * Suggested phase: Phase 1 before `a-stock-data` production integration.
 * Requires business code change: yes.
-* Current status: `get_market_data` freshness metadata MVP implemented; Source Summary In Reports MVP implemented; Time-sensitive Report Gate MVP implemented.
+* Current status: `get_market_data` freshness metadata MVP implemented; Source Summary In Reports MVP implemented; Time-sensitive Report Gate MVP implemented; extended data-quality contract for `get_fund_flow`, `get_stock_news`, and `get_research_reports` implemented; No Estimate Guard MVP implemented.
 * Design document: `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
 * ADR: `ADR-008: LLM Must Not Invent Market Data`.
-* Implementation files: `agent/src/data_quality/freshness.py`, `agent/src/data_quality/report_summary.py`, `agent/src/data_quality/report_gate.py`, `agent/src/market_data.py`, `agent/src/agent/loop.py`, `agent/tests/test_data_freshness.py`, `agent/tests/test_report_data_source_summary.py`, `agent/tests/test_report_gate.py`.
+* Implementation files: `agent/src/data_quality/freshness.py`, `agent/src/data_quality/report_summary.py`, `agent/src/data_quality/report_gate.py`, `agent/src/data_quality/no_estimate.py`, `agent/src/market_data.py`, `agent/src/tools/fund_flow_tool.py`, `agent/src/tools/stock_news_tool.py`, `agent/src/tools/research_reports_tool.py`, `agent/src/agent/context.py`, `agent/src/agent/loop.py`, `agent/tests/test_data_freshness.py`, `agent/tests/test_report_data_source_summary.py`, `agent/tests/test_report_gate.py`, `agent/tests/test_extended_data_quality.py`, `agent/tests/test_no_estimate_guard.py`.
 * Core principle: LLM must not invent market data.
 * Acceptance focus: if today's data is missing, stale, failed, delayed, or timestamp-unknown, the report must disclose that instead of inventing price, volume, turnover, fund-flow, news, or financial facts.
-* Recommended next step: extend freshness metadata to `fund_flow`, `news`, `research_reports`, announcements, and financials.
-* Main remaining risk: the gate only covers `get_market_data`; non-OHLCV factual tools can still lack freshness metadata.
+* Recommended next step: retest the Web UI red-light prompt and then extend metadata to remaining tools if gaps persist.
+* Main remaining risk: the hard gate only covers `get_market_data`; No Estimate Guard warns but does not rewrite unsafe estimated sentences.
 
 ### 2. Symbol Normalization
 

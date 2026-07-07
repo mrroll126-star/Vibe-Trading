@@ -538,7 +538,54 @@ Known limitation:
 * It does not perform deep NLP; it uses simple keywords by design.
 * It does not yet block cases where the model should have called `get_market_data` but did not.
 
-### Phase E: Extend To A-Share Tools
+### Phase E: Extended Data Quality Contract + No Estimate Guard
+
+Goal:
+
+* Extend user-facing source quality disclosure beyond OHLCV market data.
+* Cover the first high-risk supporting tools observed in Web UI tests: fund flow, news, and research reports.
+* Add a rule-based guard for prompts that explicitly say not to estimate or infer market facts.
+
+Implementation status:
+
+* Implemented as MVP on 2026-07-07.
+* Generic metadata class: `DataQualityMetadata` in `agent/src/data_quality/freshness.py`.
+* Tool integration:
+  * `get_fund_flow` appends `_data_quality` for each requested symbol.
+  * `get_stock_news` appends `_data_quality` for articles or Yahoo matches.
+  * `get_research_reports` appends `_data_quality` for A-share report rows.
+* Source Summary now groups rows by tool name and lists Missing Data / Source Warnings across tools.
+* No Estimate Guard module: `agent/src/data_quality/no_estimate.py`.
+* Agent system prompt gets extra no-estimate instructions only when the user prompt explicitly asks for no estimates.
+* Final report post-processing appends `No Estimate Warning` if a no-estimate prompt still produces estimated market-fact numbers.
+
+MVP rules:
+
+* `get_fund_flow`
+  * Per-symbol `error`, connection aborted, `ok=false`, or empty rows -> `missing`.
+  * Rows with date/timestamp -> `fresh` or `stale` when time-sensitive.
+  * Rows with no date/timestamp -> `unknown`.
+* `get_stock_news`
+  * Empty articles/matches -> `missing`.
+  * Latest article date older than 3 natural days -> `stale` with warning.
+  * News without publish date -> `unknown`.
+* `get_research_reports`
+  * `ok=false`, HTTP errors, 400-style failures, or empty report rows -> `missing`.
+  * Reports without publish date -> `unknown`.
+  * Old reports warn, but are not hard-blocked by this MVP.
+* No Estimate Guard
+  * Detects Chinese phrases such as `不要估算`, `不要推测`, `只使用实际获取到的数据`.
+  * Detects English phrases such as `do not estimate`, `do not guess`, `use only retrieved data`.
+  * Flags estimated market-fact numbers such as `成交额估算约 32.7 亿元` and `涨跌幅（估算）-1.50%`.
+  * Does not flag ordinary interpretation without market facts, such as `可能受行业情绪影响`.
+
+Known limitation:
+
+* The hard `Data Insufficient Report` gate still uses only `get_market_data`.
+* No Estimate Guard appends a warning; it does not rewrite the report body yet.
+* Other A-share factual tools still need the same contract before they can be fully governed.
+
+### Phase F: Extend To Remaining A-Share Tools
 
 Extend metadata and failure disclosure to:
 
@@ -552,7 +599,7 @@ Extend metadata and failure disclosure to:
 * `get_sector_info`
 * `get_block_trades`
 
-### Phase F: Integration With `a-stock-data` Adapter
+### Phase G: Integration With `a-stock-data` Adapter
 
 Before `a-stock-data` enters production research workflows:
 

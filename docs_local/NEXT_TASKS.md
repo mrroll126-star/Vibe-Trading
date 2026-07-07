@@ -25,6 +25,28 @@ Highest principle:
 
 * LLM must not invent market data.
 
+## Current Recommended Order After Extended Guardrail MVP
+
+1. **Retest Web UI red-light prompt**
+   * Business value: verifies the real Web UI final report path after Source Summary, Report Gate, and No Estimate Guard are active.
+   * Risk: consumes a small amount of LLM tokens.
+   * Boundary: test and record only; do not fix code during the retest.
+
+2. **Symbol Normalizer integration into `get_market_data`**
+   * Business value: supports natural inputs like `600519`, `QQQ`, and `00700`.
+   * Risk: symbol ambiguity, especially `000001`.
+   * Boundary: start with `get_market_data` only, ideally behind a feature flag.
+
+3. **`a-stock-data` adapter planning**
+   * Business value: prepares richer A-share data after guardrails exist.
+   * Risk: adding data sources before contracts are complete can hide failures.
+   * Boundary: planning first; no provider replacement.
+
+4. **Extend data quality to remaining A-share tools**
+   * Business value: brings northbound flow, margin trading, shareholder count, sector info, and financial statements into the same audit model.
+   * Risk: each tool has a different date/error shape.
+   * Boundary: continue additive `_data_quality` only.
+
 ## Recommended Task 1: A-Share Trading-Day Real Usage Test
 
 Priority: high.
@@ -91,28 +113,25 @@ Remaining gap:
 * `fund_flow`, `news`, `research_reports`, announcements, and financials are not gated yet.
 * If no `get_market_data` `_data_quality` exists, the MVP does not block.
 
-## Recommended Task 2: Extend Freshness To fund_flow / news / reports
+## Completed Phase 1 Item: Extended Data Quality Contract + No Estimate Guard MVP
 
-Priority: high.
+Status: completed on 2026-07-07.
 
-Business value:
+Implemented:
 
-* Fund flow, latest news, research reports, announcements, and financial data are factual claims with freshness risk.
-* Extending metadata beyond OHLCV makes the report gate more complete.
-* Prevents the Agent from moving the hallucination problem from market data to another tool.
+* `_data_quality` metadata for `get_fund_flow`, `get_stock_news`, and `get_research_reports`.
+* Multi-tool Source Summary grouping.
+* Rule-based No Estimate Guard for explicit no-estimate prompts.
+* `agent/tests/test_extended_data_quality.py`.
+* `agent/tests/test_no_estimate_guard.py`.
 
-Design source:
+Remaining gap:
 
-* `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`
-* `docs_local/ARCHITECTURE_DECISIONS.md`
+* No Estimate Guard appends warning only; it does not rewrite the report body.
+* Hard Data Insufficient Report gate still uses only `get_market_data`.
+* Remaining A-share tools still need metadata later.
 
-Boundary:
-
-* Design per-tool metadata contracts first.
-* Do not change provider chain.
-* Do not use `a-stock-data` yet.
-
-## Recommended Task 3: Symbol Normalizer `get_market_data` Integration
+## Recommended Task 2: Symbol Normalizer `get_market_data` Integration
 
 Priority: medium-high.
 

@@ -581,3 +581,37 @@ What was not done:
 * No `a-stock-data` integration.
 * No yfinance fix.
 * No ignored secret/runtime files committed.
+
+## 2026-07-07 Extended Data Quality Contract + No Estimate Guard MVP
+
+User approved Phase 1 anti-hallucination step 4: extend data-quality disclosure to selected supporting tools and add a rule-based guard for explicit no-estimate prompts.
+
+Actions performed:
+
+1. Confirmed branch, latest commit, clean status, and ignored secret/runtime paths.
+2. Read `get_fund_flow`, `get_stock_news`, and `get_research_reports` implementations.
+3. Extended `agent/src/data_quality/freshness.py` with generic `DataQualityMetadata` and helper assessors.
+4. Added `_data_quality` to `get_fund_flow`, `get_stock_news`, and `get_research_reports` without changing original result payloads.
+5. Updated Source Summary to group captured quality metadata by tool name.
+6. Added rule-based No Estimate Guard in `agent/src/data_quality/no_estimate.py`.
+7. Added no-estimate prompt instructions and final report warning append logic.
+8. Added `unittest` coverage for extended data quality and no-estimate behavior.
+9. Ran target unittest suites, compile check, and mock validations.
+10. Updated docs_local records.
+
+Key implementation decision:
+
+* This MVP surfaces and warns; it does not rewrite report text.
+* The hard time-sensitive report gate remains scoped to `get_market_data`.
+* No provider chain, loader, Web UI, yfinance, or `a-stock-data` change was made.
+
+Validation:
+
+* `.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard` passed with 46 tests.
+* `.venv/bin/python -m compileall -q agent/src agent/tests` passed.
+* Mock validation passed for fund-flow error, stale news, no-estimate warning, and ordinary interpretive “可能” without warning.
+
+Known limitation:
+
+* Other A-share factual tools still need data-quality metadata.
+* No Estimate Guard appends a warning but does not rewrite unsafe estimated sentences yet.

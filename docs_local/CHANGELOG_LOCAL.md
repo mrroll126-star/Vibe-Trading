@@ -521,3 +521,44 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No yfinance fix.
 - No real research task.
 - No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-07 Extended Data Quality Contract + No Estimate Guard MVP
+
+### Added
+
+- Added generic `DataQualityMetadata` helpers for selected non-market-data tools.
+- Added `agent/src/data_quality/no_estimate.py`.
+- Added `agent/tests/test_extended_data_quality.py`.
+- Added `agent/tests/test_no_estimate_guard.py`.
+
+### Updated
+
+- Updated `agent/src/data_quality/freshness.py` to assess `get_fund_flow`, `get_stock_news`, and `get_research_reports`.
+- Updated `agent/src/tools/fund_flow_tool.py` to append per-symbol `_data_quality`.
+- Updated `agent/src/tools/stock_news_tool.py` to append `_data_quality` for articles/matches and supported errors.
+- Updated `agent/src/tools/research_reports_tool.py` to append `_data_quality` for reports and supported errors.
+- Updated `agent/src/data_quality/report_summary.py` to group Source Summary by tool.
+- Updated `agent/src/agent/context.py` with conditional no-estimate system prompt guidance.
+- Updated `agent/src/agent/loop.py` to capture general `_data_quality` and append No Estimate Warning when needed.
+- Updated `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+
+### Validation
+
+- `.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard` passed with 46 tests.
+- `.venv/bin/python -m compileall -q agent/src agent/tests` passed.
+- Mock validation passed.
+
+### Boundary
+
+- No provider-chain changes.
+- No loader changes.
+- No Web UI changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No full research task.
+- No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.

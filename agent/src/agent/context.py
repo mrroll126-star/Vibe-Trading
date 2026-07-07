@@ -11,6 +11,7 @@ from typing import TYPE_CHECKING, Any, Dict, List, Optional
 from src.agent.memory import WorkspaceMemory
 from src.agent.skills import SkillsLoader
 from src.agent.tools import ToolRegistry
+from src.data_quality import build_no_estimate_system_addendum
 
 if TYPE_CHECKING:
     from src.memory.persistent import PersistentMemory
@@ -194,7 +195,7 @@ class ContextBuilder:
                 snapshot=self._persistent_memory.snapshot,
             )
 
-        return _SYSTEM_PROMPT.format(
+        prompt = _SYSTEM_PROMPT.format(
             tool_count=len(self.registry._tools),
             skill_count=len(self.skills_loader.skills),
             data_source_count=self._count_data_sources(),
@@ -204,6 +205,7 @@ class ContextBuilder:
             memory_section=memory_section,
             current_datetime=now.strftime("%A, %B %d, %Y %H:%M (local)"),
         )
+        return prompt + build_no_estimate_system_addendum(user_message)
 
     @staticmethod
     def _count_data_sources() -> int:

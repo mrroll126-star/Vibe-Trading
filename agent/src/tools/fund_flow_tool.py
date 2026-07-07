@@ -17,10 +17,12 @@ from __future__ import annotations
 
 import json
 import logging
+from datetime import datetime
 from typing import Any
 
 from backtest.loaders.eastmoney_client import get_json, resolve_secid
 from src.agent.tools import BaseTool
+from src.data_quality import assess_fund_flow_quality
 
 logger = logging.getLogger(__name__)
 
@@ -212,9 +214,21 @@ class FundFlowTool(BaseTool):
             return _error("days must be a positive integer")
         days = min(days, _MAX_DAYS)
 
+        requested_at = datetime.now().astimezone()
         results = {
             symbol: _fetch_symbol_flow(symbol, period=period, days=days)
             for symbol in (c.strip() for c in codes)
+        }
+        data_quality = {
+            symbol: assess_fund_flow_quality(
+                result,
+                raw_input=symbol,
+                symbol=symbol,
+                provider="eastmoney",
+                requested_at=requested_at,
+                time_sensitive=period == "min",
+            ).to_dict()
+            for symbol, result in results.items()
         }
         envelope = {
             "ok": True,
@@ -223,5 +237,6 @@ class FundFlowTool(BaseTool):
             "period": period,
             "buckets": list(_BUCKETS),
             "data": results,
+            "_data_quality": data_quality,
         }
         return json.dumps(envelope, ensure_ascii=False)

@@ -32,6 +32,7 @@ from src.agent.tools import ToolRegistry
 from src.agent.trace import TraceWriter
 from src.core.state import RunStateStore
 from src.data_quality import (
+    append_no_estimate_warning,
     append_data_source_summary,
     evaluate_market_data_report_gate,
     format_data_insufficient_report,
@@ -511,7 +512,7 @@ class AgentLoop:
         self._previous_summary: str = ""
         self._persistent_memory = persistent_memory
         self._run_iteration: int = 0
-        self._market_data_quality: dict[str, Any] = {}
+        self._data_quality: dict[str, Any] = {}
 
     def cancel(self) -> None:
         """Cancel the current loop.
@@ -537,7 +538,7 @@ class AgentLoop:
         self._cancel_event.clear()
         self._called_ok = set()
         self._previous_summary = ""
-        self._market_data_quality = {}
+        self._data_quality = {}
 
         state_store = RunStateStore()
         RUNS_DIR.mkdir(parents=True, exist_ok=True)
@@ -896,11 +897,12 @@ class AgentLoop:
                             goal_continuations += 1
                             continue
 
-                    gate_result = evaluate_market_data_report_gate(user_message, self._market_data_quality)
+                    gate_result = evaluate_market_data_report_gate(user_message, self._data_quality)
                     if gate_result["blocked"]:
-                        final_content = format_data_insufficient_report(gate_result, self._market_data_quality)
+                        final_content = format_data_insufficient_report(gate_result, self._data_quality)
                     else:
-                        final_content = append_data_source_summary(final_content, self._market_data_quality)
+                        final_content = append_data_source_summary(final_content, self._data_quality)
+                    final_content = append_no_estimate_warning(final_content, user_message)
                     trace.write_text_entry(
                         {"type": "answer", "iter": current_iter},
                         field="content",
@@ -1413,7 +1415,7 @@ class AgentLoop:
 
         status = "ok" if success else "error"
         truncated = result[:TOOL_RESULT_LIMIT]
-        self._capture_market_data_quality(tc.name, result)
+        self._capture_data_quality(tc.name, result)
         messages.append(context.format_tool_result(tc.id, tc.name, truncated))
 
         trace_result = _redact_trace_result(result)
@@ -1429,10 +1431,8 @@ class AgentLoop:
         react_trace.append({"type": "tool_call", "tool": tc.name, "result_preview": preview})
         self._emit("tool_result", {"tool": tc.name, "status": status, "elapsed_ms": elapsed_ms, "preview": preview})
 
-    def _capture_market_data_quality(self, tool_name: str, result: str) -> None:
-        """Collect get_market_data quality metadata for final report appendix."""
-        if tool_name != "get_market_data":
-            return
+    def _capture_data_quality(self, tool_name: str, result: str) -> None:
+        """Collect tool quality metadata for final report appendix."""
         try:
             payload = json.loads(result)
         except (TypeError, json.JSONDecodeError):
@@ -1442,7 +1442,10 @@ class AgentLoop:
             return
         for symbol, meta in data_quality.items():
             if isinstance(symbol, str) and isinstance(meta, dict):
-                self._market_data_quality[symbol] = meta
+                storage_key = symbol
+                if storage_key in self._data_quality:
+                    storage_key = f"{meta.get('tool_name') or tool_name}:{symbol}"
+                self._data_quality[storage_key] = meta
 
     # -- Context compression ---------------------------------------------------
 
