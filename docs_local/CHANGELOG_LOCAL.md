@@ -487,3 +487,37 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No yfinance fix.
 - No real research task.
 - No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-07 Time-sensitive Report Gate MVP
+
+### Added
+
+- Added `agent/src/data_quality/report_gate.py`.
+- Added `agent/tests/test_report_gate.py`.
+
+### Updated
+
+- Updated `agent/src/data_quality/__init__.py`.
+- Updated `agent/src/agent/loop.py` to apply the report gate before final content is persisted.
+- Updated `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+
+### Validation
+
+- `.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate` passed with 29 tests.
+- `.venv/bin/python -m compileall -q agent/src agent/tests` passed.
+- Mock report-gate validation passed.
+
+### Boundary
+
+- Gate uses only `get_market_data` `_data_quality`.
+- No provider-chain changes.
+- No Web UI changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No real research task.
+- No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.

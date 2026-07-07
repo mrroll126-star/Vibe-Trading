@@ -72,15 +72,34 @@ Remaining gap:
 * Only `get_market_data` `_data_quality` is covered.
 * Other tools such as `fund_flow`, `news`, and `research_reports` are not covered yet.
 
-## Recommended Task 2: Time-sensitive Report Gate
+## Completed Phase 1 Item: Time-sensitive Report Gate MVP
+
+Status: completed on 2026-07-07.
+
+Implemented:
+
+* `agent/src/data_quality/report_gate.py`
+* Time-sensitive keyword detection.
+* Blocking for `stale`, `missing`, and `unknown` `get_market_data` freshness.
+* Blocking for explicit close / closing price prompts when daily close is warned as not official close.
+* Deterministic `Data Insufficient Report`.
+* `agent/tests/test_report_gate.py`.
+
+Remaining gap:
+
+* Only `get_market_data` `_data_quality` is gated.
+* `fund_flow`, `news`, `research_reports`, announcements, and financials are not gated yet.
+* If no `get_market_data` `_data_quality` exists, the MVP does not block.
+
+## Recommended Task 2: Extend Freshness To fund_flow / news / reports
 
 Priority: high.
 
 Business value:
 
-* Prevents normal factual reports when critical current-day data is missing, stale, or unknown.
-* Converts unsafe cases into a Data Insufficient Report.
-* Protects questions about today, intraday, latest price, close, turnover, and percent change.
+* Fund flow, latest news, research reports, announcements, and financial data are factual claims with freshness risk.
+* Extending metadata beyond OHLCV makes the report gate more complete.
+* Prevents the Agent from moving the hallucination problem from market data to another tool.
 
 Design source:
 
@@ -89,25 +108,24 @@ Design source:
 
 Boundary:
 
-* Start with `get_market_data` quality only.
-* Do not expand data sources.
-* Do not rewrite the Web UI.
-* Add acceptance tests for stale/missing/unknown current-day requests.
+* Design per-tool metadata contracts first.
+* Do not change provider chain.
+* Do not use `a-stock-data` yet.
 
-## Recommended Task 3: Extend Freshness To fund_flow / news / reports
+## Recommended Task 3: Symbol Normalizer `get_market_data` Integration
 
-Priority: high.
+Priority: medium-high.
 
 Business value:
 
-* Today's fund flow, latest news, and research report facts are also high-risk factual claims.
-* Extending metadata beyond OHLCV makes the report source summary more complete.
+* Helps natural inputs like `600519`, `QQQ`, and `00700`.
+* Freshness and gate infrastructure now provides a safer audit layer for normalized symbol outputs.
 
 Boundary:
 
-* Design per-tool contracts first.
-* Do not change provider chain.
-* Do not use `a-stock-data` yet.
+* Feature flag recommended.
+* Start with `get_market_data` only.
+* Do not broadly connect all tools.
 
 ## Completed Phase 1 Item: `get_market_data` Freshness Wrapper MVP
 

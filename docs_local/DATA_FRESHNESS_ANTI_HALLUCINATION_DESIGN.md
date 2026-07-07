@@ -475,8 +475,9 @@ MVP rules:
 
 Known MVP limitation:
 
-* The wrapper marks data freshness, but it does not yet force the final research report to disclose freshness or source failures.
-* The next product step is to make Agent prompts/report templates consume `_data_quality` explicitly.
+* The wrapper marks data freshness for `get_market_data` only.
+* Source Summary and Time-sensitive Report Gate now consume this metadata for market-data-backed reports.
+* Other tools such as `fund_flow`, `news`, and `research_reports` still need equivalent metadata.
 
 ### Phase C: Source Summary In Report
 
@@ -515,6 +516,27 @@ Goal:
 * Detect strong time-sensitive asks.
 * Require fresh critical data before normal factual reports.
 * Return Data Insufficient Report when data is missing/stale/unknown.
+
+Implementation status:
+
+* Implemented as MVP on 2026-07-07.
+* Helper module: `agent/src/data_quality/report_gate.py`.
+* Agent integration point: `agent/src/agent/loop.py`.
+* The gate uses only `get_market_data` `_data_quality`.
+* If the prompt is time-sensitive and any relevant market-data symbol is `stale`, `missing`, or `unknown`, the final answer is replaced with `Data Insufficient Report`.
+* If a prompt explicitly asks for close / closing price while current-day daily close has a “not official close” warning, the report is blocked.
+* If `_data_quality` is absent, the MVP does not block to avoid false positives.
+
+Time-sensitive terms currently include:
+
+* Chinese: 今天, 今日, 盘中, 实时, 最新, 当前, 刚刚, 收盘, 当日, 涨跌幅, 成交额, 成交量, 资金流.
+* English: today, intraday, real-time, realtime, latest, current, close, closing price, volume, turnover, price change.
+
+Known limitation:
+
+* The gate does not yet understand non-market-data tools.
+* It does not perform deep NLP; it uses simple keywords by design.
+* It does not yet block cases where the model should have called `get_market_data` but did not.
 
 ### Phase E: Extend To A-Share Tools
 

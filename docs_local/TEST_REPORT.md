@@ -953,3 +953,89 @@ Conclusion:
 * Final Agent content now mechanically appends a data-quality audit section when `get_market_data` returns `_data_quality`.
 * The implementation does not rely only on the LLM choosing to disclose source quality.
 * This MVP still does not block unsafe answers; the next step is a time-sensitive report gate.
+
+## 20. Time-sensitive Report Gate MVP
+
+Date: 2026-07-07.
+
+Scope:
+
+* Block normal factual market reports when a time-sensitive prompt meets stale, missing, or unknown `get_market_data` freshness.
+* Replace unsafe final content with a deterministic `Data Insufficient Report`.
+* Keep Source Summary visible in blocked reports.
+* Use only existing `get_market_data` `_data_quality`.
+* Do not extend to `fund_flow`, `news`, `research_reports`, or other tools yet.
+* Do not modify provider chain, loaders, yfinance, Web UI, or data sources.
+
+Implemented files:
+
+| File | Purpose |
+| -- | -- |
+| `agent/src/data_quality/report_gate.py` | Detects time-sensitive prompts, evaluates market-data freshness, and formats Data Insufficient Reports. |
+| `agent/src/data_quality/__init__.py` | Exposes report-gate helpers. |
+| `agent/src/agent/loop.py` | Applies the gate before final report content is persisted. |
+| `agent/tests/test_report_gate.py` | Unit tests for gate behavior and Data Insufficient Report formatting. |
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate
+
+.venv/bin/python -m compileall -q agent/src agent/tests
+
+.venv/bin/python - <<'PY'
+from src.data_quality import append_data_source_summary, evaluate_market_data_report_gate, format_data_insufficient_report
+
+warning = 'Daily bar close on the current trading date may represent intraday last price, not official close.'
+
+def meta(symbol, status, **kw):
+    base = {
+        'tool_name': 'get_market_data',
+        'normalized_symbol': symbol,
+        'freshness_status': status,
+        'latest_data_date': '2026-07-07',
+        'latest_data_timestamp': '2026-07-07T00:00:00',
+        'requested_at': '2026-07-07T11:10:00+08:00',
+        'row_count': 1,
+        'source_success': True,
+        'source_error': None,
+        'warnings': [],
+    }
+    base.update(kw)
+    return base
+
+stale_quality = {'600519.SH': meta('600519.SH', 'stale', latest_data_date='2026-07-06')}
+stale_gate = evaluate_market_data_report_gate('请分析 600519.SH 今天盘中表现，包括涨跌幅和成交额', stale_quality)
+assert stale_gate['blocked'] is True
+assert format_data_insufficient_report(stale_gate, stale_quality).startswith('# Data Insufficient Report')
+
+fresh_quality = {'600519.SH': meta('600519.SH', 'fresh')}
+fresh_gate = evaluate_market_data_report_gate('请做 600519.SH 的长期历史概览', fresh_quality)
+fresh_report = append_data_source_summary('## 历史概览\n仅做历史说明。', fresh_quality)
+assert fresh_gate['blocked'] is False
+assert fresh_report.startswith('## 历史概览') and '## Data Source Summary' in fresh_report
+
+close_quality = {'600519.SH': meta('600519.SH', 'fresh', warnings=[warning])}
+close_gate = evaluate_market_data_report_gate('请告诉我 600519.SH 今天收盘价', close_quality)
+assert close_gate['blocked'] is True
+print('report gate validation ok')
+PY
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Freshness unittest | Passed, 8 tests. |
+| Report summary unittest | Passed, 8 tests. |
+| Report gate unittest | Passed, 13 tests. |
+| Total unittest count | 29 tests passed. |
+| Compile check | Passed. |
+| Mock report-gate validation | Passed. |
+| Full research task | Not run, by design to avoid unnecessary token use. |
+
+Conclusion:
+
+* Time-sensitive market-data reports are now blocked when `get_market_data` freshness is stale, missing, or unknown.
+* Blocked reports use a deterministic `Data Insufficient Report` and retain source summary details.
+* This MVP still covers only `get_market_data`; other factual tools need freshness metadata before they can be gated.

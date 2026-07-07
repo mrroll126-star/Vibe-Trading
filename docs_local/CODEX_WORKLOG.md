@@ -540,3 +540,44 @@ What was not done:
 * No `a-stock-data` integration.
 * No yfinance fix.
 * No ignored secret/runtime files committed.
+
+## 2026-07-07 Time-sensitive Report Gate MVP
+
+User approved Phase 1 anti-hallucination step 3: block unsafe time-sensitive market reports when `get_market_data` freshness is stale, missing, or unknown.
+
+Actions performed:
+
+1. Confirmed branch, latest commit, clean status, and ignored secret/runtime paths.
+2. Re-read Source Summary and AgentLoop finalization path.
+3. Added `agent/src/data_quality/report_gate.py`.
+4. Updated `AgentLoop` to evaluate the gate before final report content is persisted.
+5. Added `agent/tests/test_report_gate.py`.
+6. Ran freshness, source-summary, and report-gate unittest suites.
+7. Ran compile check and mock gate validation.
+8. Updated docs_local records.
+
+Key implementation decision:
+
+* If blocked, replace the LLM's market-analysis body with a deterministic `Data Insufficient Report`.
+* If not blocked, preserve the original body and append Source Summary as before.
+* Gate only on `get_market_data` `_data_quality`; do not infer quality for other tools.
+
+Validation:
+
+* `.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate` passed with 29 tests.
+* Compile check passed.
+* Mock validation passed for stale+today, fresh+historical, and close+warning cases.
+
+Known limitation:
+
+* This gate does not yet cover fund flow, news, research reports, announcements, or financials.
+* If no `get_market_data` `_data_quality` exists, the MVP does not block.
+
+What was not done:
+
+* No full research task.
+* No Web UI code change.
+* No provider-chain change.
+* No `a-stock-data` integration.
+* No yfinance fix.
+* No ignored secret/runtime files committed.

@@ -31,7 +31,11 @@ from src.agent.progress import HeartbeatTimer, ProgressEvent, _set_emitter
 from src.agent.tools import ToolRegistry
 from src.agent.trace import TraceWriter
 from src.core.state import RunStateStore
-from src.data_quality import append_data_source_summary
+from src.data_quality import (
+    append_data_source_summary,
+    evaluate_market_data_report_gate,
+    format_data_insufficient_report,
+)
 from src.goal.context import (
     format_goal_continuation_prompt,
     get_current_goal_context,
@@ -892,7 +896,11 @@ class AgentLoop:
                             goal_continuations += 1
                             continue
 
-                    final_content = append_data_source_summary(final_content, self._market_data_quality)
+                    gate_result = evaluate_market_data_report_gate(user_message, self._market_data_quality)
+                    if gate_result["blocked"]:
+                        final_content = format_data_insufficient_report(gate_result, self._market_data_quality)
+                    else:
+                        final_content = append_data_source_summary(final_content, self._market_data_quality)
                     trace.write_text_entry(
                         {"type": "answer", "iter": current_iter},
                         field="content",
