@@ -1259,3 +1259,30 @@ Validation:
 Important limitation:
 
 The Web UI Agent chain can rewrite the user's raw symbol before the tool-entry normalizer sees it. This means the current feature-flagged integration is compatible and useful, but it is not sufficient to enforce confirmation for ambiguous or Chinese-name inputs in real Web UI use.
+
+## 25. Pre-tool Symbol Intent Guard Design Investigation
+
+Date: 2026-07-08.
+
+Scope:
+
+* Read-only code-path investigation.
+* No business code changes.
+* No provider-chain changes.
+* No service startup.
+* No Web UI retest.
+
+Findings:
+
+| Question | Result |
+| -- | -- |
+| Original user prompt before tool execution | Available in `AgentLoop.run(user_message=...)`; also persisted to run request and trace. |
+| Tool name and args before execution | Available in `AgentLoop._process_tool_calls(...)` through `tc.name` and `tc.arguments`. |
+| Unified tool execution path | `_execute_single` and `_execute_parallel` both call `_invoke_tool`, which calls `ToolRegistry.execute`. |
+| Best low-risk guard point | `AgentLoop` before provider execution, starting only with `get_market_data`. |
+| `search_symbol` risk | It can precede `get_market_data`, and its result can lead the LLM to call a normalized ticker. |
+| Current normalizer limitation | It sees only final tool args, so it cannot know whether `000001.SZ` came from explicit user intent or LLM pre-normalization of ambiguous `000001`. |
+
+Design output:
+
+* Added `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.

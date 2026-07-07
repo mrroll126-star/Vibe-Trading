@@ -103,6 +103,14 @@ Phase 1 foundation update:
   * `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
   * `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`
   * `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`
+  * `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`
+
+Pre-tool Symbol Intent Guard update:
+
+* Design is complete.
+* Next implementation should be a pure guard function with tests only.
+* AgentLoop integration should be feature-flagged and limited to `get_market_data`.
+* `a-stock-data` remains deferred until symbol identity and data quality are auditable.
 
 See:
 

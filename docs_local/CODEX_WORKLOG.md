@@ -694,3 +694,30 @@ Decision:
 
 * Do not default-enable Symbol Normalizer yet.
 * Next recommended design task is a pre-tool symbol intent guard.
+
+## 2026-07-08 Pre-tool Symbol Intent Guard Design
+
+User requested a design-only follow-up after the Web UI bare-symbol retest.
+
+Actions performed:
+
+1. Confirmed branch, clean status, and ignored secret/runtime paths.
+2. Read the Web UI session entry path: `/sessions/{session_id}/messages`.
+3. Read `SessionService._run_with_agent` and confirmed the current attempt prompt is passed into `AgentLoop.run`.
+4. Read `AgentLoop.run`, `_process_tool_calls`, `_execute_single`, `_execute_parallel`, and `_invoke_tool`.
+5. Read `ToolRegistry.execute`, `MarketDataTool`, `fetch_market_data`, and `SymbolSearchTool`.
+6. Created `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.
+7. Updated existing docs to record that the current `get_market_data` normalizer is a tool-entry guard, not a pre-tool intent guard.
+
+Key findings:
+
+* Original user prompt is available before tool execution inside `AgentLoop.run`.
+* Tool name and args are available before execution inside `_process_tool_calls`.
+* `search_symbol` can run before `get_market_data` and influence later tool args.
+* The current normalizer cannot stop LLM pre-normalization of ambiguous `000001` or Chinese names.
+
+Decision:
+
+* Keep Symbol Normalizer disabled by default.
+* Next recommended task is pure `evaluate_symbol_intent_guard(...)` plus tests.
+* `a-stock-data` remains deferred.

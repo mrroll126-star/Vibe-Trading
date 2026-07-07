@@ -114,6 +114,8 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Why it matters: a tool-entry normalizer cannot require confirmation if the raw ambiguous input has already been rewritten into an explicit symbol.
 * Candidate solution: capture raw symbol intent from the user prompt, pass `raw_input` or `original_query` into tools, or add a pre-tool guard that blocks ambiguous/name-based conversions until confirmed.
 * Current mitigation: keep `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0` by default and prefer explicit symbols for production-like tests.
+* Design document: `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.
+* Recommended next step: implement pure `evaluate_symbol_intent_guard(...)` plus tests before any AgentLoop integration.
 
 ### 3. A-Share Data Source Enhancement
 

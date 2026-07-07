@@ -657,3 +657,37 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No `a-stock-data` integration.
 - No yfinance fix.
 - No sensitive or runtime files committed.
+
+## 2026-07-08 Pre-tool Symbol Intent Guard Design
+
+### Added
+
+- Added `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.
+
+### Updated
+
+- Updated `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`.
+- Updated `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/ROADMAP.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+
+### Findings
+
+- The original user prompt is available before tool execution.
+- Tool name and arguments are available before execution.
+- `_invoke_tool` is the shared executor, but it currently does not receive original prompt context.
+- The lowest-risk design is a feature-flagged AgentLoop guard before `get_market_data` provider execution.
+
+### Boundary
+
+- Design-only round.
+- No business code changes.
+- No provider-chain changes.
+- No Web UI changes.
+- No service startup.
+- No `a-stock-data` integration.
+- No sensitive or runtime files committed.

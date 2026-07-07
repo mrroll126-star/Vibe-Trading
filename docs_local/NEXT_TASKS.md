@@ -332,3 +332,24 @@ Future re-enable conditions:
 
 5. **Keep `a-stock-data` adapter planning deferred**
    * Reason: input identity and data-quality contracts should stay ahead of new data-source integration.
+
+## Current Recommended Order After Guard Design
+
+1. **Implement pure pre-tool symbol guard function + tests**
+   * Scope: no AgentLoop integration yet.
+   * Value: prove the guard rules for `600519`, `QQQ`, `00700`, `000001`, `贵州茅台`, and wrong-symbol cases.
+
+2. **Feature-flagged AgentLoop integration**
+   * Scope: only `get_market_data`.
+   * Flag: `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`.
+   * Value: stop ambiguous or untraceable tool calls before provider execution.
+
+3. **Web UI retest**
+   * Scope: `600519`, `QQQ`, `00700`, `000001`, `贵州茅台`.
+   * Value: confirm safe bare symbols pass and ambiguous/name inputs require clarification.
+
+4. **Only then decide whether Symbol Normalizer can default on**
+   * Current recommendation: keep default off.
+
+5. **Keep `a-stock-data` adapter deferred**
+   * Reason: symbol identity must be auditable before adding new A-share data sources.

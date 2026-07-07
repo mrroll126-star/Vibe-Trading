@@ -475,3 +475,32 @@ Current recommendation:
 * Keep explicit symbols such as `SPY.US`, `600519.SH`, `300750.SZ`, and `00700.HK` working exactly as before.
 * Keep `get_stock_news` as the likely second integration.
 * Defer A-share specialty tools, Chinese-name resolution, and Web UI hints until the first tool integration is proven safe.
+
+## 10. Pre-tool Intent Guard Requirement
+
+Date: 2026-07-08.
+
+The Web UI bare-symbol retest showed that a tool-entry normalizer is not enough by itself.
+
+Why:
+
+* In the real Agent loop, the LLM can rewrite user input before calling tools.
+* `000001` was converted to `000001.SZ` before `get_market_data` saw the raw input.
+* `贵州茅台` was converted to `600519.SH` before the Chinese-name confirmation rule could run.
+
+Design implication:
+
+* Symbol Normalizer should remain disabled by default.
+* Before default-enable, add a pre-tool Symbol Intent Guard that compares:
+  * original user prompt
+  * tool name
+  * tool args
+  * optional recent `search_symbol` results
+
+New design document:
+
+* `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`
+
+Priority rule:
+
+The agent must not silently rewrite ambiguous user symbol intent.

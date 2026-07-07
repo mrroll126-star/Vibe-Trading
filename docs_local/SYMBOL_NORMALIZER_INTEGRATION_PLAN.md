@@ -440,3 +440,32 @@ Next design requirement:
 
 * Add a pre-tool symbol intent guard, or change tool contracts so the original user-facing symbol/query is passed into the tool alongside the normalized symbol.
 * Ambiguous inputs should not be silently converted in Agent reasoning before confirmation.
+
+## 13. Pre-tool Guard Design Status
+
+Date: 2026-07-08.
+
+Read-only investigation confirmed:
+
+* `AgentLoop.run(user_message=...)` has access to the original user prompt.
+* `AgentLoop._process_tool_calls(...)` sees every LLM tool call before execution.
+* Tool name and tool args are available before `_execute_single`, `_execute_parallel`, and `_invoke_tool`.
+* `_invoke_tool` is the unified final executor, but it currently receives only `tool_name` and `args`.
+
+Recommended guard location:
+
+* First implementation should evaluate tool calls inside `AgentLoop` before provider execution.
+* MVP scope should be `get_market_data` only.
+* A blocked or clarification decision should append a synthetic tool result instead of calling the provider.
+
+Feature flag:
+
+```text
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=0
+```
+
+Default remains off.
+
+See:
+
+* `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`
