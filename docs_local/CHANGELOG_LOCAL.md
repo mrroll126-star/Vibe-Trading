@@ -590,3 +590,40 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No `a-stock-data` integration.
 - No yfinance fix.
 - No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-07 Symbol Normalizer Feature-Flagged `get_market_data` Integration
+
+### Added
+
+- Added `agent/src/symbols/config.py`.
+- Added `agent/tests/test_market_data_symbol_normalization.py`.
+
+### Updated
+
+- Updated `agent/src/market_data.py` to normalize `get_market_data` inputs only when `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` is enabled.
+- Updated `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`.
+- Updated `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+- Updated `docs_local/ROADMAP.md`.
+
+### Validation
+
+- `.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization` passed with 23 tests.
+- `.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard` passed with 46 tests.
+- `.venv/bin/python -m compileall -q agent/src agent/tests` passed.
+- Direct mock validation passed.
+
+### Boundary
+
+- Feature flag default is off.
+- Only `get_market_data` is integrated.
+- No provider-chain changes.
+- No loader changes.
+- No Web UI changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.

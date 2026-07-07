@@ -644,3 +644,27 @@ Observed result:
 Key finding:
 
 * The warning-only MVP works in Web UI, but the main report body can still contain estimated market-fact phrasing. This is expected for MVP and should be addressed later only if stricter behavior is desired.
+
+## 2026-07-07 Symbol Normalizer Feature-Flagged `get_market_data` Integration
+
+User approved Phase 1 Symbol Normalizer first-stage integration.
+
+Actions performed:
+
+1. Confirmed branch, latest commit, clean status, and ignored secret/runtime paths.
+2. Re-read `agent/src/symbols/normalizer.py`, symbol tests, design docs, and `agent/src/market_data.py`.
+3. Added `agent/src/symbols/config.py` with `is_symbol_normalizer_enabled()`.
+4. Integrated normalization only at the `fetch_market_data` entry point.
+5. Preserved flag-off behavior.
+6. Added `_symbol_normalization` metadata when the flag is enabled.
+7. Preserved `_data_quality` and `raw_input` for normalized calls.
+8. Added `agent/tests/test_market_data_symbol_normalization.py`.
+9. Ran symbol tests, anti-hallucination regression tests, compile check, and direct validation.
+10. Updated docs_local records.
+
+Key implementation decision:
+
+* `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` is off by default.
+* Bare ambiguous `000001` and Chinese names do not force provider calls.
+* Explicit standard symbols are preserved.
+* No provider chain, loader, Web UI, yfinance, or `a-stock-data` change was made.

@@ -95,12 +95,13 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Priority: high.
 * Suggested phase: Phase 1 foundation task.
 * Requires business code change: yes for tool integration; design/helper already complete.
-* Current status: pure helper, acceptance-style tests, and integration plan implemented; not yet integrated into tools.
+* Current status: pure helper, acceptance-style tests, integration plan, and feature-flagged `get_market_data` integration implemented.
 * Acceptance focus: natural inputs such as `QQQ`, `600519`, `00700`, `贵州茅台`, and ambiguous multi-listing names.
-* Implementation files: `agent/src/symbols/normalizer.py`, `agent/tests/test_symbol_normalizer.py`.
+* Implementation files: `agent/src/symbols/normalizer.py`, `agent/src/symbols/config.py`, `agent/src/market_data.py`, `agent/tests/test_symbol_normalizer.py`, `agent/tests/test_market_data_symbol_normalization.py`.
 * Integration plan: `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
-* Recommended next step: after A-share trading-day review, integrate only `get_market_data` behind a disabled-by-default feature flag.
+* Recommended next step: Web UI bare-symbol retest with `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1` set only for the local test run.
 * Main risk: ambiguous inputs such as `000001` and accidental changes to currently working explicit symbols.
+* Current mitigation: feature flag defaults off; bare `000001` and Chinese names require confirmation and do not force provider calls.
 
 ### 3. A-Share Data Source Enhancement
 

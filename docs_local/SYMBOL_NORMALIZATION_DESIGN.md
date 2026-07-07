@@ -1,10 +1,19 @@
 # Symbol Normalization Design
 
-Status: helper implemented, not integrated into tools.
+Status: helper implemented; `get_market_data` first-stage integration implemented behind a disabled-by-default feature flag.
 
 Date: 2026-07-05.
 
 Scope: design a user-friendly symbol normalization layer for Phase 1. A pure helper now exists, but it is not wired into `get_market_data`, `get_stock_news`, Web UI, or any provider chain.
+
+Update on 2026-07-07:
+
+* `get_market_data` now has first-stage integration behind `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`.
+* The flag is disabled by default.
+* No other tools are integrated.
+* Provider chains and loaders are unchanged.
+* Chinese names still require confirmation and are not resolved automatically.
+* Ambiguous symbols such as bare `000001` return warnings and are not forced into a provider call.
 
 ## 1. Why This Matters
 

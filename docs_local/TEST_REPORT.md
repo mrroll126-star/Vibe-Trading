@@ -1165,3 +1165,55 @@ Conclusion:
 
 * Web UI integration passed for Source Summary, multi-tool `_data_quality`, and No Estimate Warning.
 * If the product requirement becomes “estimated market facts must never appear in the body,” the next task should be a stricter no-estimate rewrite/block gate.
+
+## 23. Symbol Normalizer Feature-Flagged `get_market_data` Integration
+
+Date: 2026-07-07.
+
+Scope:
+
+* Integrate the existing Symbol Normalizer helper only into `get_market_data`.
+* Add `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`.
+* Keep the flag disabled by default.
+* Do not integrate `stock_news`, `fund_flow`, `research_reports`, Web UI, provider chains, loaders, yfinance, or `a-stock-data`.
+
+Behavior:
+
+| Case | Result |
+| -- | -- |
+| Flag off | Existing behavior is preserved. Bare `600519` stays `600519`; bare `QQQ` stays `QQQ`; no `_symbol_normalization` metadata is added. |
+| Flag on, A-share | `600519 -> 600519.SH`, `300750 -> 300750.SZ`, `510300 -> 510300.SH`, `159915 -> 159915.SZ`. |
+| Flag on, US | `QQQ -> QQQ.US`, `SPY -> SPY.US`. |
+| Flag on, HK | `00700 -> 00700.HK`, `9988 -> 09988.HK`. |
+| Bare `000001` | Returns `000001.SZ` candidate plus ambiguous warning, but does not force a provider call. |
+| Chinese name | Requires confirmation and does not call provider. |
+| Invalid symbol | Returns warning/error metadata and does not call provider. |
+| Explicit symbol | `600519.SH`, `300750.SZ`, `SPY.US`, `00700.HK` remain usable. |
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization
+
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Symbol normalizer tests | Passed, 23 tests. |
+| Anti-hallucination regression tests | Passed, 46 tests. |
+| Compile check | Passed. |
+| Direct flag-off validation | Passed. |
+| Direct flag-on `600519` validation | Passed. |
+| Direct flag-on `QQQ` validation | Passed. |
+| Direct Chinese-name confirmation validation | Passed. |
+
+Known limitations:
+
+* This is not enabled by default.
+* Web UI was not retested with bare symbols in this round.
+* Other tools still expect explicit symbols unless the LLM normalizes them itself.

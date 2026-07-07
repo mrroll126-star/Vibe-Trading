@@ -94,7 +94,9 @@ Phase 1 foundation update:
   * `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`
 * Symbol normalization design is now a high-priority foundation task because it directly affects natural user inputs, tool routing, data-source selection, and future A-share adapter safety.
 * The pure symbol normalizer helper and unittest coverage are implemented.
-* Tool integration is not yet approved and should not be broad. The recommended first integration is a feature-flagged `get_market_data` entry-point change after A-share trading-day evidence is reviewed.
+* First tool integration is now implemented only for `get_market_data`, behind disabled-by-default `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`.
+* Broad integration is still not approved. `get_stock_news`, `get_fund_flow`, and `get_research_reports` are not connected to the normalizer yet.
+* The next recommended validation is a Web UI bare-symbol retest with the flag enabled only for the test run.
 * Design documents:
   * `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`
   * `docs_local/SYMBOL_NORMALIZATION_ACCEPTANCE_TESTS.md`

@@ -27,22 +27,27 @@ Highest principle:
 
 ## Current Recommended Order After Extended Guardrail MVP
 
-1. **Symbol Normalizer integration into `get_market_data`**
-   * Business value: supports natural inputs like `600519`, `QQQ`, and `00700`.
-   * Risk: symbol ambiguity, especially `000001`.
-   * Boundary: start with `get_market_data` only, ideally behind a feature flag.
+1. **Web UI bare-symbol retest with Symbol Normalizer enabled manually**
+   * Business value: verifies that `600519`, `QQQ`, and `00700` can work through the real Agent/Web UI path when `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`.
+   * Risk: consumes a small amount of LLM tokens and may expose prompt/tool-routing issues unrelated to the helper.
+   * Boundary: test only; do not enable the flag by default.
 
-2. **Optional stricter No Estimate Guard**
+2. **Decide whether to default-enable Symbol Normalizer later**
+   * Business value: determines whether natural symbols should become normal product behavior.
+   * Risk: ambiguous symbols such as `000001` can still require confirmation.
+   * Boundary: decide from test evidence, not assumption.
+
+3. **Optional stricter No Estimate Guard**
    * Business value: prevents estimated market-fact phrases from remaining in the main report body when the user explicitly says no estimates.
    * Risk: automatic rewrite can overcorrect or remove useful context.
    * Boundary: design first; consider block/rewrite only for explicit no-estimate prompts.
 
-3. **`a-stock-data` adapter planning**
+4. **`a-stock-data` adapter planning**
    * Business value: prepares richer A-share data after guardrails exist.
    * Risk: adding data sources before contracts are complete can hide failures.
    * Boundary: planning first; no provider replacement.
 
-4. **Extend data quality to remaining A-share tools**
+5. **Extend data quality to remaining A-share tools**
    * Business value: brings northbound flow, margin trading, shareholder count, sector info, and financial statements into the same audit model.
    * Risk: each tool has a different date/error shape.
    * Boundary: continue additive `_data_quality` only.
@@ -60,6 +65,25 @@ Result:
 * `get_stock_news` stale status was disclosed.
 * No Estimate Warning appeared.
 * Main body still contained estimated market-fact phrasing, which is expected for the warning-only MVP.
+
+## Completed Phase 1 Item: Symbol Normalizer `get_market_data` Integration
+
+Status: completed on 2026-07-07.
+
+Implemented:
+
+* `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` feature flag.
+* Default off behavior.
+* `get_market_data` entry-point normalization.
+* `_symbol_normalization` metadata.
+* Preservation of `_data_quality`.
+* Tests for flag off/on and A-share, US, HK, ambiguous, Chinese, invalid, multi-symbol cases.
+
+Remaining gap:
+
+* No Web UI bare-symbol retest yet.
+* No integration for `get_stock_news`, `get_fund_flow`, or `get_research_reports`.
+* Not approved to default-enable yet.
 
 ## Recommended Task 1: A-Share Trading-Day Real Usage Test
 

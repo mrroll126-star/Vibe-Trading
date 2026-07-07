@@ -1,8 +1,19 @@
 # Symbol Normalizer Integration Plan
 
-Status: design only. No tool-layer integration has been implemented.
+Status: first-stage `get_market_data` integration implemented behind a feature flag. Broader tool-layer integration is still not approved.
 
 Date: 2026-07-05.
+
+Update on 2026-07-07:
+
+* Implemented only for `get_market_data`.
+* Feature flag: `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`.
+* Default: off.
+* Enabled values: `1`, `true`, `yes`, `on`.
+* Flag-off behavior preserves the old path exactly: no normalization metadata, no symbol changes.
+* Flag-on behavior normalizes supported bare A-share, US, and HK symbols before loader routing.
+* The result includes `_symbol_normalization` metadata and keeps `_data_quality`.
+* `get_stock_news`, `get_fund_flow`, `get_research_reports`, Web UI, provider chains, and loaders were not changed.
 
 ## 1. Design Goals
 
