@@ -31,6 +31,7 @@ from src.agent.progress import HeartbeatTimer, ProgressEvent, _set_emitter
 from src.agent.tools import ToolRegistry
 from src.agent.trace import TraceWriter
 from src.core.state import RunStateStore
+from src.data_quality import append_data_source_summary
 from src.goal.context import (
     format_goal_continuation_prompt,
     get_current_goal_context,
@@ -506,6 +507,7 @@ class AgentLoop:
         self._previous_summary: str = ""
         self._persistent_memory = persistent_memory
         self._run_iteration: int = 0
+        self._market_data_quality: dict[str, Any] = {}
 
     def cancel(self) -> None:
         """Cancel the current loop.
@@ -531,6 +533,7 @@ class AgentLoop:
         self._cancel_event.clear()
         self._called_ok = set()
         self._previous_summary = ""
+        self._market_data_quality = {}
 
         state_store = RunStateStore()
         RUNS_DIR.mkdir(parents=True, exist_ok=True)
@@ -889,6 +892,7 @@ class AgentLoop:
                             goal_continuations += 1
                             continue
 
+                    final_content = append_data_source_summary(final_content, self._market_data_quality)
                     trace.write_text_entry(
                         {"type": "answer", "iter": current_iter},
                         field="content",
@@ -1401,6 +1405,7 @@ class AgentLoop:
 
         status = "ok" if success else "error"
         truncated = result[:TOOL_RESULT_LIMIT]
+        self._capture_market_data_quality(tc.name, result)
         messages.append(context.format_tool_result(tc.id, tc.name, truncated))
 
         trace_result = _redact_trace_result(result)
@@ -1415,6 +1420,21 @@ class AgentLoop:
         preview = trace_result[:200]
         react_trace.append({"type": "tool_call", "tool": tc.name, "result_preview": preview})
         self._emit("tool_result", {"tool": tc.name, "status": status, "elapsed_ms": elapsed_ms, "preview": preview})
+
+    def _capture_market_data_quality(self, tool_name: str, result: str) -> None:
+        """Collect get_market_data quality metadata for final report appendix."""
+        if tool_name != "get_market_data":
+            return
+        try:
+            payload = json.loads(result)
+        except (TypeError, json.JSONDecodeError):
+            return
+        data_quality = payload.get("_data_quality") if isinstance(payload, dict) else None
+        if not isinstance(data_quality, dict):
+            return
+        for symbol, meta in data_quality.items():
+            if isinstance(symbol, str) and isinstance(meta, dict):
+                self._market_data_quality[symbol] = meta
 
     # -- Context compression ---------------------------------------------------
 

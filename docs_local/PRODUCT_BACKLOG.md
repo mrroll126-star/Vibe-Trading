@@ -67,14 +67,14 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Priority: highest.
 * Suggested phase: Phase 1 before `a-stock-data` production integration.
 * Requires business code change: yes.
-* Current status: `get_market_data` freshness metadata MVP implemented; report/source-summary enforcement still pending.
+* Current status: `get_market_data` freshness metadata MVP implemented; Source Summary In Reports MVP implemented; time-sensitive hard gate still pending.
 * Design document: `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
 * ADR: `ADR-008: LLM Must Not Invent Market Data`.
-* Implementation files: `agent/src/data_quality/freshness.py`, `agent/src/market_data.py`, `agent/tests/test_data_freshness.py`.
+* Implementation files: `agent/src/data_quality/freshness.py`, `agent/src/data_quality/report_summary.py`, `agent/src/market_data.py`, `agent/src/agent/loop.py`, `agent/tests/test_data_freshness.py`, `agent/tests/test_report_data_source_summary.py`.
 * Core principle: LLM must not invent market data.
 * Acceptance focus: if today's data is missing, stale, failed, delayed, or timestamp-unknown, the report must disclose that instead of inventing price, volume, turnover, fund-flow, news, or financial facts.
-* Recommended next step: make final reports surface `_data_quality` in Data Facts / Missing Data / Source Failures.
-* Main remaining risk: adding metadata alone does not force the final LLM answer to use or disclose it.
+* Recommended next step: implement a time-sensitive report gate for today/intraday/latest/close/turnover questions.
+* Main remaining risk: source summary is appended after the model response, but it does not yet prevent unsafe claims in the main body.
 
 ### 2. Symbol Normalization
 

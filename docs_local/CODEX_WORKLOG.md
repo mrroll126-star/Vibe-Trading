@@ -498,3 +498,45 @@ What was not done:
 * No provider-chain modification.
 * No full research task.
 * No ignored secret/runtime files committed.
+
+## 2026-07-07 Source Summary In Reports MVP
+
+User approved Phase 1 anti-hallucination step 2: make final reports surface `get_market_data` `_data_quality`.
+
+Actions performed:
+
+1. Confirmed branch, latest commit, clean status, and ignored secret/runtime paths.
+2. Read Agent loop, context builder, session service, and report flow.
+3. Added `agent/src/data_quality/report_summary.py`.
+4. Updated `AgentLoop` to capture `get_market_data` `_data_quality` from tool results.
+5. Appended a mechanical report appendix to final content when market-data quality exists.
+6. Added data truthfulness rules to the system prompt.
+7. Added `agent/tests/test_report_data_source_summary.py`.
+8. Ran unittest and compile checks.
+9. Updated docs_local records.
+
+Key implementation decision:
+
+* Do not rely only on the LLM to disclose quality metadata.
+* Preserve the original report body and append an audit section at the end.
+* Only use existing `get_market_data` `_data_quality`; do not invent summaries for other tools.
+
+Validation:
+
+* `.venv/bin/python -m unittest agent.tests.test_data_freshness` passed with 8 tests.
+* `.venv/bin/python -m unittest agent.tests.test_report_data_source_summary` passed with 8 tests.
+* Compile check passed.
+* Mock source-summary validation passed.
+
+Known limitation:
+
+* This is still not a hard report gate. Time-sensitive prompts can be handled more safely only after a gate classifies critical data as fresh/stale/missing/unknown before finalization.
+
+What was not done:
+
+* No full research task.
+* No Web UI code change.
+* No provider-chain change.
+* No `a-stock-data` integration.
+* No yfinance fix.
+* No ignored secret/runtime files committed.

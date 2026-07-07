@@ -878,3 +878,78 @@ Conclusion:
 * Original symbol payloads are not wrapped or deleted.
 * This is a metadata MVP, not a full report gate.
 * Next step should make Agent reports surface `_data_quality` in Data Facts / Source Failures / Missing Data sections.
+
+## 19. Source Summary In Reports MVP
+
+Date: 2026-07-07.
+
+Scope:
+
+* Surface `get_market_data` `_data_quality` in final reports.
+* Add mechanical report sections: `Data Source Summary`, `Missing Data`, and `Source Warnings`.
+* Add system prompt instructions for data truthfulness.
+* Do not implement a hard time-sensitive report gate.
+* Do not extend freshness metadata to `fund_flow`, `news`, `research_reports`, or other tools yet.
+* Do not modify provider chain, loaders, yfinance, Web UI, or data sources.
+
+Implemented files:
+
+| File | Purpose |
+| -- | -- |
+| `agent/src/data_quality/report_summary.py` | Formats `_data_quality` into report appendix sections. |
+| `agent/src/data_quality/__init__.py` | Exposes report-summary helpers. |
+| `agent/src/agent/loop.py` | Captures `get_market_data` `_data_quality` and appends the audit section to final content. |
+| `agent/src/agent/context.py` | Adds data truthfulness instructions to the system prompt. |
+| `agent/tests/test_report_data_source_summary.py` | Unit tests for summary formatting behavior. |
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness
+
+.venv/bin/python -m unittest agent.tests.test_report_data_source_summary
+
+.venv/bin/python -m compileall -q agent/src agent/tests
+
+.venv/bin/python - <<'PY'
+from src.data_quality import append_data_source_summary
+
+report = '## 原始分析\n这是模型正文。'
+quality = {
+    '600519.SH': {
+        'tool_name': 'get_market_data',
+        'normalized_symbol': '600519.SH',
+        'freshness_status': 'stale',
+        'latest_data_date': '2026-07-06',
+        'latest_data_timestamp': '2026-07-06T00:00:00',
+        'requested_at': '2026-07-07T11:10:00+08:00',
+        'row_count': 10,
+        'source_success': True,
+        'source_error': None,
+        'warnings': ['Latest data date 2026-07-06 is older than requested date 2026-07-07.'],
+    },
+}
+out = append_data_source_summary(report, quality)
+assert out.startswith(report)
+assert '## Data Source Summary' in out
+assert 'stale' in out
+assert '## Missing Data' in out
+print('source summary validation ok')
+PY
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| Freshness unittest | Passed, 8 tests. |
+| Report summary unittest | Passed, 8 tests. |
+| Compile check | Passed. |
+| Mock source-summary validation | Passed. |
+| Full research task | Not run, by design to avoid unnecessary token use. |
+
+Conclusion:
+
+* Final Agent content now mechanically appends a data-quality audit section when `get_market_data` returns `_data_quality`.
+* The implementation does not rely only on the LLM choosing to disclose source quality.
+* This MVP still does not block unsafe answers; the next step is a time-sensitive report gate.

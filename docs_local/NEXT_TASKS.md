@@ -54,28 +54,25 @@ Boundary:
 * Do not integrate new providers.
 * Keep shell tools disabled.
 
-## Recommended Task 2: Source Summary In Reports
+## Completed Phase 1 Item: Source Summary In Reports MVP
 
-Priority: high.
+Status: completed on 2026-07-07.
 
-Business value:
+Implemented:
 
-* Makes freshness metadata visible to the user instead of leaving it only in tool JSON.
-* Forces reports to disclose stale, missing, failed, or timestamp-unknown data.
-* Reduces the exact risk observed in A-share Web UI testing: a report claiming intraday facts when only older data was available.
+* `agent/src/data_quality/report_summary.py`
+* Mechanical Data Source Summary / Missing Data / Source Warnings appendix.
+* Agent loop capture of `get_market_data` `_data_quality`.
+* System prompt data truthfulness rules.
+* `agent/tests/test_report_data_source_summary.py`
 
-Design source:
+Remaining gap:
 
-* `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`
-* `docs_local/ARCHITECTURE_DECISIONS.md`
+* This is not a hard report gate.
+* Only `get_market_data` `_data_quality` is covered.
+* Other tools such as `fund_flow`, `news`, and `research_reports` are not covered yet.
 
-Boundary:
-
-* Start with prompt/report-source-summary behavior.
-* Do not rewrite the entire Web UI.
-* Do not block all reports yet; first make source failures and freshness warnings visible.
-
-## Recommended Task 3: Report Gate For Time-Sensitive Questions
+## Recommended Task 2: Time-sensitive Report Gate
 
 Priority: high.
 
@@ -85,10 +82,32 @@ Business value:
 * Converts unsafe cases into a Data Insufficient Report.
 * Protects questions about today, intraday, latest price, close, turnover, and percent change.
 
+Design source:
+
+* `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`
+* `docs_local/ARCHITECTURE_DECISIONS.md`
+
 Boundary:
 
-* Needs careful acceptance tests.
-* Start with market-data facts before expanding to fund flow, news, announcements, and financials.
+* Start with `get_market_data` quality only.
+* Do not expand data sources.
+* Do not rewrite the Web UI.
+* Add acceptance tests for stale/missing/unknown current-day requests.
+
+## Recommended Task 3: Extend Freshness To fund_flow / news / reports
+
+Priority: high.
+
+Business value:
+
+* Today's fund flow, latest news, and research report facts are also high-risk factual claims.
+* Extending metadata beyond OHLCV makes the report source summary more complete.
+
+Boundary:
+
+* Design per-tool contracts first.
+* Do not change provider chain.
+* Do not use `a-stock-data` yet.
 
 ## Completed Phase 1 Item: `get_market_data` Freshness Wrapper MVP
 

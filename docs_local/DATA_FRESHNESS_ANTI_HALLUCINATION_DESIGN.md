@@ -485,6 +485,29 @@ Goal:
 * Add Data Source Summary, Missing Data, and Source Failures to final reports.
 * Ensure failed tools are visible in the user-facing answer, not only in trace.
 
+Implementation status:
+
+* Implemented as MVP on 2026-07-07.
+* Helper module: `agent/src/data_quality/report_summary.py`.
+* Agent integration point: `agent/src/agent/loop.py`.
+* System prompt rules updated in `agent/src/agent/context.py`.
+* The Agent loop captures only `get_market_data` `_data_quality`.
+* The final report is mechanically appended with `Data Source Summary`, `Missing Data`, and `Source Warnings` when `get_market_data` quality metadata exists.
+* If `_data_quality` is absent, the original final answer is unchanged.
+
+MVP behavior:
+
+* `fresh` rows appear in `Data Source Summary`.
+* `stale`, `missing`, and `unknown` rows also appear in `Missing Data`.
+* Warnings such as “daily close may be intraday-like, not official close” appear in `Source Warnings`.
+* Multiple symbols are listed one by one.
+* No non-`get_market_data` source summary is invented.
+
+Known limitation:
+
+* This is not yet a hard report gate. A model can still write an unsafe sentence in the main body, but the appended audit section now exposes the underlying data quality.
+* `fund_flow`, `news`, `research_reports`, and other tools do not yet have this freshness contract.
+
 ### Phase D: Report Gate For Time-Sensitive Questions
 
 Goal:

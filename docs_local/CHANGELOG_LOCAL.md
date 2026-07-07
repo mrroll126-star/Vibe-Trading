@@ -450,3 +450,40 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No yfinance fix.
 - No real research task.
 - No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-07 Source Summary In Reports MVP
+
+### Added
+
+- Added `agent/src/data_quality/report_summary.py`.
+- Added `agent/tests/test_report_data_source_summary.py`.
+
+### Updated
+
+- Updated `agent/src/data_quality/__init__.py`.
+- Updated `agent/src/agent/loop.py` to collect `get_market_data` `_data_quality` and append a report audit section.
+- Updated `agent/src/agent/context.py` with data truthfulness rules.
+- Updated `docs_local/DATA_FRESHNESS_ANTI_HALLUCINATION_DESIGN.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+
+### Validation
+
+- `.venv/bin/python -m unittest agent.tests.test_data_freshness` passed with 8 tests.
+- `.venv/bin/python -m unittest agent.tests.test_report_data_source_summary` passed with 8 tests.
+- `.venv/bin/python -m compileall -q agent/src agent/tests` passed.
+- Mock `append_data_source_summary` validation passed.
+
+### Boundary
+
+- Only `get_market_data` `_data_quality` is surfaced.
+- No hard report gate.
+- No provider-chain changes.
+- No Web UI changes.
+- No `a-stock-data` integration.
+- No yfinance fix.
+- No real research task.
+- No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
