@@ -228,3 +228,11 @@ Proposed MVP tools:
 Decision:
 
 This should be handled before default-enabling Symbol Normalizer or Pre-tool Symbol Guard.
+
+Implementation status:
+
+Pure function and unit tests are complete. Runtime integration is not yet done.
+
+Next engineering item:
+
+Feature-flagged AgentLoop integration with structured routing metadata and no provider call on `block` / `ask_for_confirmation`.

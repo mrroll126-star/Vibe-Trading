@@ -167,3 +167,18 @@ Phase 1 priority update:
 
 * Asset-type-aware routing should come before default-enabling Symbol Normalizer / Pre-tool Symbol Guard.
 * `a-stock-data` remains downstream.
+
+## 2026-07-08 Pure Asset-type Guard Implementation
+
+Completed:
+
+* Added pure guard module `agent/src/tools/routing_guard.py`.
+* Added unit tests `agent/tests/test_tool_routing_guard.py`.
+* Confirmed no AgentLoop integration and no runtime behavior change.
+* Confirmed no provider-chain, loader, or Web UI changes.
+
+Next:
+
+* Feature-flagged AgentLoop integration.
+* Web UI retest for stock / ETF / index routing.
+* Default-enable decision for Symbol Guard / Symbol Normalizer after retest.

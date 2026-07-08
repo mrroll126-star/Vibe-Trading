@@ -909,3 +909,23 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * Clarified that Pre-tool Symbol Guard is a default-on candidate, but asset-type routing should be designed first.
 * Clarified that Symbol Normalizer should remain feature-flagged.
 * Kept `a-stock-data` downstream.
+
+### Added
+
+* `agent/src/tools/routing_guard.py`
+* `agent/tests/test_tool_routing_guard.py`
+
+### Validation
+
+* Pure routing guard unit tests passed with 27 tests.
+* Symbol-related regression tests passed with 68 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* Pure function only.
+* No AgentLoop integration.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.

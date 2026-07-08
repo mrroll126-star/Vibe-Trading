@@ -1696,3 +1696,70 @@ Investigation result:
 * `000001.SH` should be allowed for market data, but stock/company-specific tools require routing policy.
 
 No commands were run against live services. No tests were executed because this was a design-only round.
+
+## 2026-07-08 Pure Asset-type Tool Routing Guard
+
+Purpose:
+
+Implement the first pure-function step for asset-type-aware tool routing without changing runtime behavior.
+
+Files added:
+
+* `agent/src/tools/routing_guard.py`
+* `agent/tests/test_tool_routing_guard.py`
+
+Commands executed:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard
+```
+
+Result:
+
+* Passed.
+* 27 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 68 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Lightweight pure-function validation:
+
+| Case | Result |
+| --- | --- |
+| `get_market_data` + `000001.SH` + `index` | allow |
+| `get_sector_info` + `000001.SH` + `index` | block |
+| `get_financial_statements` + `510300.SH` + `etf` | block |
+| `get_margin_trading` + `510300.SH` + `etf` | warn |
+| `web_search` + `000001.SH` + `index` | allow |
+
+Boundary:
+
+* Not integrated into AgentLoop.
+* Does not affect real tool calls.
+* Does not modify provider chain.
+* Does not modify loaders.
+* Does not modify Web UI.
+* Does not integrate `a-stock-data`.

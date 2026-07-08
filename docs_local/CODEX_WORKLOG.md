@@ -955,3 +955,32 @@ Boundary:
 * No loader changes.
 * No Web UI changes.
 * No `a-stock-data` integration.
+
+## 2026-07-08 Pure Asset-type Tool Routing Guard
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Verified current Symbol Normalizer asset-type output.
+3. Added pure routing guard function in `agent/src/tools/routing_guard.py`.
+4. Added `agent/tests/test_tool_routing_guard.py`.
+5. Ran new unit tests, symbol regression tests, anti-hallucination regression tests, compile check, and lightweight pure-function validation.
+6. Updated docs_local records.
+
+Key behavior:
+
+* `get_market_data` allows stock / index / ETF.
+* `get_sector_info`, `get_financial_statements`, and `get_shareholder_count` block index / ETF.
+* `get_margin_trading` allows A-share stock, warns on A-share ETF, blocks index.
+* `get_block_trades` allows stock, warns on ETF, blocks index.
+* `get_stock_news` allows stock and warns on non-stock.
+* `web_search`, `read_url`, and `search_symbol` are allowed and marked as web/unstructured or discovery.
+
+Boundary:
+
+* Pure function only.
+* No AgentLoop integration.
+* No provider execution changes.
+* No provider-chain changes.
+* No Web UI changes.
+* No `a-stock-data` integration.

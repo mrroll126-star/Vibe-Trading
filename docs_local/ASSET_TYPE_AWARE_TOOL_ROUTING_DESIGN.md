@@ -282,3 +282,43 @@ Every custom provider should document:
 * Failure behavior.
 * Whether it is stock-specific, index-capable, ETF-capable, or market-wide.
 
+## 13. Pure Guard Implementation Status
+
+Implemented on 2026-07-08:
+
+* Module: `agent/src/tools/routing_guard.py`
+* Function: `evaluate_tool_asset_compatibility(...)`
+* Tests: `agent/tests/test_tool_routing_guard.py`
+
+Current status:
+
+* Pure function only.
+* No AgentLoop integration.
+* No provider calls.
+* No loader changes.
+* No Web UI behavior changes.
+* No default feature flag changes.
+
+Implemented MVP tools:
+
+* `get_market_data`
+* `get_sector_info`
+* `get_financial_statements`
+* `get_shareholder_count`
+* `get_margin_trading`
+* `get_block_trades`
+* `get_stock_news`
+* `web_search`
+* `read_url`
+* `search_symbol`
+
+Validation summary:
+
+* New routing guard unit tests passed.
+* Symbol normalizer / symbol intent guard regression tests passed.
+* Data freshness / report guard regression tests passed.
+* Compile check passed.
+
+Next step:
+
+Feature-flagged AgentLoop integration. The future integration should run after Pre-tool Symbol Intent Guard and before provider execution.

@@ -495,3 +495,21 @@ Future re-enable conditions:
 
 5. **Keep `a-stock-data` adapter deferred**
    * Reason: a new data source should not be added before tool compatibility policy is explicit.
+
+## Current Recommended Order After Pure Asset-type Guard
+
+1. **Feature-flagged AgentLoop integration**
+   * Scope: run `evaluate_tool_asset_compatibility` after Pre-tool Symbol Intent Guard and before provider execution.
+   * Default: off.
+   * Value: stop wrong tool / asset-type combinations before real provider calls.
+
+2. **Web UI retest asset-type routing**
+   * Test `000001.SH`, `510300.SH`, `600519.SH`, `QQQ.US`, and `00700.HK`.
+   * Confirm `Tool Routing Summary` or structured routing result appears.
+
+3. **Default-enable decision**
+   * Pre-tool Symbol Guard remains a default-on candidate.
+   * Symbol Normalizer should remain feature-flagged until asset routing is proven in Web UI.
+
+4. **Keep `a-stock-data` adapter deferred**
+   * Reason: new providers should come after routing policy is enforced.
