@@ -76,13 +76,13 @@ class SymbolIntentGuardTests(unittest.TestCase):
         self.assertDecision(result, "block", "tool_symbol_not_traceable_to_user_prompt")
 
     def test_non_market_data_tool_allows(self) -> None:
-        result = self._guard("请分析 600519", ["600519.SH"], tool_name="get_stock_news")
+        result = self._guard("请分析 600519", ["600519.SH"], tool_name="web_search")
         self.assertDecision(result, "allow", "unsupported_tool_for_mvp")
         self.assertEqual(result["metadata"]["source"], "unsupported_tool")
 
     def test_missing_get_market_data_symbol_blocks(self) -> None:
         result = evaluate_symbol_intent_guard("请分析 600519", "get_market_data", {})
-        self.assertDecision(result, "block", "missing_tool_symbol")
+        self.assertDecision(result, "block", "missing_or_untraceable_tool_symbol")
 
     def test_multiple_symbols_one_ambiguous_clarifies(self) -> None:
         result = self._guard("请分析 600519 和 000001", ["600519.SH", "000001.SZ"])
@@ -105,6 +105,82 @@ class SymbolIntentGuardTests(unittest.TestCase):
             {"symbols": "600519.SH,QQQ.US"},
         )
         self.assertDecision(result, "allow")
+
+    def test_get_fund_flow_ambiguous_000001_clarifies(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 000001 今天表现",
+            "get_fund_flow",
+            {"codes": ["000001.SZ"]},
+        )
+        self.assertDecision(result, "clarify", "ambiguous_000001_requires_confirmation")
+        self.assertTrue(result["metadata"]["guarded_tool"])
+        self.assertEqual(result["metadata"]["guarded_tool_group"], "stock_specific")
+
+    def test_get_stock_news_chinese_name_clarifies(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 贵州茅台 今天表现",
+            "get_stock_news",
+            {"code": "600519.SH"},
+        )
+        self.assertDecision(result, "clarify", "chinese_name_requires_confirmation")
+
+    def test_get_research_reports_safe_a_share_allows(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 600519",
+            "get_research_reports",
+            {"code": "600519.SH"},
+        )
+        self.assertDecision(result, "allow", "safe_bare_symbol_mapping")
+
+    def test_get_sector_info_safe_us_allows(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "Analyze QQQ",
+            "get_sector_info",
+            {"code": "QQQ.US"},
+        )
+        self.assertDecision(result, "allow", "safe_bare_symbol_mapping")
+
+    def test_web_search_with_symbol_query_is_not_guarded(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 000001",
+            "web_search",
+            {"query": "000001.SZ"},
+        )
+        self.assertDecision(result, "allow", "unsupported_tool_for_mvp")
+        self.assertFalse(result["metadata"]["guarded_tool"])
+
+    def test_search_symbol_chinese_name_is_not_guarded(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 贵州茅台",
+            "search_symbol",
+            {"query": "贵州茅台"},
+        )
+        self.assertDecision(result, "allow", "unsupported_tool_for_mvp")
+        self.assertFalse(result["metadata"]["guarded_tool"])
+
+    def test_get_fund_flow_explicit_mismatch_blocks(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 600519.SH",
+            "get_fund_flow",
+            {"codes": ["300750.SZ"]},
+        )
+        self.assertDecision(result, "block", "tool_symbol_mismatch")
+
+    def test_get_stock_news_no_symbol_prompt_blocks(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析今天市场",
+            "get_stock_news",
+            {"code": "600519.SH"},
+        )
+        self.assertDecision(result, "block", "tool_symbol_not_traceable_to_user_prompt")
+
+    def test_query_field_extracts_standard_symbol_for_guarded_tool(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 600519",
+            "get_sector_info",
+            {"query": "请查询 600519.SH 所属板块"},
+        )
+        self.assertDecision(result, "allow", "safe_bare_symbol_mapping")
 
 
 if __name__ == "__main__":

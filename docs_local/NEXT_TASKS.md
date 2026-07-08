@@ -27,32 +27,27 @@ Highest principle:
 
 ## Current Recommended Order After Web UI Pre-tool Guard Retest
 
-1. **Extend Pre-tool Symbol Intent Guard beyond `get_market_data`**
-   * Business value: prevents ambiguous or Chinese-name prompts from reaching other stock-specific provider tools before user confirmation.
-   * Risk: broad guard coverage can accidentally block legitimate explicit symbols if rules are too aggressive.
-   * Boundary: continue feature-flagged behavior; do not default-enable yet.
-
-2. **Retest Web UI after full stock-tool guard coverage**
+1. **Web UI retest after stock-specific symbol guard extension**
    * Business value: verifies that `000001` and Chinese names do not trigger any stock-specific provider call before clarification.
    * Risk: consumes LLM tokens and may expose unrelated tool-routing behavior.
    * Boundary: localhost only; shell tools disabled.
 
-3. **Decide whether to default-enable Symbol Normalizer and Pre-tool Guard later**
+2. **Decide whether to default-enable Symbol Normalizer and Pre-tool Guard later**
    * Business value: determines whether natural symbols can become normal product behavior.
-   * Risk: the current retest is only a partial pass because non-market-data tools still ran for ambiguous/name-based prompts.
+   * Risk: must wait for a full Web UI pass after the expanded guard.
    * Boundary: decide from a full pass, not from the current partial pass.
 
-4. **Optional stricter No Estimate Guard**
+3. **Optional stricter No Estimate Guard**
    * Business value: prevents estimated market-fact phrases from remaining in the main report body when the user explicitly says no estimates.
    * Risk: automatic rewrite can overcorrect or remove useful context.
    * Boundary: design first; consider block/rewrite only for explicit no-estimate prompts.
 
-5. **`a-stock-data` adapter planning**
+4. **`a-stock-data` adapter planning**
    * Business value: prepares richer A-share data after guardrails exist.
    * Risk: adding data sources before contracts are complete can hide failures.
    * Boundary: planning first; no provider replacement.
 
-6. **Extend data quality to remaining A-share tools**
+5. **Extend data quality to remaining A-share tools**
    * Business value: brings northbound flow, margin trading, shareholder count, sector info, and financial statements into the same audit model.
    * Risk: each tool has a different date/error shape.
    * Boundary: continue additive `_data_quality` only.
@@ -80,6 +75,34 @@ Important gap:
 * In the Web UI retest, `000001` still triggered `get_fund_flow`, `get_stock_news`, and `get_sector_info` with `000001.SZ`.
 * `贵州茅台` still triggered `get_stock_news` and `get_sector_info` with `600519.SH`.
 * Therefore, the current status is partial pass, not enough to default-enable the feature flags.
+
+## Completed Phase 1 Item: Extended Pre-tool Guard To Stock-specific Tools
+
+Status: completed on 2026-07-08.
+
+Implemented:
+
+* Guarded tool list now includes:
+  * `get_market_data`
+  * `get_fund_flow`
+  * `get_stock_news`
+  * `get_research_reports`
+  * `get_sector_info`
+* Feature flag remains `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`.
+* Default remains off.
+* `web_search`, `read_url`, `search_symbol`, and `read_document` are not covered by this MVP.
+
+Validation:
+
+* Symbol tests passed.
+* Anti-hallucination regression tests passed.
+* Compile check passed.
+* Lightweight mock validation passed.
+
+Remaining gap:
+
+* No Web UI retest has been run after this extension.
+* Do not default-enable Symbol Normalizer or Pre-tool Guard until that retest passes.
 
 ## Completed Phase 1 Validation: Web UI Red-Light Prompt Retest
 

@@ -142,8 +142,74 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
     def test_flag_on_does_not_intercept_non_market_data_tool(self) -> None:
         payload, calls = self._run_single(
             "请分析 600519",
+            "web_search",
+            {"query": "600519.SH"},
+            flag=True,
+        )
+        self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+
+    def test_flag_off_does_not_intercept_fund_flow(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 000001",
+            "get_fund_flow",
+            {"codes": ["000001.SZ"]},
+            flag=False,
+        )
+        self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+        self.assertNotIn("_symbol_intent_guard", payload)
+
+    def test_flag_on_clarifies_fund_flow_ambiguous_000001(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 000001",
+            "get_fund_flow",
+            {"codes": ["000001.SZ"]},
+            flag=True,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "pre_tool_symbol_intent_guard")
+        self.assertEqual(payload["decision"], "clarify")
+        self.assertEqual(payload["tool_name"], "get_fund_flow")
+
+    def test_flag_on_clarifies_stock_news_chinese_name(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 贵州茅台",
             "get_stock_news",
             {"code": "600519.SH"},
+            flag=True,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["decision"], "clarify")
+        self.assertEqual(payload["reason"], "chinese_name_requires_confirmation")
+        self.assertEqual(payload["tool_name"], "get_stock_news")
+
+    def test_flag_on_allows_sector_info_safe_symbol(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 600519",
+            "get_sector_info",
+            {"code": "600519.SH"},
+            flag=True,
+        )
+        self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+
+    def test_flag_on_blocks_research_reports_mismatch(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 600519.SH",
+            "get_research_reports",
+            {"code": "300750.SZ"},
+            flag=True,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["decision"], "block")
+        self.assertEqual(payload["tool_name"], "get_research_reports")
+
+    def test_flag_on_does_not_intercept_read_url(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 000001",
+            "read_url",
+            {"url": "https://example.com/000001.SZ"},
             flag=True,
         )
         self.assertEqual(calls, 1)

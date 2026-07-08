@@ -550,3 +550,65 @@ Recommended next implementation:
 * Keep `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=0` by default.
 * Extend guard coverage to stock-specific tools, or introduce a per-run symbol intent state that blocks all stock-specific provider tools once clarification is required.
 * Retest the Web UI after that extension.
+
+## 16. Phase E Stock-specific Tool Guard MVP
+
+Date: 2026-07-08.
+
+Implemented:
+
+* Expanded the guarded stock-specific tool list to:
+  * `get_market_data`
+  * `get_fund_flow`
+  * `get_stock_news`
+  * `get_research_reports`
+  * `get_sector_info`
+* Kept the same feature flag:
+  * `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`
+* Kept the feature flag off by default.
+* Reused the same synthetic guard result shape for `clarify` and `block`.
+
+Not covered:
+
+* `web_search`
+* `read_url`
+* `search_symbol`
+* `read_document`
+* broad market tools
+* trading tools
+* non-stock tools
+
+Symbol fields handled:
+
+* `codes`
+* `symbols`
+* `symbol`
+* `ticker`
+* `code`
+* `query` when it contains a recognizable standard symbol
+
+Behavior:
+
+* If the flag is off, existing behavior is preserved.
+* If the flag is on and the tool is in the stock-specific guarded list, the guard checks whether the tool symbol is traceable to the original user prompt.
+* If the decision is `clarify` or `block`, the original provider tool is not called.
+* If the tool is not in the guarded list, it is allowed with reason `unsupported_tool_for_mvp`.
+
+Validation:
+
+* Symbol tests passed.
+* AgentLoop integration tests passed.
+* Anti-hallucination regression tests passed.
+* Compile check passed.
+* Lightweight mock validation confirmed:
+  * `get_fund_flow` + `000001.SZ` is clarified without provider call when the flag is on.
+  * `get_stock_news` + `600519.SH` from `贵州茅台` is clarified without provider call when the flag is on.
+  * `get_sector_info` + safe `600519.SH` is allowed.
+  * `web_search` is not affected.
+  * flag off keeps `get_fund_flow` behavior unchanged.
+
+Not done:
+
+* No Web UI retest yet after this extension.
+* No default-enable decision.
+* No `a-stock-data` integration.

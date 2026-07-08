@@ -129,6 +129,9 @@ This backlog records observed defects, product gaps, and future improvement cand
   * `贵州茅台` still triggered other stock-specific tools with `600519.SH`, including `get_stock_news` and `get_sector_info`.
 * Why it matters: the current guard prevents the primary market-data provider call, but it does not yet prevent all provider calls based on an unconfirmed symbol intent.
 * Recommended next step: extend the feature-flagged guard to all stock-specific provider tools or add a per-run symbol-intent confirmation gate before any stock-specific provider tool executes.
+* Current implementation update: first-batch stock-specific tool coverage is implemented for `get_market_data`, `get_fund_flow`, `get_stock_news`, `get_research_reports`, and `get_sector_info`.
+* Still not covered: `web_search`, `read_url`, `search_symbol`, and `read_document`.
+* Current validation status: unittest and lightweight mock validation passed; Web UI retest after this extension is still pending.
 * Default-enable recommendation: not yet.
 
 ### 3. A-Share Data Source Enhancement

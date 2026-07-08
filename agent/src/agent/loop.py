@@ -50,7 +50,7 @@ from src.providers.content_filter import (
     compute_content_filter_warnings,
 )
 from src.symbols.config import is_pre_tool_symbol_guard_enabled
-from src.symbols.intent_guard import evaluate_symbol_intent_guard
+from src.symbols.intent_guard import STOCK_SYMBOL_GUARDED_TOOLS, evaluate_symbol_intent_guard
 from src.tools.background_tools import get_background_manager
 from src.tools.redaction import redact_payload
 
@@ -1236,7 +1236,7 @@ class AgentLoop:
 
     def _pre_tool_symbol_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
         """Return a synthetic tool result when symbol intent should block execution."""
-        if not is_pre_tool_symbol_guard_enabled() or tool_name != "get_market_data":
+        if not is_pre_tool_symbol_guard_enabled() or tool_name not in STOCK_SYMBOL_GUARDED_TOOLS:
             return None
 
         decision = evaluate_symbol_intent_guard(

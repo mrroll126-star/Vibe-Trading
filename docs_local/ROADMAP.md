@@ -109,10 +109,16 @@ Pre-tool Symbol Intent Guard update:
 
 * Design is complete.
 * Pure guard function with tests is complete.
-* AgentLoop integration is feature-flagged and limited to `get_market_data`.
+* AgentLoop integration is feature-flagged.
+* First-batch stock-specific tool coverage is implemented:
+  * `get_market_data`
+  * `get_fund_flow`
+  * `get_stock_news`
+  * `get_research_reports`
+  * `get_sector_info`
 * Feature flag: `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`.
 * Default: off.
-* Web UI retest is still pending.
+* Web UI retest after the expanded guard is still pending.
 * `a-stock-data` remains deferred until symbol identity and data quality are auditable.
 
 Current implementation files:

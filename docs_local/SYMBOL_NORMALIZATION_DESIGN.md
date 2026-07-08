@@ -509,6 +509,13 @@ Implementation update:
 
 * Pure guard function is implemented in `agent/src/symbols/intent_guard.py`.
 * Unit tests are implemented in `agent/tests/test_symbol_intent_guard.py`.
-* It is now feature-flagged into AgentLoop for `get_market_data` only.
+* It is now feature-flagged into AgentLoop for the first batch of stock-specific tools:
+  * `get_market_data`
+  * `get_fund_flow`
+  * `get_stock_news`
+  * `get_research_reports`
+  * `get_sector_info`
 * The flag is `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`, and it is off by default.
-* Symbol Normalizer should still remain disabled by default until Web UI retesting proves the full flow works for `000001`, Chinese names, and safe bare symbols.
+* The guard does not cover `web_search`, `read_url`, `search_symbol`, or `read_document`.
+* Symbol Normalizer and Pre-tool Guard should still remain disabled by default until Web UI retesting proves the full flow works for `000001`, Chinese names, and safe bare symbols.
+* `a-stock-data` remains deferred.

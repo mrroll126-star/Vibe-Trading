@@ -1459,3 +1459,96 @@ Shutdown:
 * Backend and frontend were stopped.
 * `lsof -i :8899` returned no listener.
 * `lsof -i :5899` returned no listener.
+
+## 29. Extended Pre-tool Symbol Guard To Stock-specific Tools
+
+Date: 2026-07-08.
+
+Goal:
+
+* Extend `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD` from `get_market_data` to the first batch of stock-specific tools.
+* Keep the flag off by default.
+* Preserve flag-off behavior.
+* Do not call providers when the guard returns `clarify` or `block`.
+
+Covered tools:
+
+* `get_market_data`
+* `get_fund_flow`
+* `get_stock_news`
+* `get_research_reports`
+* `get_sector_info`
+
+Not covered:
+
+* `web_search`
+* `read_url`
+* `search_symbol`
+* `read_document`
+
+Read-only tool-parameter findings:
+
+| Tool | Symbol field | Notes |
+| -- | -- | -- |
+| `get_market_data` | `codes` | Multi-symbol list. |
+| `get_fund_flow` | `codes` | Multi-symbol list. |
+| `get_stock_news` | `code` | Single stock when `scope=stock`; broad market when `scope=global`. |
+| `get_research_reports` | `code` | A-share single-symbol reports. |
+| `get_sector_info` | `code` | Single-symbol membership mode; ranking mode is broad-market. |
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+```text
+Ran 45 tests in 0.072s
+OK
+```
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+```text
+Ran 68 tests in 0.067s
+OK
+```
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+```text
+Ran 46 tests in 0.003s
+OK
+```
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result: passed.
+
+Lightweight mock validation:
+
+| Case | Result |
+| -- | -- |
+| flag on + `get_fund_flow` + prompt `000001` + tool symbol `000001.SZ` | `clarify`; `_invoke_tool` calls = 0. |
+| flag on + `get_stock_news` + prompt `贵州茅台` + tool symbol `600519.SH` | `clarify`; `_invoke_tool` calls = 0. |
+| flag on + `get_sector_info` + prompt `600519` + tool symbol `600519.SH` | allowed; `_invoke_tool` calls = 1. |
+| flag on + `web_search` | allowed; `_invoke_tool` calls = 1. |
+| flag off + `get_fund_flow` + prompt `000001` + tool symbol `000001.SZ` | existing behavior; `_invoke_tool` calls = 1. |
+
+Status:
+
+* Passed local unittest and mock validation.
+* Web UI retest was not run in this round.
+* Feature flags should remain off by default until Web UI retest passes.

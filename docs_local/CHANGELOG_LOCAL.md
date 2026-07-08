@@ -275,6 +275,46 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No provider chain was changed.
 - No business code was modified.
 
+## 2026-07-08 Extend Pre-tool Symbol Guard To Stock Tools
+
+### Changed
+
+- Extended `agent/src/symbols/intent_guard.py` from `get_market_data` only to the first batch of stock-specific tools.
+- Updated AgentLoop guard integration to use the shared guarded-tool list.
+- Added tests for `get_fund_flow`, `get_stock_news`, `get_research_reports`, and `get_sector_info`.
+
+### Covered Tools
+
+- `get_market_data`
+- `get_fund_flow`
+- `get_stock_news`
+- `get_research_reports`
+- `get_sector_info`
+
+### Not Covered
+
+- `web_search`
+- `read_url`
+- `search_symbol`
+- `read_document`
+
+### Validation
+
+- Symbol test suite passed: 68 tests.
+- Anti-hallucination regression suite passed: 46 tests.
+- Compile check passed.
+- Lightweight mock validation confirmed clarify/block paths do not call providers.
+
+### Security / Boundary
+
+- Feature flag remains off by default.
+- No Web UI retest was run.
+- No provider chain was changed.
+- No loader was changed.
+- No `a-stock-data` integration was attempted.
+- No remote service was exposed.
+- Shell tools remained disabled.
+
 ## 2026-07-05 Symbol Normalizer Helper
 
 ### Added

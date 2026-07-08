@@ -516,3 +516,44 @@ Next required validation:
 
 * Web UI retest with the flag enabled.
 * Do not default-enable Symbol Normalizer until the Web UI retest passes.
+
+## 16. Extended Pre-tool Guard Status
+
+Date: 2026-07-08.
+
+The Web UI retest showed that guarding only `get_market_data` was not enough: ambiguous or Chinese-name prompts could still reach other stock-specific tools.
+
+The pre-tool guard has now been extended to the first batch of stock-specific tools:
+
+* `get_market_data`
+* `get_fund_flow`
+* `get_stock_news`
+* `get_research_reports`
+* `get_sector_info`
+
+The feature flag remains:
+
+```text
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=0
+```
+
+Default remains off.
+
+Non-covered tools:
+
+* `web_search`
+* `read_url`
+* `search_symbol`
+* `read_document`
+
+Boundary:
+
+* No provider chain change.
+* No loader change.
+* No Web UI code change.
+* No `a-stock-data` integration.
+
+Next required validation:
+
+* Run the Web UI stock-specific symbol guard retest with both symbol flags enabled.
+* Do not default-enable Symbol Normalizer or Pre-tool Guard until that Web UI retest passes.

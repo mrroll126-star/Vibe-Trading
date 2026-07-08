@@ -322,6 +322,48 @@ What was not done:
 * No provider chain was changed.
 * No real key was printed.
 * No remote service was exposed.
+
+## 2026-07-08 Extend Pre-tool Symbol Guard To Stock-specific Tools
+
+User requested extending the existing feature-flagged Pre-tool Symbol Intent Guard beyond `get_market_data`.
+
+Actions performed:
+
+1. Confirmed repository state and ignored local artifacts.
+2. Read target tool implementations and schemas:
+   - `get_market_data`
+   - `get_fund_flow`
+   - `get_stock_news`
+   - `get_research_reports`
+   - `get_sector_info`
+3. Extended the pure guard's stock-specific tool list.
+4. Extended symbol extraction to include `query` when it contains a recognizable standard symbol.
+5. Updated AgentLoop to use the guarded tool list instead of a hard-coded `get_market_data` check.
+6. Added pure guard tests and AgentLoop integration tests.
+7. Ran symbol tests, anti-hallucination regression tests, compile check, and lightweight mock validation.
+8. Updated local documentation.
+
+Result:
+
+* Guarded tools now include:
+  - `get_market_data`
+  - `get_fund_flow`
+  - `get_stock_news`
+  - `get_research_reports`
+  - `get_sector_info`
+* `web_search`, `read_url`, `search_symbol`, and `read_document` remain unguarded by this MVP.
+* Feature flag remains default off.
+* In mock validation, clarify/block paths did not call `_invoke_tool`.
+
+What was not done:
+
+* No Web UI retest.
+* No provider-chain change.
+* No loader change.
+* No Web UI code change.
+* No `a-stock-data` integration.
+* No shell tools enabled.
+* No remote service exposed.
 - No `a-stock-data` integration was attempted.
 
 ## 2026-07-05 Phase 0 Closeout

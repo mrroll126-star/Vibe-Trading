@@ -13,9 +13,15 @@ from typing import Any
 from src.symbols.normalizer import normalize_symbol
 
 
-_SUPPORTED_TOOL = "get_market_data"
+STOCK_SYMBOL_GUARDED_TOOLS = {
+    "get_market_data",
+    "get_fund_flow",
+    "get_stock_news",
+    "get_research_reports",
+    "get_sector_info",
+}
 _DECISION_RANK = {"allow": 0, "block": 1, "clarify": 2}
-_SYMBOL_KEYS = ("codes", "symbols", "symbol", "ticker", "code")
+_SYMBOL_KEYS = ("codes", "symbols", "symbol", "ticker", "code", "query")
 _CHINESE_NAME_KEYWORDS = {
     "贵州茅台": "600519.SH",
     "平安银行": "000001.SZ",
@@ -50,7 +56,7 @@ def evaluate_symbol_intent_guard(
     """
     del recent_symbol_search_results  # Not used by the MVP policy.
 
-    if tool_name != _SUPPORTED_TOOL:
+    if tool_name not in STOCK_SYMBOL_GUARDED_TOOLS:
         return _decision(
             "allow",
             "unsupported_tool_for_mvp",
@@ -59,7 +65,11 @@ def evaluate_symbol_intent_guard(
             tool_symbol=None,
             raw_symbol_candidates=[],
             warnings=[],
-            metadata={"source": "unsupported_tool"},
+            metadata={
+                "source": "unsupported_tool",
+                "guarded_tool": False,
+                "tool_name": tool_name,
+            },
             details=[],
         )
 
@@ -68,18 +78,23 @@ def evaluate_symbol_intent_guard(
     if not symbols:
         return _decision(
             "block",
-            "missing_tool_symbol",
-            "missing_tool_symbol",
+            "missing_or_untraceable_tool_symbol",
+            "missing_or_untraceable_tool_symbol",
             tool_name=tool_name,
             tool_symbol=None,
             raw_symbol_candidates=[],
-            warnings=["get_market_data requires at least one auditable symbol."],
-            metadata={"source": "untraceable"},
+            warnings=[f"{tool_name} requires at least one auditable symbol."],
+            metadata={
+                "source": "untraceable",
+                "guarded_tool": True,
+                "guarded_tool_group": "stock_specific",
+                "tool_name": tool_name,
+            },
             details=[],
         )
 
     prompt_facts = _extract_prompt_facts(prompt)
-    details = [_evaluate_one_symbol(prompt, prompt_facts, symbol) for symbol in symbols]
+    details = [_evaluate_one_symbol(prompt, prompt_facts, symbol, tool_name) for symbol in symbols]
     overall = max(details, key=lambda item: _DECISION_RANK[item["decision"]])
     warnings: list[str] = []
     raw_candidates: list[str] = []
@@ -100,7 +115,7 @@ def evaluate_symbol_intent_guard(
     )
 
 
-def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str) -> dict:
+def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str, tool_name: str) -> dict:
     upper_symbol = tool_symbol.upper()
 
     if upper_symbol in facts["explicit_symbols"]:
@@ -109,6 +124,7 @@ def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str) -
             "explicit_symbol_match",
             "rule_a_explicit_symbol",
             tool_symbol,
+            tool_name=tool_name,
             raw=[upper_symbol],
             source="explicit",
             normalized_symbol=upper_symbol,
@@ -120,6 +136,7 @@ def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str) -
             "tool_symbol_mismatch",
             "rule_e_tool_symbol_mismatch",
             tool_symbol,
+            tool_name=tool_name,
             raw=sorted(facts["explicit_symbols"]),
             source="untraceable",
             warnings=[
@@ -135,6 +152,7 @@ def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str) -
                 "ambiguous_000001_requires_confirmation",
                 "rule_c_ambiguous_000001",
                 tool_symbol,
+                tool_name=tool_name,
                 raw=["000001"],
                 source="ambiguous",
                 normalized_symbol=upper_symbol,
@@ -148,6 +166,7 @@ def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str) -
             "chinese_name_requires_confirmation",
             "rule_d_chinese_name",
             tool_symbol,
+            tool_name=tool_name,
             raw=chinese_hits,
             source="chinese_name",
             normalized_symbol=upper_symbol,
@@ -166,6 +185,7 @@ def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str) -
                 "safe_bare_symbol_mapping",
                 "rule_b_safe_bare_symbol",
                 tool_symbol,
+                tool_name=tool_name,
                 raw=[raw],
                 source="normalizer",
                 normalized_symbol=normalized.normalized_symbol,
@@ -180,6 +200,7 @@ def _evaluate_one_symbol(prompt: str, facts: dict[str, Any], tool_symbol: str) -
         "tool_symbol_not_traceable_to_user_prompt",
         "rule_f_untraceable_symbol",
         tool_symbol,
+        tool_name=tool_name,
         raw=facts["bare_candidates"] + facts["chinese_name_hits"],
         source="untraceable",
         normalized_symbol=upper_symbol,
@@ -196,12 +217,39 @@ def _extract_tool_symbols(tool_args: dict) -> list[str]:
             continue
         value = tool_args.get(key)
         if isinstance(value, str):
-            symbols.extend(part.strip() for part in value.split(","))
+            symbols.extend(_extract_symbols_from_string(value))
         elif isinstance(value, (list, tuple, set)):
-            symbols.extend(str(item).strip() for item in value)
+            for item in value:
+                symbols.extend(_extract_symbols_from_string(str(item)))
         elif value is not None:
-            symbols.append(str(value).strip())
+            symbols.extend(_extract_symbols_from_string(str(value)))
     return _unique([symbol.upper() for symbol in symbols if symbol])
+
+
+def _extract_symbols_from_string(value: str) -> list[str]:
+    text = value.strip()
+    if not text:
+        return []
+    parts = [part.strip() for part in text.split(",") if part.strip()]
+    symbols: list[str] = []
+    for part in parts:
+        matches = re.findall(
+            r"(?<![\w.])(?:\d{6}\.(?:SH|SZ|BJ)|\d{1,5}\.HK|[A-Z]{1,5}\.US)(?![\w.])",
+            part.upper(),
+        )
+        if matches:
+            symbols.extend(matches)
+        elif _looks_like_symbol_candidate(part):
+            symbols.append(part)
+    return symbols
+
+
+def _looks_like_symbol_candidate(value: str) -> bool:
+    upper = value.upper()
+    return bool(
+        re.fullmatch(r"(?:\d{4,6}|[A-Z]{1,5}|[A-Z0-9-]{2,20})", upper)
+        or _looks_like_standard_symbol(upper)
+    )
 
 
 def _extract_prompt_facts(prompt: str) -> dict[str, Any]:
@@ -243,6 +291,7 @@ def _symbol_decision(
     matched_rule: str,
     tool_symbol: str,
     *,
+    tool_name: str,
     raw: list[str],
     source: str,
     normalized_symbol: str | None = None,
@@ -252,7 +301,7 @@ def _symbol_decision(
         "decision": decision,
         "reason": reason,
         "matched_rule": matched_rule,
-        "tool_name": _SUPPORTED_TOOL,
+        "tool_name": tool_name,
         "tool_symbol": tool_symbol.upper(),
         "raw_symbol_candidates": _unique(raw),
         "warnings": warnings or [],
@@ -260,6 +309,9 @@ def _symbol_decision(
             "source": source,
             "normalized_symbol": normalized_symbol,
             "raw_input": raw[0] if raw else None,
+            "guarded_tool": True,
+            "guarded_tool_group": "stock_specific",
+            "tool_name": tool_name,
         },
     }
 
