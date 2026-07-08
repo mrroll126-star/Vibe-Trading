@@ -471,3 +471,129 @@ Observed `_data_quality` examples:
 The feature-flagged normalizer is compatible with the Web UI `get_market_data` path, but this retest does not prove that the tool-entry normalizer safely handles all raw Web UI input. In real Agent runs, the model can pre-normalize ambiguous or named symbols before tool execution.
 
 Do not enable the Symbol Normalizer by default yet. The next design task should address pre-tool symbol intent, especially ambiguous inputs like `000001` and Chinese names like `贵州茅台`.
+
+## 12. Web UI Boundary Retest For Stock-specific Symbol Guard
+
+Date: 2026-07-08 10:41-10:46 local time.
+
+Backend was started with both feature flags enabled only for this local test:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+```
+
+Frontend was started locally:
+
+```bash
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Services were bound to `127.0.0.1`; no public or Tailscale exposure was used. Shell tools remained disabled.
+
+### 12.1 Summary
+
+| Input | Session ID | Run ID | Result | Guard judgment | Data quality | Key finding |
+| -- | -- | -- | -- | -- | -- | -- |
+| `QQQ` | `56e5272ab623` | `20260708_104158_24_8d4f78` | completed | allow | `get_market_data` stale, latest date 2026-07-07, yahoo | Safe US bare ticker passed; normalized to `QQQ.US`; no clarification. |
+| `00700` | `dd90f724f8df` | `20260708_104211_92_abb605` | completed | allow | `get_market_data` fresh, latest date 2026-07-08, yahoo | Safe HK bare code passed; normalized to `00700.HK`; no clarification. |
+| `000001.SZ` | `aacc86b161c4` | `20260708_104224_94_85bca8` | completed with Data Insufficient Report | allow | `get_market_data` stale, latest date 2026-07-07, tencent | Explicit A-share stock was not mis-blocked; freshness gate correctly blocked today's analysis. |
+| `000001.SH` | `811ea87008ce` | `20260708_104237_60_8d8e5a` | completed | partial allow | `get_market_data` fresh, latest date 2026-07-08, tencent | Explicit index was not blocked for market data, but `get_sector_info` was blocked because the tool call lacked an auditable symbol. |
+
+### 12.2 Test Details
+
+#### QQQ
+
+Prompt:
+
+```text
+请分析 QQQ 最近行情、新闻和主要风险。只使用实际获取到的数据，不要估算。
+```
+
+Result:
+
+* Run ID: `20260708_104158_24_8d4f78`
+* Allowed: yes.
+* Normalized symbol: `QQQ.US`.
+* Mis-blocked: no.
+* Tools observed: `search_symbol`, `get_market_data`, `get_stock_news`, `get_stock_profile`, `web_search`, `read_url`.
+* Data Source Summary: present.
+* `_data_quality`: present.
+* Notable issue: `get_stock_profile` still failed through the known Yahoo/yfinance TLS path. The final report also used web search and `read_url`, so future report guardrails should continue to distinguish structured data from web snippets.
+
+#### 00700
+
+Prompt:
+
+```text
+请分析 00700 最近行情、新闻和主要风险。只使用实际获取到的数据，不要估算。
+```
+
+Result:
+
+* Run ID: `20260708_104211_92_abb605`
+* Allowed: yes.
+* Normalized symbol: `00700.HK`.
+* Mis-blocked: no.
+* Tools observed: `get_market_data`, `get_stock_news`, `get_stock_profile`, `get_financial_statements`, `web_search`, `read_url`.
+* Data Source Summary: present.
+* `_data_quality`: present.
+* Notable issue: one `read_url` call returned HTTP 403 and `get_stock_profile` failed through the known Yahoo/yfinance TLS path. This did not indicate symbol guard failure.
+
+#### 000001.SZ
+
+Prompt:
+
+```text
+请分析 000001.SZ 今天的行情、资金流、新闻和行业情况。只使用实际获取到的数据，不要估算。
+```
+
+Result:
+
+* Run ID: `20260708_104224_94_85bca8`
+* Allowed: yes.
+* Mis-triggered clarification: no.
+* Provider called: yes.
+* Tools observed: `get_market_data`, `get_fund_flow`, `get_stock_news`, `get_sector_info`.
+* Data Source Summary: present.
+* Final report: `Data Insufficient Report`.
+* Key reason: `get_market_data` returned `freshness_status=stale` with latest date 2026-07-07 while the prompt asked about today.
+* Notable issue: `get_fund_flow` returned missing due to remote connection reset, which was disclosed in Missing Data.
+
+#### 000001.SH
+
+Prompt:
+
+```text
+请分析 000001.SH 今天的行情、资金流、新闻和行业情况。只使用实际获取到的数据，不要估算。
+```
+
+Result:
+
+* Run ID: `20260708_104237_60_8d8e5a`
+* Allowed: yes for market data.
+* Mis-triggered clarification: no.
+* Provider called: yes.
+* Tools observed: `get_market_data`, `get_stock_news`, `get_sector_info`, `get_northbound_flow`, `screen_market`, `web_search`, `read_url`.
+* Data Source Summary: present.
+* `get_market_data`: fresh, latest date 2026-07-08, with current-day daily-bar warning.
+* Tool routing issue: `get_sector_info` was blocked by `pre_tool_symbol_intent_guard` because the tool call did not include an auditable symbol. This looks like an asset-type-aware tool routing problem for index prompts, not a symbol guard failure.
+* Product risk: final report mixed structured index data with web-search/read-url content. Future guardrails should make source classes more explicit for index reports.
+
+### 12.3 Overall Judgment
+
+This boundary retest passed for the stock-specific symbol guard:
+
+* `QQQ` passed as a safe US bare ticker and normalized to `QQQ.US`.
+* `00700` passed as a safe HK bare code and normalized to `00700.HK`.
+* `000001.SZ` passed as an explicit A-share stock and was not forced into clarification.
+* `000001.SH` passed as an explicit A-share index for market data and was not forced into clarification.
+* `_data_quality` and `Data Source Summary` remained present.
+
+Do not default-enable both feature flags yet. The next product decision should separate:
+
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`: stronger candidate for default-on after one more review, because it is a safety guard.
+* `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`: should remain feature-flagged until more input and asset-type boundaries are tested.
+
+Backlog item added: asset-type-aware tool routing for index prompts such as `000001.SH`.

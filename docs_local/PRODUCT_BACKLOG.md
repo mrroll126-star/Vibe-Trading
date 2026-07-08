@@ -189,3 +189,26 @@ The following are not approved yet:
 * Enabling shell tools.
 * Adding trading execution.
 * Exposing Web UI remotely.
+## Added 2026-07-08: Asset-type-aware Tool Routing
+
+Type: improvement
+
+Impact range:
+
+Index prompts such as `000001.SH` may call stock-specific tools or market-wide tools without enough asset-type context. In the boundary retest, `get_market_data` handled `000001.SH`, but `get_sector_info` was blocked because the tool call did not include an auditable symbol.
+
+Priority:
+
+Medium-high before default-enabling symbol guard / normalizer.
+
+Suggested phase:
+
+Phase 1 hardening, after the stock-specific symbol guard boundary retest.
+
+Needs business code change:
+
+Yes. Likely requires tool routing or tool metadata changes so the Agent can distinguish stock, ETF, index, sector, and market-wide tasks.
+
+Current handling:
+
+Record only. Do not fix in this retest round.

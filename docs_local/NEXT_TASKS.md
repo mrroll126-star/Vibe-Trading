@@ -452,3 +452,23 @@ Future re-enable conditions:
 
 3. **`a-stock-data` adapter planning**
    * Still deferred until symbol identity and freshness contracts are stable.
+## Current Recommended Order After Boundary Retest
+
+1. **Default-enable decision for Pre-tool Symbol Guard**
+   * Reason: Web UI boundary retest passed for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
+   * Current view: the guard is a safety layer and is a stronger default-on candidate than the normalizer.
+   * User confirmation required: yes.
+
+2. **Keep Symbol Normalizer feature-flagged**
+   * Reason: automatic symbol rewriting changes user input semantics.
+   * Current view: keep `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` off by default until more market and asset-type boundaries are tested.
+
+3. **Design asset-type-aware tool routing**
+   * Reason: `000001.SH` exposed that index prompts can still trigger stock-specific or symbol-less tool calls.
+   * Value: separates stock, ETF, index, sector, and market-wide workflows before broader rollout.
+
+4. **Then revisit broader Symbol Normalizer rollout**
+   * Reason: normalizer rollout should follow intent guard and asset-type routing stability.
+
+5. **Keep `a-stock-data` adapter deferred**
+   * Reason: symbol identity, data freshness, and asset-type routing should be stable before adding new A-share providers.

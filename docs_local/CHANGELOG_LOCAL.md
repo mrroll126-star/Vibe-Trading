@@ -880,3 +880,21 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No service startup.
 - No `a-stock-data` integration.
 - No sensitive or runtime files committed.
+## 2026-07-08
+
+### Documentation
+
+Recorded Web UI boundary retest for the stock-specific symbol guard:
+
+* `QQQ` safe bare ticker passed.
+* `00700` safe bare HK code passed.
+* `000001.SZ` explicit A-share stock passed and freshness gate blocked stale current-day market analysis.
+* `000001.SH` explicit A-share index market-data path passed, with an asset-type-aware routing backlog item.
+
+### Boundary
+
+* Documentation-only update.
+* No business code changes.
+* No provider-chain changes.
+* No default feature flag changes.
+* No sensitive files committed.

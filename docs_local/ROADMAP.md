@@ -133,3 +133,22 @@ See:
 * `docs_local/PHASE_1_PLAN.md`
 * `docs_local/NEXT_TASKS.md`
 * `docs_local/A_SHARE_TRADING_DAY_TEST_PLAN.md`
+## 2026-07-08 Boundary Retest Milestone
+
+Completed:
+
+* Web UI boundary retest with `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`.
+* Web UI boundary retest with `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`.
+* Verified safe bare US ticker: `QQQ -> QQQ.US`.
+* Verified safe bare HK code: `00700 -> 00700.HK`.
+* Verified explicit A-share stock: `000001.SZ`.
+* Verified explicit A-share index market-data path: `000001.SH`.
+
+New Phase 1 hardening item:
+
+* Asset-type-aware tool routing for stock / ETF / index / sector / market-wide prompts.
+
+Default-enable decision:
+
+* Pre-tool Symbol Guard: candidate for default-on after user approval.
+* Symbol Normalizer: keep feature-flagged for now.

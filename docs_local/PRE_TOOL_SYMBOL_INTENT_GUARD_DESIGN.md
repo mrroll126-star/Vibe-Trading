@@ -663,3 +663,34 @@ Default-enable recommendation:
   * `00700`
   * `000001.SZ`
   * `000001.SH`
+## Web UI Boundary Retest Result: 2026-07-08
+
+The stock-specific pre-tool guard was retested in the Web UI with both feature flags enabled:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1
+```
+
+Boundary prompts:
+
+* `QQQ`
+* `00700`
+* `000001.SZ`
+* `000001.SH`
+
+Result:
+
+* `QQQ` was allowed and normalized to `QQQ.US`.
+* `00700` was allowed and normalized to `00700.HK`.
+* `000001.SZ` was allowed as an explicit A-share stock. The final report was blocked by freshness logic because current-day market data was stale, not by symbol clarification.
+* `000001.SH` was allowed as an explicit index for market data. A later `get_sector_info` call was blocked because the tool call lacked an auditable symbol.
+
+Design implication:
+
+The guard is working as a symbol-intent safety layer. The next issue is not basic symbol intent, but asset-type-aware tool routing, especially for index prompts such as `000001.SH`.
+
+Default recommendation:
+
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`: candidate for future default-on after final review.
+* `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`: keep feature-flagged until more asset-type and market boundary tests are complete.

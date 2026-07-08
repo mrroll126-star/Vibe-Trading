@@ -900,3 +900,34 @@ Boundary:
 * No Web UI code changes.
 * No `a-stock-data` integration.
 * Web UI retest not run yet.
+## 2026-07-08 Web UI Boundary Retest For Stock-specific Symbol Guard
+
+Actions performed:
+
+1. Confirmed branch, clean status, and local service ports.
+2. Used Web UI with both feature flags enabled:
+   * `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`
+   * `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
+3. Submitted four boundary prompts:
+   * `QQQ`
+   * `00700`
+   * `000001.SZ`
+   * `000001.SH`
+4. Parsed local session and trace files for run ids, tool calls, data quality metadata, and guard behavior.
+5. Stopped backend and frontend services.
+6. Updated docs_local records only.
+
+Findings:
+
+* `QQQ` passed and normalized to `QQQ.US`.
+* `00700` passed and normalized to `00700.HK`.
+* `000001.SZ` passed as explicit stock; freshness gate blocked stale current-day report.
+* `000001.SH` passed for market data, but exposed an asset-type-aware routing backlog for index prompts.
+
+Boundary:
+
+* No business code changes.
+* No provider-chain changes.
+* No `a-stock-data` integration.
+* No default feature flag changes.
+* No sensitive files committed.

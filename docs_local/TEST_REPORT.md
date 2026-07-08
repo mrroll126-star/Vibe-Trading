@@ -1615,3 +1615,56 @@ Result:
 
 * Web UI stock-specific symbol guard retest passed.
 * Feature flags should still remain off by default until one more boundary retest covers `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
+## 2026-07-08 Web UI Boundary Retest For Stock-specific Symbol Guard
+
+Purpose:
+
+Verify the stock-specific symbol guard in the real Web UI path after extending it beyond `get_market_data`.
+
+Feature flags used for this local test only:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1
+```
+
+Backend command:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+```
+
+Frontend command:
+
+```bash
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Service boundary:
+
+* Backend: `127.0.0.1:8899`.
+* Frontend: `127.0.0.1:5899`.
+* Public exposure: no.
+* Shell tools: disabled.
+* Services stopped after test.
+
+Results:
+
+| Prompt input | Session ID | Run ID | Result | Key evidence |
+| -- | -- | -- | -- | -- |
+| `QQQ` | `56e5272ab623` | `20260708_104158_24_8d4f78` | Pass | Allowed, normalized to `QQQ.US`, no clarification, `Data Source Summary` present. |
+| `00700` | `dd90f724f8df` | `20260708_104211_92_abb605` | Pass | Allowed, normalized to `00700.HK`, no clarification, `Data Source Summary` present. |
+| `000001.SZ` | `aacc86b161c4` | `20260708_104224_94_85bca8` | Pass | Explicit stock allowed; stale current-day data triggered `Data Insufficient Report`. |
+| `000001.SH` | `811ea87008ce` | `20260708_104237_60_8d8e5a` | Pass with backlog | Explicit index market data allowed; `get_sector_info` was blocked when called without auditable symbol, indicating asset-type-aware routing work is needed. |
+
+Known issues observed:
+
+* Yahoo/yfinance profile path still has TLS failures.
+* Some web search / read URL calls timed out or returned HTTP 403.
+* `000001.SH` index prompt can trigger stock-specific or market-wide tools that are not asset-type aware enough.
+
+Conclusion:
+
+The stock-specific symbol guard works in the real Web UI path for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`. Keep both feature flags off by default until the default-enable decision is made.
