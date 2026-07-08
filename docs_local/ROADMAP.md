@@ -182,3 +182,18 @@ Next:
 * Feature-flagged AgentLoop integration.
 * Web UI retest for stock / ETF / index routing.
 * Default-enable decision for Symbol Guard / Symbol Normalizer after retest.
+
+## 2026-07-08 Feature-flagged Asset Routing Integration
+
+Completed:
+
+* Added `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD`.
+* Integrated asset-type routing guard into AgentLoop after symbol intent guard.
+* Preserved zero behavior change when flag is off.
+* Added integration tests for allow / warn / block / ask / non-covered tools / ordering.
+
+Next:
+
+* Web UI retest asset-type routing.
+* Decide whether Pre-tool Symbol Guard can become default-on.
+* Keep Symbol Normalizer and `a-stock-data` deferred until retests pass.

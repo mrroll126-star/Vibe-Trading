@@ -984,3 +984,32 @@ Boundary:
 * No provider-chain changes.
 * No Web UI changes.
 * No `a-stock-data` integration.
+
+## 2026-07-08 Feature-flagged Asset-type Routing Guard Integration
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Added `is_asset_type_routing_guard_enabled()` for `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD`.
+3. Integrated asset-type routing into AgentLoop after Pre-tool Symbol Intent Guard and before `_invoke_tool`.
+4. Added synthetic structured results for `block` and `ask_for_confirmation`.
+5. Added `_tool_routing_guard` metadata injection for `warn` results while still calling the provider/tool.
+6. Added `agent/tests/test_tool_routing_guard_integration.py`.
+7. Ran integration tests, symbol regression, anti-hallucination regression, compile check, and lightweight mock validation.
+8. Updated docs_local records.
+
+Key behavior:
+
+* Flag off: zero behavior change.
+* Symbol intent guard has priority over asset-type routing.
+* `block` / `ask_for_confirmation`: no provider call.
+* `warn`: provider call proceeds and metadata is attached.
+
+Boundary:
+
+* Default off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* Web UI retest not run yet.

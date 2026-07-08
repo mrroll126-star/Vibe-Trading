@@ -20,3 +20,10 @@ def is_pre_tool_symbol_guard_enabled() -> bool:
 
     value = os.getenv("VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD", "")
     return value.strip().lower() in _ENABLED_VALUES
+
+
+def is_asset_type_routing_guard_enabled() -> bool:
+    """Return whether asset-type-aware tool routing is enabled."""
+
+    value = os.getenv("VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD", "")
+    return value.strip().lower() in _ENABLED_VALUES

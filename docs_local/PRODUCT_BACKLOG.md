@@ -236,3 +236,15 @@ Pure function and unit tests are complete. Runtime integration is not yet done.
 Next engineering item:
 
 Feature-flagged AgentLoop integration with structured routing metadata and no provider call on `block` / `ask_for_confirmation`.
+
+Current engineering status:
+
+Feature-flagged AgentLoop integration is complete. Web UI retest is still pending.
+
+Next validation item:
+
+Run local Web UI retest with:
+
+* `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=1`
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
+* Optional controlled `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`

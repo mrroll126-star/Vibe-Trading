@@ -513,3 +513,20 @@ Future re-enable conditions:
 
 4. **Keep `a-stock-data` adapter deferred**
    * Reason: new providers should come after routing policy is enforced.
+
+## Current Recommended Order After AgentLoop Asset Routing Integration
+
+1. **Web UI retest asset-type routing**
+   * Enable `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=1` locally.
+   * Test `000001.SH`, `510300.SH`, `600519.SH`, `QQQ.US`, and `00700.HK`.
+   * Confirm incompatible stock-only tools are blocked before provider execution.
+
+2. **Decide whether to default-enable Pre-tool Symbol Guard**
+   * The symbol guard is safety-oriented and has passed Web UI retests.
+   * Asset routing should pass Web UI retest before making default decisions.
+
+3. **Keep Symbol Normalizer feature-flagged**
+   * Automatic input rewriting should stay opt-in until more asset-type and market cases pass.
+
+4. **Keep `a-stock-data` adapter deferred**
+   * Reason: data-source expansion should follow routing and source-quality enforcement.

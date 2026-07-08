@@ -322,3 +322,30 @@ Validation summary:
 Next step:
 
 Feature-flagged AgentLoop integration. The future integration should run after Pre-tool Symbol Intent Guard and before provider execution.
+
+## 14. Feature-flagged AgentLoop Integration Status
+
+Implemented on 2026-07-08:
+
+* Feature flag: `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD`
+* Default: off
+* AgentLoop integration point: after Pre-tool Symbol Intent Guard and before provider execution
+* Integration tests: `agent/tests/test_tool_routing_guard_integration.py`
+
+Runtime behavior:
+
+* Flag off: zero behavior change.
+* `allow`: provider/tool is called.
+* `warn`: provider/tool is called and `_tool_routing_guard` metadata is appended to the tool result.
+* `block`: provider/tool is not called; AgentLoop returns a structured `Tool Routing Blocked` result.
+* `ask_for_confirmation`: provider/tool is not called; AgentLoop returns a structured `Tool Routing Requires Confirmation` result.
+
+Important implementation note:
+
+Routing inference does not modify tool arguments. It extracts the first symbol-like argument, infers market / asset type without network calls, then evaluates compatibility. `000001.SH` is treated as an index for routing decisions because the current normalizer still marks it as stock with an ambiguity warning.
+
+Not yet done:
+
+* Web UI asset-type routing retest.
+* Default-enable decision.
+* Tool Routing Summary section in final report.

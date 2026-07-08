@@ -49,10 +49,12 @@ from src.providers.content_filter import (
     MAX_CONSECUTIVE_CONTENT_FILTER_SKIPS,
     compute_content_filter_warnings,
 )
-from src.symbols.config import is_pre_tool_symbol_guard_enabled
+from src.symbols import normalize_symbol
+from src.symbols.config import is_asset_type_routing_guard_enabled, is_pre_tool_symbol_guard_enabled
 from src.symbols.intent_guard import STOCK_SYMBOL_GUARDED_TOOLS, evaluate_symbol_intent_guard
 from src.tools.background_tools import get_background_manager
 from src.tools.redaction import redact_payload
+from src.tools.routing_guard import evaluate_tool_asset_compatibility
 
 RUNS_DIR = Path(__file__).resolve().parents[2] / "runs"
 SESSIONS_DIR = Path(__file__).resolve().parents[2] / "sessions"
@@ -165,6 +167,43 @@ def _record_llm_usage(
         logger.debug("LLM usage artifact write skipped: %s", exc)
 
     return normalized
+
+
+_ROUTING_SYMBOL_KEYS = ("codes", "symbols", "symbol", "ticker", "code")
+_ROUTING_INDEX_OVERRIDES = {
+    "000001.SH",
+    "000300.SH",
+    "000905.SH",
+    "399001.SZ",
+    "399006.SZ",
+}
+
+
+def _first_tool_symbol(args: Dict[str, Any]) -> str | None:
+    """Extract the first symbol-like argument without mutating tool arguments."""
+    for key in _ROUTING_SYMBOL_KEYS:
+        value = args.get(key)
+        if isinstance(value, str) and value.strip():
+            return value.strip()
+        if isinstance(value, list):
+            for item in value:
+                if isinstance(item, str) and item.strip():
+                    return item.strip()
+    return None
+
+
+def _infer_routing_market_asset(symbol: str | None) -> tuple[str | None, str | None]:
+    """Infer market and asset type for routing only."""
+    if not symbol:
+        return None, None
+    upper = symbol.strip().upper()
+    if upper in _ROUTING_INDEX_OVERRIDES:
+        return "CN", "index"
+    try:
+        normalized = normalize_symbol(symbol)
+    except Exception:  # noqa: BLE001 - routing inference must never break tools
+        return None, None
+    return normalized.market, normalized.asset_type
 
 
 def _redact_trace_result(result: str) -> str:
@@ -1230,7 +1269,13 @@ class AgentLoop:
             self._finalize_tool_result(tc, guard_result, 0, context, messages, trace, react_trace, iteration)
             return
 
+        routing_result = self._asset_type_routing_guard_result(tc.name, args)
+        if routing_result is not None:
+            self._finalize_tool_result(tc, routing_result, 0, context, messages, trace, react_trace, iteration)
+            return
+
         result, elapsed_ms = self._invoke_tool(tc.name, args)
+        result = self._append_asset_type_routing_warning_result(tc.name, args, result)
 
         self._finalize_tool_result(tc, result, elapsed_ms, context, messages, trace, react_trace, iteration)
 
@@ -1276,6 +1321,82 @@ class AgentLoop:
             },
         }
         return json.dumps(payload, ensure_ascii=False)
+
+    def _asset_type_routing_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
+        """Return a synthetic tool result when asset/tool compatibility blocks execution."""
+        decision = self._asset_type_routing_decision(tool_name, args)
+        if decision is None or decision.get("decision") in {"allow", "warn"}:
+            return None
+
+        message = (
+            "Tool Routing Requires Confirmation"
+            if decision.get("decision") == "ask_for_confirmation"
+            else "Tool Routing Blocked"
+        )
+        payload = {
+            "ok": False,
+            "status": "error",
+            "error_code": "asset_type_tool_routing_guard",
+            "blocked_by": "asset_type_tool_routing_guard",
+            "decision": decision.get("decision"),
+            "tool_name": tool_name,
+            "message": message,
+            "reason": decision.get("reason"),
+            "matched_rule": decision.get("matched_rule"),
+            "symbol": decision.get("symbol"),
+            "market": decision.get("market"),
+            "asset_type": decision.get("asset_type"),
+            "warnings": decision.get("warnings") or [],
+            "_tool_routing_guard": {
+                "decision": decision.get("decision"),
+                "reason": decision.get("reason"),
+                "matched_rule": decision.get("matched_rule"),
+                "symbol": decision.get("symbol"),
+                "market": decision.get("market"),
+                "asset_type": decision.get("asset_type"),
+                "warnings": decision.get("warnings") or [],
+            },
+        }
+        return json.dumps(payload, ensure_ascii=False)
+
+    def _append_asset_type_routing_warning_result(self, tool_name: str, args: Dict[str, Any], result: str) -> str:
+        """Attach routing warning metadata to a successful provider result."""
+        decision = self._asset_type_routing_decision(tool_name, args)
+        if decision is None or decision.get("decision") != "warn":
+            return result
+        try:
+            payload = json.loads(result)
+        except (TypeError, json.JSONDecodeError):
+            return result
+        if not isinstance(payload, dict):
+            return result
+        payload["_tool_routing_guard"] = {
+            "decision": decision.get("decision"),
+            "reason": decision.get("reason"),
+            "matched_rule": decision.get("matched_rule"),
+            "symbol": decision.get("symbol"),
+            "market": decision.get("market"),
+            "asset_type": decision.get("asset_type"),
+            "warnings": decision.get("warnings") or [],
+        }
+        return json.dumps(payload, ensure_ascii=False)
+
+    def _asset_type_routing_decision(self, tool_name: str, args: Dict[str, Any]) -> dict | None:
+        """Evaluate asset/tool compatibility when the feature flag is enabled."""
+        if not is_asset_type_routing_guard_enabled():
+            return None
+        if tool_name == "get_sector_info" and str(args.get("mode") or "membership").strip().lower() == "ranking":
+            return None
+
+        symbol = _first_tool_symbol(args)
+        market, asset_type = _infer_routing_market_asset(symbol)
+        return evaluate_tool_asset_compatibility(
+            tool_name=tool_name,
+            symbol=symbol,
+            market=market,
+            asset_type=asset_type,
+            original_prompt=self._current_user_message,
+        )
 
     def _invoke_tool(self, tool_name: str, args: Dict[str, Any]) -> tuple[str, int]:
         """Execute a tool with heartbeat + structured progress emission.

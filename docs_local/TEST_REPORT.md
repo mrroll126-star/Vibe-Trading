@@ -1763,3 +1763,81 @@ Boundary:
 * Does not modify loaders.
 * Does not modify Web UI.
 * Does not integrate `a-stock-data`.
+
+## 2026-07-08 Feature-flagged Asset-type Routing Guard Integration
+
+Purpose:
+
+Connect pure asset-type routing guard to AgentLoop behind a default-off feature flag.
+
+Feature flag:
+
+```bash
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=1
+```
+
+Default:
+
+Off. No `.env` change is required and no `.env` file was committed.
+
+Files changed:
+
+* `agent/src/symbols/config.py`
+* `agent/src/agent/loop.py`
+* `agent/tests/test_tool_routing_guard_integration.py`
+
+Commands executed:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration
+```
+
+Result:
+
+* Passed.
+* 43 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 68 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Lightweight mock validation:
+
+| Case | Provider/tool called | Result |
+| --- | ---: | --- |
+| flag on + `get_sector_info` + `000001.SH` | 0 | block |
+| flag on + `get_financial_statements` + `510300.SH` | 0 | block |
+| flag on + `get_margin_trading` + `510300.SH` | 1 | warn |
+| flag on + `get_market_data` + `000001.SH` | 1 | allow |
+| flag off + `get_sector_info` + `000001.SH` | 1 | allow / no intercept |
+
+Boundary:
+
+* Feature flag default is off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* Web UI routing retest has not been run yet.

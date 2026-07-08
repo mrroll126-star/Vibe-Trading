@@ -929,3 +929,23 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No provider-chain changes.
 * No loader changes.
 * No Web UI changes.
+
+### Added
+
+* Feature flag `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD`.
+* AgentLoop integration for asset-type routing guard.
+* `agent/tests/test_tool_routing_guard_integration.py`.
+
+### Behavior
+
+* Default off.
+* `block` / `ask_for_confirmation` stop provider calls.
+* `warn` allows provider calls and appends `_tool_routing_guard`.
+* Pre-tool Symbol Intent Guard still runs first.
+
+### Validation
+
+* Routing guard + integration tests passed with 43 tests.
+* Symbol regression tests passed with 68 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
