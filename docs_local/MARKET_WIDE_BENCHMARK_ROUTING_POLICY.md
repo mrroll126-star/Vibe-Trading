@@ -292,3 +292,35 @@ Before adding more A-share data sources, the project should define:
 * when ETF proxies are acceptable;
 * how source failures and stale benchmark data are shown in reports.
 
+## 13. Pure Policy Implementation Status
+
+Date: 2026-07-08.
+
+Implemented:
+
+* Pure module: `agent/src/symbols/benchmark_policy.py`.
+* Pure function: `evaluate_market_wide_benchmark_intent(...)`.
+* Unit tests: `agent/tests/test_benchmark_policy.py`.
+
+Current behavior:
+
+* Explicit A-share market-wide prompts return `allow_benchmark` with the A-share benchmark universe.
+* Explicit US market-wide prompts return `allow_benchmark` with ETF proxies.
+* Explicit Hong Kong market-wide prompts return `allow_benchmark` with HK ETF proxies.
+* `get_stock_news(scope=global)` and `get_sector_info(mode=ranking)` remain no-symbol market-wide tools and do not require benchmark symbols.
+* Ambiguous prompts such as "看看市场" return `ask_for_confirmation`.
+* User-specified single-target prompts return `not_market_wide`.
+* Company-specific tools such as `get_financial_statements` return `block` for benchmark policy.
+* Symbols outside the documented benchmark universe are rejected for benchmark use.
+
+Boundary:
+
+* Not integrated into AgentLoop.
+* Does not change Symbol Intent Guard behavior.
+* Does not change Asset-type Routing Guard behavior.
+* Does not change feature flag defaults.
+* Does not call providers, loaders, tools, LLMs, network, files, or Web UI.
+
+Next:
+
+Only after user approval, consider feature-flagged integration inside or immediately before Symbol Intent Guard.

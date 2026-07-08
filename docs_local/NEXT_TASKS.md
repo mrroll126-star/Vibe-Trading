@@ -595,3 +595,16 @@ Future re-enable conditions:
 
 4. **Prepare GitHub fork / push strategy**
    * Reason: the local branch now contains a meaningful Phase 1 safety baseline worth backing up after user approval.
+
+## Current Recommended Order After Pure Benchmark Policy
+
+1. **Feature-flagged integration into Symbol Intent Guard**
+   * Scope: use `evaluate_market_wide_benchmark_intent(...)` only for explicit market-wide prompts.
+   * Default recommendation: start behind a feature flag or narrow internal guard path.
+   * Required output: preserve `system_selected_benchmark` metadata for future report disclosure.
+
+2. **a-stock-data adapter planning**
+   * Keep downstream until benchmark routing is integrated and retested.
+
+3. **GitHub fork / push strategy**
+   * Back up the Phase 1 guardrail baseline after user confirms remote setup.

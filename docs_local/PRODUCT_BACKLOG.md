@@ -303,3 +303,16 @@ Design document added: `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.
 Next engineering step:
 
 Implement a pure benchmark policy helper and tests only after user approval.
+
+Implementation status:
+
+Pure helper and tests are complete:
+
+* `agent/src/symbols/benchmark_policy.py`
+* `agent/tests/test_benchmark_policy.py`
+
+Remaining work:
+
+* Feature-flagged integration into Symbol Intent Guard.
+* Trace/report metadata for `system_selected_benchmark`.
+* Web UI retest after integration.

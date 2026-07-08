@@ -1003,6 +1003,31 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ## 2026-07-08
 
+### Added
+
+* Pure market-wide benchmark policy helper: `agent/src/symbols/benchmark_policy.py`.
+* Benchmark policy unit tests: `agent/tests/test_benchmark_policy.py`.
+* Export for `evaluate_market_wide_benchmark_intent`.
+
+### Validation
+
+* Benchmark policy tests passed with 25 tests.
+* Symbol regression tests passed with 87 tests.
+* Routing regression tests passed with 56 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* No AgentLoop integration.
+* No real tool-call behavior change.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+
+## 2026-07-08
+
 ### Changed
 
 * Enabled Pre-tool Symbol Intent Guard by default.

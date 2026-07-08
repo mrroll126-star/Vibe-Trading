@@ -270,3 +270,24 @@ Still deferred:
 * `a-stock-data` adapter.
 * Provider-chain changes.
 * Web UI changes.
+
+## 2026-07-08 Pure Market-wide Benchmark Policy
+
+Completed:
+
+* Added pure helper `evaluate_market_wide_benchmark_intent(...)`.
+* Added MVP benchmark universe constants for A-share, US, and Hong Kong markets.
+* Added unit tests covering market-wide, ambiguous, single-target, company-specific tool, and benchmark-universe boundaries.
+* Confirmed symbol/routing/anti-hallucination regressions still pass.
+
+Not changed:
+
+* AgentLoop.
+* Symbol Intent Guard runtime behavior.
+* Asset-type Routing Guard runtime behavior.
+* Feature flag defaults.
+* Provider chain / loaders / Web UI.
+
+Next roadmap item:
+
+Feature-flagged integration into Symbol Intent Guard, only after user approval.

@@ -2090,3 +2090,84 @@ Boundary:
 * No loader changes.
 * No Web UI changes.
 * No `a-stock-data` integration.
+
+## 2026-07-08 Pure Market-wide Benchmark Policy
+
+Purpose:
+
+Implement the first phase of Market-wide Benchmark Routing Policy as a pure helper with tests.
+
+Files added:
+
+* `agent/src/symbols/benchmark_policy.py`
+* `agent/tests/test_benchmark_policy.py`
+
+Commands executed:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_benchmark_policy
+```
+
+Result:
+
+* Passed.
+* 25 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 87 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration
+```
+
+Result:
+
+* Passed.
+* 56 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Lightweight pure-function validation:
+
+| Case | Result |
+| --- | --- |
+| `A股今天怎么样` + `get_market_data` | `allow_benchmark`, market `cn` |
+| `美股今天怎么样` + `get_market_data` | `allow_benchmark`, market `us` |
+| `港股今天怎么样` + `get_market_data` | `allow_benchmark`, market `hk` |
+| `看看市场` | `ask_for_confirmation` |
+| `贵州茅台今天怎么样` | `not_market_wide` |
+| `A股今天怎么样` + `get_financial_statements` | `block` |
+| `A股今天怎么样` + `get_market_data(symbol=600519.SH)` | `block` |
+| `A股今天怎么样` + `get_market_data(symbol=000001.SH)` | `allow_benchmark` |
+
+Boundary:
+
+* Pure helper only.
+* No AgentLoop integration.
+* No real tool-call behavior changed.
+* No feature flag default changed.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.

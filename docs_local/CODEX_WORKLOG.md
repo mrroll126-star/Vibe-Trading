@@ -1108,3 +1108,24 @@ Boundary:
 * No loader changes.
 * No Web UI changes.
 * No `a-stock-data` integration.
+
+## 2026-07-08 Pure Market-wide Benchmark Policy
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Re-read Symbol Intent Guard, Symbol Normalizer, feature flag config, Asset-type Routing Guard, and benchmark routing design.
+3. Added pure policy module `agent/src/symbols/benchmark_policy.py`.
+4. Exported `evaluate_market_wide_benchmark_intent` from `src.symbols`.
+5. Added `agent/tests/test_benchmark_policy.py`.
+6. Ran benchmark policy tests, symbol regression, routing regression, anti-hallucination regression, compile check, and lightweight pure-function validation.
+7. Updated docs_local.
+
+Boundary:
+
+* No AgentLoop integration.
+* No live tool-call behavior change.
+* No feature flag default change.
+* No provider-chain or loader change.
+* No Web UI change.
+* No `a-stock-data` integration.
