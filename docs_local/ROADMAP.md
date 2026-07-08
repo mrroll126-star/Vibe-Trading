@@ -197,3 +197,19 @@ Next:
 * Web UI retest asset-type routing.
 * Decide whether Pre-tool Symbol Guard can become default-on.
 * Keep Symbol Normalizer and `a-stock-data` deferred until retests pass.
+
+## 2026-07-08 Parallel Asset Routing Fix
+
+Completed:
+
+* Fixed Asset-type Routing Guard for parallel readonly tool execution.
+* Unified single and parallel pre-tool guard order.
+* Preserved Symbol Intent Guard priority.
+* Allowed market-wide `get_sector_info(mode=ranking|list|overview)` without a single symbol.
+* Added parallel-path tests for block / warn / flag off / non-covered tools.
+
+Next:
+
+* Repeat Web UI asset-type routing retest.
+* Decide default policy only after Web UI retest passes.
+* Keep `a-stock-data` deferred.

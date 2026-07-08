@@ -949,3 +949,31 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * Symbol regression tests passed with 68 tests.
 * Anti-hallucination regression tests passed with 46 tests.
 * Compile check passed.
+
+## 2026-07-08
+
+### Fixed
+
+* Applied Asset-type Routing Guard to parallel readonly tool execution in `AgentLoop._execute_parallel`.
+* Preserved Pre-tool Symbol Intent Guard priority before asset-type routing.
+* Added market-wide sector mode allowance for `get_sector_info(mode=ranking|list|overview)` without a single symbol.
+
+### Added
+
+* Parallel-path tests for asset routing block, warn, flag-off behavior, non-covered tools, symbol-guard precedence, and market-wide sector ranking.
+
+### Validation
+
+* Routing guard tests passed with 53 tests.
+* Symbol regression tests passed with 68 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* Feature flag remains default off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* No sensitive/runtime files committed.

@@ -530,3 +530,18 @@ Future re-enable conditions:
 
 4. **Keep `a-stock-data` adapter deferred**
    * Reason: data-source expansion should follow routing and source-quality enforcement.
+
+## Current Recommended Order After Parallel Asset Routing Fix
+
+1. **Web UI retest asset-type routing failure points**
+   * Enable `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`, `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`, and `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=1` locally.
+   * Retest `510300.SH` + financial statements and `QQQ.US` + stock news.
+   * Expected: ETF financials are blocked before provider execution; ETF news includes routing warning metadata.
+
+2. **Decide whether to default-enable safety guards**
+   * Candidate: Pre-tool Symbol Guard.
+   * Candidate: Asset-type Routing Guard after Web UI retest passes.
+   * Keep Symbol Normalizer feature-flagged because it rewrites user input.
+
+3. **Keep `a-stock-data` adapter planning downstream**
+   * Reason: new A-share data sources should come after symbol identity, asset routing, and data quality contracts are stable.

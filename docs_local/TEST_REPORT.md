@@ -1841,3 +1841,74 @@ Boundary:
 * No Web UI changes.
 * No `a-stock-data` integration.
 * Web UI routing retest has not been run yet.
+
+## 2026-07-08 Fix Parallel Asset-type Routing Guard
+
+Purpose:
+
+Fix the Web UI path where readonly tools run in parallel and previously skipped the Asset-type Routing Guard.
+
+Root cause:
+
+`_execute_single` ran Symbol Intent Guard and Asset-type Routing Guard, but `_execute_parallel` only ran Symbol Intent Guard. Real Web UI research tasks commonly call multiple readonly tools in one batch, so ETF/index routing rules were bypassed.
+
+Files changed:
+
+* `agent/src/agent/loop.py`
+* `agent/tests/test_tool_routing_guard_integration.py`
+
+Commands executed:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration
+```
+
+Result:
+
+* Passed.
+* 53 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 68 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Lightweight mock validation:
+
+| Case | Provider/tool called | Result |
+| --- | ---: | --- |
+| flag on + parallel `get_financial_statements` + `510300.SH` | 0 | block |
+| flag on + parallel `get_margin_trading` + `510300.SH` | 1 | warn + `_tool_routing_guard` |
+| flag on + parallel `get_stock_news` + `QQQ.US` | 1 | warn + `_tool_routing_guard` |
+| flag on + parallel `get_sector_info(mode=ranking)` | 1 | allow |
+| flag off + parallel `get_financial_statements` + `510300.SH` | 1 | allow / no intercept |
+
+Boundary:
+
+* Feature flag default remains off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* Web UI retest after the fix has not been run yet.

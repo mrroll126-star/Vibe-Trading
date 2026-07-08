@@ -177,6 +177,7 @@ _ROUTING_INDEX_OVERRIDES = {
     "399001.SZ",
     "399006.SZ",
 }
+_MARKET_WIDE_SECTOR_MODES = {"ranking", "list", "overview"}
 
 
 def _first_tool_symbol(args: Dict[str, Any]) -> str | None:
@@ -204,6 +205,14 @@ def _infer_routing_market_asset(symbol: str | None) -> tuple[str | None, str | N
     except Exception:  # noqa: BLE001 - routing inference must never break tools
         return None, None
     return normalized.market, normalized.asset_type
+
+
+def _is_market_wide_sector_info_call(tool_name: str, args: Dict[str, Any]) -> bool:
+    """Return true for sector requests that are not about one security."""
+    if tool_name != "get_sector_info":
+        return False
+    mode = str(args.get("mode") or "").strip().lower()
+    return mode in _MARKET_WIDE_SECTOR_MODES and _first_tool_symbol(args) is None
 
 
 def _redact_trace_result(result: str) -> str:
@@ -1208,7 +1217,7 @@ class AgentLoop:
             event_args = {k: str(v)[:200] for k, v in redacted_args.items()}
             self._emit("tool_call", {"tool": tc.name, "arguments": event_args, "iter": iteration})
             trace.write({"type": "tool_call", "iter": iteration, "tool": tc.name, "call_id": tc.id, "args": redacted_args})
-            guard_result = self._pre_tool_symbol_guard_result(tc.name, args)
+            guard_result = self._pre_tool_guard_result(tc.name, args)
             if guard_result is not None:
                 self._finalize_tool_result(tc, guard_result, 0, context, messages, trace, react_trace, iteration)
                 continue
@@ -1221,6 +1230,7 @@ class AgentLoop:
         def _run(tc_args: tuple) -> tuple:
             tc, args = tc_args
             result, elapsed_ms = self._invoke_tool(tc.name, args)
+            result = self._append_asset_type_routing_warning_result(tc.name, args, result)
             return tc, result, elapsed_ms
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(runnable), 8)) as pool:
@@ -1264,14 +1274,9 @@ class AgentLoop:
         trace.write({"type": "tool_call", "iter": iteration, "tool": tc.name, "call_id": tc.id, "args": redacted_args})
         logger.info(f"Tool call: {tc.name}({list(args.keys())})")
 
-        guard_result = self._pre_tool_symbol_guard_result(tc.name, args)
+        guard_result = self._pre_tool_guard_result(tc.name, args)
         if guard_result is not None:
             self._finalize_tool_result(tc, guard_result, 0, context, messages, trace, react_trace, iteration)
-            return
-
-        routing_result = self._asset_type_routing_guard_result(tc.name, args)
-        if routing_result is not None:
-            self._finalize_tool_result(tc, routing_result, 0, context, messages, trace, react_trace, iteration)
             return
 
         result, elapsed_ms = self._invoke_tool(tc.name, args)
@@ -1279,9 +1284,18 @@ class AgentLoop:
 
         self._finalize_tool_result(tc, result, elapsed_ms, context, messages, trace, react_trace, iteration)
 
+    def _pre_tool_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
+        """Apply pre-invocation guards shared by serial and parallel tool paths."""
+        guard_result = self._pre_tool_symbol_guard_result(tool_name, args)
+        if guard_result is not None:
+            return guard_result
+        return self._asset_type_routing_guard_result(tool_name, args)
+
     def _pre_tool_symbol_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
         """Return a synthetic tool result when symbol intent should block execution."""
         if not is_pre_tool_symbol_guard_enabled() or tool_name not in STOCK_SYMBOL_GUARDED_TOOLS:
+            return None
+        if _is_market_wide_sector_info_call(tool_name, args):
             return None
 
         decision = evaluate_symbol_intent_guard(
@@ -1385,8 +1399,16 @@ class AgentLoop:
         """Evaluate asset/tool compatibility when the feature flag is enabled."""
         if not is_asset_type_routing_guard_enabled():
             return None
-        if tool_name == "get_sector_info" and str(args.get("mode") or "membership").strip().lower() == "ranking":
-            return None
+        if _is_market_wide_sector_info_call(tool_name, args):
+            return {
+                "decision": "allow",
+                "reason": "market_wide_mode",
+                "matched_rule": "market_wide_sector_info",
+                "symbol": None,
+                "market": None,
+                "asset_type": None,
+                "warnings": [],
+            }
 
         symbol = _first_tool_symbol(args)
         market, asset_type = _infer_routing_market_asset(symbol)

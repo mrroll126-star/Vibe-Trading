@@ -349,3 +349,38 @@ Not yet done:
 * Web UI asset-type routing retest.
 * Default-enable decision.
 * Tool Routing Summary section in final report.
+
+## 15. Parallel Tool Execution Fix
+
+Implemented on 2026-07-08:
+
+* Fix target: `AgentLoop._execute_parallel`.
+* Root cause: Web UI research tasks often launch multiple readonly tools in one parallel batch. Asset-type routing was only connected to `_execute_single`, so parallel tool calls skipped the routing guard.
+* Previous Web UI failure examples:
+  * `510300.SH` ETF + `get_financial_statements` called the provider instead of being blocked.
+  * `QQQ.US` ETF + `get_stock_news` did not include `_tool_routing_guard` warning metadata.
+
+Fix behavior:
+
+* Single and parallel execution now share the same pre-tool guard helper.
+* Pre-tool Symbol Intent Guard still runs first.
+* Asset-type Routing Guard runs after symbol intent allow.
+* `block` / `ask_for_confirmation`: provider is not called.
+* `warn`: provider is called and `_tool_routing_guard` is attached to the result.
+* `allow`: provider is called normally.
+* Feature flag default remains off.
+
+Market-wide mode handling:
+
+`get_sector_info(mode=ranking|list|overview)` with no single symbol is treated as a market-wide sector request and is allowed. This avoids confusing full-market ranking/list calls with missing-symbol single-security calls.
+
+Validation:
+
+* Added parallel-path tests to `agent/tests/test_tool_routing_guard_integration.py`.
+* Routing guard tests, symbol regression tests, data-quality/report-gate regression tests, and compile check passed.
+
+Still not done:
+
+* Web UI retest after this parallel-path fix.
+* Default-enable decision.
+* `a-stock-data` integration.

@@ -1013,3 +1013,30 @@ Boundary:
 * No Web UI changes.
 * No `a-stock-data` integration.
 * Web UI retest not run yet.
+
+## 2026-07-08 Fix Parallel Asset-type Routing Guard
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Re-read `AgentLoop._execute_single`, `_execute_parallel`, and existing routing guard tests.
+3. Confirmed root cause from Web UI retest: `_execute_parallel` skipped Asset-type Routing Guard.
+4. Added shared pre-tool guard helper so single and parallel paths apply the same order.
+5. Kept Pre-tool Symbol Intent Guard before Asset-type Routing Guard.
+6. Added parallel-path tests for flag off, block, warn, symbol-guard precedence, non-covered tools, and market-wide sector ranking.
+7. Ran routing, symbol, anti-hallucination, compile, and lightweight mock validations.
+
+Key behavior:
+
+* `block` / `ask_for_confirmation`: no provider call in parallel path.
+* `warn`: provider call proceeds and `_tool_routing_guard` is attached.
+* `get_sector_info(mode=ranking|list|overview)` without symbol is allowed as market-wide.
+
+Boundary:
+
+* Feature flag default remains off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* Web UI retest after the fix is still pending.

@@ -241,6 +241,10 @@ Current engineering status:
 
 Feature-flagged AgentLoop integration is complete. Web UI retest is still pending.
 
+Parallel execution fix status:
+
+The first Web UI retest found that parallel readonly tool batches skipped Asset-type Routing Guard. This has been fixed in `AgentLoop._execute_parallel` with tests. Web UI retest is still required before default-enable decisions.
+
 Next validation item:
 
 Run local Web UI retest with:
