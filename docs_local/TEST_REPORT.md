@@ -1387,4 +1387,75 @@ Lightweight validation:
 
 Web UI retest:
 
-* Not run in this round.
+* Completed in the next round and recorded below.
+
+## 28. Web UI Pre-tool Symbol Guard Retest
+
+Date: 2026-07-08.
+
+Goal:
+
+* Verify that `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1` and `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1` work in the real Web UI path.
+* Confirm safe bare symbols still run.
+* Confirm ambiguous `000001` and Chinese-name `贵州茅台` do not silently proceed as normal market-data calls.
+
+Commands:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+```
+
+```bash
+cd frontend
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Web UI URL:
+
+```text
+http://127.0.0.1:5899/agent
+```
+
+Prompts tested:
+
+| Case | Prompt | Session | Run ID | Result |
+| -- | -- | -- | -- | -- |
+| `600519` | `请分析 600519 今天的行情表现。只使用实际获取到的数据，不要估算。` | `66a8cff0a5b7` | `20260708_100611_10_dc3c41` | `get_market_data` allowed as `600519.SH`; final report was blocked by stale current-day data. |
+| `QQQ` | `请分析 QQQ 最近行情表现。只使用实际获取到的数据，不要估算。` | `541e9b698014` | `20260708_100748_61_145e43` | `get_market_data` allowed as `QQQ.US`; report completed. |
+| `00700` | `请分析 00700 最近行情表现。只使用实际获取到的数据，不要估算。` | `4f38726ed856` | `20260708_100758_62_0f00eb` | `get_market_data` allowed as `00700.HK`; report completed. |
+| `000001` | `请分析 000001 今天的行情表现。只使用实际获取到的数据，不要估算。` | `634e6290c0ab` | `20260708_100809_64_c7f4c7` | `get_market_data` blocked by pre-tool guard; final answer asked for `000001.SZ` vs `000001.SH`. |
+| `贵州茅台` | `请分析 贵州茅台 今天的行情表现。只使用实际获取到的数据，不要估算。` | `036be2933e75` | `20260708_100820_64_0082d9` | `get_market_data` blocked by pre-tool guard; final answer asked to confirm `600519.SH`. |
+| `600519.SH` | `请分析 600519.SH 今天的行情表现。只使用实际获取到的数据，不要估算。` | `ce1ed7471c1c` | `20260708_100832_19_f3a59b` | Explicit symbol allowed; final report was blocked by stale current-day data. |
+
+Trace findings:
+
+| Case | `get_market_data` guard result | `_data_quality` | Important note |
+| -- | -- | -- | -- |
+| `600519` | allowed | present; `stale`, latest `2026-07-07`, provider `tencent` | Time-sensitive gate correctly produced `Data Insufficient Report`. |
+| `QQQ` | allowed | present; `stale`, latest `2026-07-07`, provider `yahoo` | Yahoo profile SSL failure still appeared for `get_stock_profile`. |
+| `00700` | allowed | present; `fresh`, latest `2026-07-08`, provider `yahoo` | Daily close warning appeared; research-report path was unsupported for HK. |
+| `000001` | blocked / clarify | no market-data `_data_quality` because provider was not called | Other tools still ran with `000001.SZ`. |
+| `贵州茅台` | blocked / clarify | no market-data `_data_quality` because provider was not called | Other tools still ran with `600519.SH`. |
+| `600519.SH` | allowed | present; `stale`, latest `2026-07-07`, provider `tencent` | No false block on explicit symbol. |
+
+Pass criteria:
+
+* Feature flags were honored in the Web UI path: passed.
+* Safe bare symbols were allowed: passed.
+* Explicit symbol was allowed: passed.
+* `get_market_data` was blocked for ambiguous/name-based intent: passed.
+* No provider tool should run for ambiguous/name-based intent before confirmation: not fully passed.
+
+Overall result:
+
+* Partial pass.
+* The current MVP should not be default-enabled yet.
+* Next step should extend symbol intent protection to all stock-specific provider tools, not only `get_market_data`.
+
+Shutdown:
+
+* Backend and frontend were stopped.
+* `lsof -i :8899` returned no listener.
+* `lsof -i :5899` returned no listener.

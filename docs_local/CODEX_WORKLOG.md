@@ -284,6 +284,44 @@ What was not done:
 - No provider chain was changed.
 - No shell tools were enabled.
 - No remote service was exposed.
+
+## 2026-07-08 Web UI Pre-tool Symbol Guard Retest
+
+User requested a real Web UI retest after feature-flagged Pre-tool Symbol Intent Guard entered the AgentLoop tool path.
+
+Actions performed:
+
+1. Started backend on `127.0.0.1:8899` with:
+   - `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`
+   - `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
+2. Started frontend on `127.0.0.1:5899`.
+3. Submitted six prompts through the Web UI:
+   - `600519`
+   - `QQQ`
+   - `00700`
+   - `000001`
+   - `贵州茅台`
+   - `600519.SH`
+4. Audited local ignored session traces under `agent/sessions/`.
+5. Stopped backend and frontend.
+6. Confirmed ports `8899` and `5899` were released.
+7. Updated `docs_local` with the retest evidence and next-step recommendation.
+
+Result:
+
+* Safe bare symbols and explicit symbol were not incorrectly blocked.
+* `get_market_data` was blocked for ambiguous `000001` and Chinese-name `贵州茅台`.
+* Final answers requested clarification/confirmation for `000001` and `贵州茅台`.
+* Gap found: non-market-data tools still ran for ambiguous/name-based prompts.
+
+What was not done:
+
+* No business code was modified.
+* No feature flag was default-enabled.
+* No `a-stock-data` integration was attempted.
+* No provider chain was changed.
+* No real key was printed.
+* No remote service was exposed.
 - No `a-stock-data` integration was attempted.
 
 ## 2026-07-05 Phase 0 Closeout

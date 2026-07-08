@@ -237,6 +237,44 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No `a-stock-data` integration was attempted.
 - No ignored local runtime artifacts were committed.
 
+## 2026-07-08 Web UI Pre-tool Symbol Guard Retest
+
+### Updated
+
+- Updated `WEB_UI_SMOKE_TEST_REPORT.md` with Web UI Pre-tool Symbol Guard retest results.
+- Updated `TEST_REPORT.md` with commands, prompts, session IDs, run IDs, and trace findings.
+- Updated `PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md` with Phase D Web UI retest findings.
+- Updated `PRODUCT_BACKLOG.md` with the remaining gap: non-market-data tools are not yet guarded for ambiguous/name-based symbol intent.
+- Updated `NEXT_TASKS.md` to prioritize extending guard coverage before default-enabling symbol flags.
+- Updated `CODEX_WORKLOG.md` with this retest action.
+
+### Validation
+
+- Backend started locally with:
+  - `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`
+  - `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
+- Frontend started locally on `127.0.0.1:5899`.
+- Web UI prompts were submitted for `600519`, `QQQ`, `00700`, `000001`, `贵州茅台`, and `600519.SH`.
+- Local session traces confirmed `get_market_data` was blocked for `000001` and `贵州茅台`.
+
+### Result
+
+- Partial pass.
+- Safe bare symbols were allowed.
+- Explicit symbols were allowed.
+- Ambiguous/name-based market-data calls were blocked.
+- Non-market-data stock tools still ran for ambiguous/name-based prompts, so the flags should remain off by default.
+
+### Security
+
+- No real key was printed.
+- `agent/.env` was not committed.
+- `agent/runs/` and `agent/sessions/` were not committed.
+- Shell tools remained disabled.
+- Services were bound only to `127.0.0.1`.
+- No provider chain was changed.
+- No business code was modified.
+
 ## 2026-07-05 Symbol Normalizer Helper
 
 ### Added

@@ -118,7 +118,18 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Recommended next step: implement pure `evaluate_symbol_intent_guard(...)` plus tests before any AgentLoop integration.
 * Current implementation status: pure function and tests are complete; AgentLoop integration is not started.
 * Implementation files: `agent/src/symbols/intent_guard.py`, `agent/tests/test_symbol_intent_guard.py`.
-* AgentLoop integration status: feature-flagged integration complete for `get_market_data`; Web UI retest pending.
+* AgentLoop integration status: feature-flagged integration complete for `get_market_data`; Web UI retest completed on 2026-07-08.
+* Web UI retest result: partial pass.
+* Passed in Web UI:
+  * `600519`, `QQQ`, `00700`, and explicit `600519.SH` were not incorrectly blocked.
+  * `get_market_data` was blocked for ambiguous `000001` and Chinese-name `贵州茅台`.
+  * Final answers asked for clarification instead of giving a normal market report for `000001` and `贵州茅台`.
+* Remaining defect:
+  * `000001` still triggered other stock-specific tools with `000001.SZ`, including `get_fund_flow`, `get_stock_news`, and `get_sector_info`.
+  * `贵州茅台` still triggered other stock-specific tools with `600519.SH`, including `get_stock_news` and `get_sector_info`.
+* Why it matters: the current guard prevents the primary market-data provider call, but it does not yet prevent all provider calls based on an unconfirmed symbol intent.
+* Recommended next step: extend the feature-flagged guard to all stock-specific provider tools or add a per-run symbol-intent confirmation gate before any stock-specific provider tool executes.
+* Default-enable recommendation: not yet.
 
 ### 3. A-Share Data Source Enhancement
 

@@ -218,6 +218,103 @@ Guardrail result:
 * The report body still contained estimated or approximate market-fact phrasing, including estimated turnover and approximate percent-style statements.
 * MVP behavior is therefore working as designed: warning is appended, but the body is not rewritten yet.
 
+## 10. Web UI Pre-tool Symbol Guard Retest
+
+Date: 2026-07-08 10:06-10:09 local time.
+
+Scope: real Web UI retest with both symbol feature flags enabled for this local run only.
+
+Backend command:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+```
+
+Frontend command:
+
+```bash
+cd frontend
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Security status:
+
+* Services were bound only to `127.0.0.1`.
+* Shell tools remained disabled.
+* No remote access was exposed.
+* `agent/.env`, `agent/runs/`, and `agent/sessions/` were not committed.
+
+### 10.1 Retest Summary
+
+| Case | Session | Run ID | Result | Tool behavior |
+| -- | -- | -- | -- | -- |
+| `600519` | `66a8cff0a5b7` | `20260708_100611_10_dc3c41` | Completed with `Data Insufficient Report` | Allowed; `get_market_data` called `600519.SH`; `_symbol_normalization` and `_data_quality` present. |
+| `QQQ` | `541e9b698014` | `20260708_100748_61_145e43` | Completed normal report | Allowed; `get_market_data` called `QQQ.US`; `_symbol_normalization` and `_data_quality` present. |
+| `00700` | `4f38726ed856` | `20260708_100758_62_0f00eb` | Completed normal report | Allowed; `get_market_data` called `00700.HK`; `_symbol_normalization` and `_data_quality` present. |
+| `000001` | `634e6290c0ab` | `20260708_100809_64_c7f4c7` | Asked user to clarify `000001.SZ` vs `000001.SH` | `get_market_data` was blocked by `pre_tool_symbol_intent_guard`, but other tools still ran with `000001.SZ`. |
+| `贵州茅台` | `036be2933e75` | `20260708_100820_64_0082d9` | Asked user to confirm `600519.SH` | `get_market_data` was blocked by `pre_tool_symbol_intent_guard`, but other tools still ran with `600519.SH`. |
+| `600519.SH` | `ce1ed7471c1c` | `20260708_100832_19_f3a59b` | Completed with `Data Insufficient Report` | Explicit symbol was allowed; no false block. |
+
+### 10.2 Detailed Findings
+
+`600519`:
+
+* `get_market_data` was called with `600519.SH`.
+* `_symbol_normalization` recorded `600519.SH -> 600519.SH` because the Agent already converted the bare code before tool execution.
+* `_data_quality` showed `freshness_status=stale`, `latest_data_date=2026-07-07`, `provider=tencent`.
+* Final report was blocked by the time-sensitive report gate because the user asked about today and the latest market data was stale.
+
+`QQQ`:
+
+* `search_symbol` found `QQQ.US`.
+* `get_market_data` was called with `QQQ.US`.
+* `_data_quality` showed `freshness_status=stale`, `latest_data_date=2026-07-07`, `provider=yahoo`.
+* `get_stock_profile` still hit the known Yahoo TLS/profile failure, but the task completed through market data and news.
+
+`00700`:
+
+* `get_market_data` was called with `00700.HK`.
+* `_data_quality` showed `freshness_status=fresh`, `latest_data_date=2026-07-08`, `provider=yahoo`.
+* Source warning appeared for current-day daily-bar close: it may represent intraday last price, not official close.
+* The Agent also used web/read-url tools and attempted some unsupported HK research-report paths; this should be treated as a product-routing improvement candidate, not a symbol guard failure.
+
+`000001`:
+
+* `get_market_data` was blocked with `blocked_by=pre_tool_symbol_intent_guard`.
+* Guard reason: `ambiguous_000001_requires_confirmation`.
+* Final answer asked whether the user meant `000001.SZ` Ping An Bank or `000001.SH` Shanghai Composite.
+* Gap: non-market-data tools still ran with `000001.SZ`, including `get_fund_flow`, `get_stock_news`, and `get_sector_info`.
+
+`贵州茅台`:
+
+* `get_market_data` was blocked with `blocked_by=pre_tool_symbol_intent_guard`.
+* Guard reason: `chinese_name_requires_confirmation`.
+* Final answer asked the user to confirm `600519.SH`.
+* Gap: non-market-data tools still ran with `600519.SH`, including `get_stock_news` and `get_sector_info`.
+
+`600519.SH`:
+
+* Explicit symbol was allowed.
+* `get_market_data` returned `600519.SH` data with `_symbol_normalization` and `_data_quality`.
+* Final report was blocked by freshness gate because latest market data was `2026-07-07`, older than request date `2026-07-08`.
+
+### 10.3 Overall Judgment
+
+The Web UI retest is a partial pass:
+
+* Pass: feature flags are honored in the real Web UI path.
+* Pass: safe symbols are not incorrectly blocked.
+* Pass: explicit symbols are not incorrectly blocked.
+* Pass: `get_market_data` is protected against ambiguous `000001` and Chinese-name pre-normalization.
+* Gap: ambiguous/name-based prompts can still trigger non-market-data tools before user confirmation.
+
+Recommendation:
+
+* Do not default-enable the flags yet.
+* Next implementation should extend pre-tool symbol intent guard coverage to the other stock-specific tools, or apply the guard once per run before any stock-specific provider tool is allowed.
+
 Product conclusion:
 
 * The Phase 1 anti-hallucination MVP is active in the real Web UI final report path.

@@ -502,6 +502,51 @@ Validation:
 
 Not done yet:
 
-* Web UI retest.
 * Default-enable decision.
 * Expansion to `get_stock_news`, `get_fund_flow`, or other tools.
+
+## 15. Phase D Web UI Retest
+
+Date: 2026-07-08.
+
+Flags enabled for the local retest:
+
+```text
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1
+```
+
+Result: partial pass.
+
+What passed:
+
+* The guard is active in the real Web UI AgentLoop path.
+* Safe bare symbols were not falsely blocked:
+  * `600519` reached `get_market_data` as `600519.SH`.
+  * `QQQ` reached `get_market_data` as `QQQ.US`.
+  * `00700` reached `get_market_data` as `00700.HK`.
+* Explicit `600519.SH` was not falsely blocked.
+* Ambiguous `000001` produced `blocked_by=pre_tool_symbol_intent_guard` for `get_market_data`.
+* Chinese-name `贵州茅台` produced `blocked_by=pre_tool_symbol_intent_guard` for `get_market_data`.
+* Final answers for `000001` and `贵州茅台` asked for clarification or confirmation.
+
+What did not fully pass:
+
+* `000001` still triggered non-market-data stock tools with `000001.SZ`:
+  * `get_fund_flow`
+  * `get_stock_news`
+  * `get_sector_info`
+* `贵州茅台` still triggered non-market-data stock tools with `600519.SH`:
+  * `get_stock_news`
+  * `get_sector_info`
+
+Conclusion:
+
+The current MVP protects `get_market_data`, but it is not yet a full stock-symbol intent guard. It should remain disabled by default until ambiguous or name-based symbol intent can block all stock-specific provider tools before user confirmation.
+
+Recommended next implementation:
+
+* Keep `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0` by default.
+* Keep `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=0` by default.
+* Extend guard coverage to stock-specific tools, or introduce a per-run symbol intent state that blocks all stock-specific provider tools once clarification is required.
+* Retest the Web UI after that extension.

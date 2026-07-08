@@ -25,32 +25,61 @@ Highest principle:
 
 * LLM must not invent market data.
 
-## Current Recommended Order After Extended Guardrail MVP
+## Current Recommended Order After Web UI Pre-tool Guard Retest
 
-1. **Web UI bare-symbol retest with Symbol Normalizer enabled manually**
-   * Business value: verifies that `600519`, `QQQ`, and `00700` can work through the real Agent/Web UI path when `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`.
-   * Risk: consumes a small amount of LLM tokens and may expose prompt/tool-routing issues unrelated to the helper.
-   * Boundary: test only; do not enable the flag by default.
+1. **Extend Pre-tool Symbol Intent Guard beyond `get_market_data`**
+   * Business value: prevents ambiguous or Chinese-name prompts from reaching other stock-specific provider tools before user confirmation.
+   * Risk: broad guard coverage can accidentally block legitimate explicit symbols if rules are too aggressive.
+   * Boundary: continue feature-flagged behavior; do not default-enable yet.
 
-2. **Decide whether to default-enable Symbol Normalizer later**
-   * Business value: determines whether natural symbols should become normal product behavior.
-   * Risk: ambiguous symbols such as `000001` can still require confirmation.
-   * Boundary: decide from test evidence, not assumption.
+2. **Retest Web UI after full stock-tool guard coverage**
+   * Business value: verifies that `000001` and Chinese names do not trigger any stock-specific provider call before clarification.
+   * Risk: consumes LLM tokens and may expose unrelated tool-routing behavior.
+   * Boundary: localhost only; shell tools disabled.
 
-3. **Optional stricter No Estimate Guard**
+3. **Decide whether to default-enable Symbol Normalizer and Pre-tool Guard later**
+   * Business value: determines whether natural symbols can become normal product behavior.
+   * Risk: the current retest is only a partial pass because non-market-data tools still ran for ambiguous/name-based prompts.
+   * Boundary: decide from a full pass, not from the current partial pass.
+
+4. **Optional stricter No Estimate Guard**
    * Business value: prevents estimated market-fact phrases from remaining in the main report body when the user explicitly says no estimates.
    * Risk: automatic rewrite can overcorrect or remove useful context.
    * Boundary: design first; consider block/rewrite only for explicit no-estimate prompts.
 
-4. **`a-stock-data` adapter planning**
+5. **`a-stock-data` adapter planning**
    * Business value: prepares richer A-share data after guardrails exist.
    * Risk: adding data sources before contracts are complete can hide failures.
    * Boundary: planning first; no provider replacement.
 
-5. **Extend data quality to remaining A-share tools**
+6. **Extend data quality to remaining A-share tools**
    * Business value: brings northbound flow, margin trading, shareholder count, sector info, and financial statements into the same audit model.
    * Risk: each tool has a different date/error shape.
    * Boundary: continue additive `_data_quality` only.
+
+## Completed Phase 1 Validation: Web UI Pre-tool Symbol Guard Retest
+
+Status: completed on 2026-07-08.
+
+Flags used for this local run:
+
+* `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
+
+Result:
+
+* `600519`, `QQQ`, `00700`, and explicit `600519.SH` were not incorrectly blocked.
+* `get_market_data` was guarded correctly for `000001` and `贵州茅台`.
+* `000001` final answer asked the user to choose `000001.SZ` or `000001.SH`.
+* `贵州茅台` final answer asked the user to confirm `600519.SH`.
+* `_data_quality` remained present for allowed `get_market_data` calls.
+
+Important gap:
+
+* The guard currently covers `get_market_data` only.
+* In the Web UI retest, `000001` still triggered `get_fund_flow`, `get_stock_news`, and `get_sector_info` with `000001.SZ`.
+* `贵州茅台` still triggered `get_stock_news` and `get_sector_info` with `600519.SH`.
+* Therefore, the current status is partial pass, not enough to default-enable the feature flags.
 
 ## Completed Phase 1 Validation: Web UI Red-Light Prompt Retest
 
