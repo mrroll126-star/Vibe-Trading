@@ -295,3 +295,11 @@ Acceptance direction:
 * Require trace disclosure when the system selects a benchmark not typed by the user.
 * Keep single-stock prompts under strict symbol-intent rules.
 * Preserve `get_stock_news(scope=global)` market-wide exemption.
+
+Design status:
+
+Design document added: `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.
+
+Next engineering step:
+
+Implement a pure benchmark policy helper and tests only after user approval.

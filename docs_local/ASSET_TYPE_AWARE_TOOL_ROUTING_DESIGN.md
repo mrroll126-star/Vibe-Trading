@@ -438,3 +438,7 @@ The guard does not change provider chains, loaders, or Web UI code. It only deci
 Follow-up backlog:
 
 Add a Market-wide Benchmark Routing Policy so broad market prompts can safely use approved benchmark indices without being treated as silent symbol invention.
+
+Design status:
+
+`docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md` now defines the policy. Benchmark routing remains subject to Asset-type Routing Guard. For example, an A-share market-wide prompt may use `000001.SH` as a benchmark for market data, but a financial-statements tool call for `000001.SH` should still be blocked because the benchmark is an index, not a company.

@@ -756,3 +756,20 @@ VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=off
 Boundary:
 
 This default-on decision does not enable Symbol Normalizer. `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` remains default off because it automatically rewrites user input.
+
+## Market-wide Benchmark Routing Policy Dependency
+
+Date: 2026-07-08.
+
+Default-on Symbol Guard intentionally blocks untraceable tool symbols. For ordinary single-target prompts, that is the desired safety behavior.
+
+For explicit market-wide prompts, such as "A 股今天怎么样？", the Agent may need a small documented benchmark set, for example `000001.SH`, `399001.SZ`, `399006.SZ`, and `000300.SH`. These symbols are not user-specified targets; they are system-selected benchmarks.
+
+Design decision:
+
+* Do not loosen Symbol Guard globally.
+* Add a narrow future benchmark policy for explicit market-wide intent.
+* Require report disclosure that benchmark symbols are system-selected, not user-specified.
+* Keep ambiguous prompts such as "看看市场" under confirmation behavior.
+
+See `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.

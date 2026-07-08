@@ -250,3 +250,23 @@ Symbol Normalizer is different because it automatically rewrites user input, so 
 Next roadmap item:
 
 Design Market-wide Benchmark Routing Policy before adding new providers such as `a-stock-data`.
+
+## 2026-07-08 Market-wide Benchmark Routing Policy Design
+
+Completed:
+
+* Added `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.
+* Defined user-specified target intent, market-wide intent, and ambiguous intent.
+* Proposed MVP benchmark universe for A-share, US, and HK market-wide prompts.
+* Defined reporting requirement: Benchmark Selection Summary.
+* Confirmed this is a narrow exception, not a Symbol Guard bypass.
+
+Next roadmap item:
+
+Implement pure benchmark policy helper and tests after user approval.
+
+Still deferred:
+
+* `a-stock-data` adapter.
+* Provider-chain changes.
+* Web UI changes.

@@ -619,3 +619,14 @@ The following guards are now default-on because they restrict unsafe behavior ra
 Boundary:
 
 Do not default-enable Symbol Normalizer until there is a separate product decision and Web UI regression plan.
+
+## Relationship to Market-wide Benchmarks
+
+Date: 2026-07-08.
+
+Market-wide Benchmark Routing Policy is separate from Symbol Normalizer.
+
+* Symbol Normalizer rewrites user-entered symbols such as `QQQ -> QQQ.US`.
+* Benchmark Routing would allow a documented benchmark set only when the user asks an explicit market-wide question.
+
+Because Benchmark Routing chooses system benchmarks, it must disclose `system_selected_benchmark` in reports. This does not change the decision to keep Symbol Normalizer default off.

@@ -2046,3 +2046,47 @@ Boundary:
 * No `a-stock-data` integration.
 * No shell tools enabled.
 * No remote exposure.
+
+## 2026-07-08 Market-wide Benchmark Routing Policy Design
+
+Purpose:
+
+Design how explicit market-wide prompts can use documented benchmark symbols without disabling Symbol Guard.
+
+Read-only discovery:
+
+* `get_stock_news(scope=global)` is already allowed by Symbol Intent Guard when no symbol is supplied.
+* `get_stock_news(mode=global|market|all|sector)` and broad market-news query hints are also allowed when no symbol is supplied.
+* `get_sector_info(mode=ranking|list|overview)` is allowed without a symbol.
+* `get_market_data` can fetch multiple symbols in one call, but there is no benchmark policy exemption yet.
+* Current reports can show Data Source Summary, Missing Data, Source Warnings, and routing metadata; they do not yet show Benchmark Selection Summary.
+
+Documents added/updated:
+
+* Added `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.
+* Updated guard design, routing design, normalizer plan, roadmap, backlog, next tasks, worklog, and changelog.
+
+Commands executed:
+
+```bash
+pwd
+git branch --show-current
+git status --short
+git log --oneline -5
+git ls-files agent/.env agent/runs agent/sessions local_reports
+```
+
+Result:
+
+* Branch: `feature/bootstrap-local-setup`.
+* Working tree was clean before this documentation task.
+* Sensitive/runtime paths are not tracked by Git.
+
+Boundary:
+
+* Documentation-only task.
+* No tests were required because no business code changed.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.

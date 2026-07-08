@@ -578,3 +578,20 @@ Future re-enable conditions:
 
 4. **Keep `a-stock-data` adapter deferred**
    * Reason: new data-source integration should come after routing policy and source-quality guardrails remain stable under default-on safety guards.
+
+## Current Recommended Order After Market-wide Benchmark Policy Design
+
+1. **Implement pure benchmark policy + tests**
+   * Candidate module: `agent/src/symbols/benchmark_policy.py`.
+   * Scope: pure function only, no AgentLoop integration yet.
+   * Business value: allow audited market-wide benchmark calls without disabling Symbol Guard.
+
+2. **Then decide feature-flagged AgentLoop integration**
+   * Scope: apply only to explicit market-wide prompts and documented benchmark universe.
+   * Required metadata: `system_selected_benchmark`.
+
+3. **Keep `a-stock-data` adapter deferred**
+   * Reason: adding new A-share data before benchmark routing is explicit would multiply ambiguity.
+
+4. **Prepare GitHub fork / push strategy**
+   * Reason: the local branch now contains a meaningful Phase 1 safety baseline worth backing up after user approval.

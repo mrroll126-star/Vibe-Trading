@@ -1085,3 +1085,26 @@ Boundary:
 * No `a-stock-data` integration.
 * No shell tools enabled.
 * No remote service exposure.
+
+## 2026-07-08 Market-wide Benchmark Routing Policy Design
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Read current Symbol Intent Guard, Asset-type Routing Guard, AgentLoop guard order, market data helper, stock news tool, sector tool, and symbol search tool.
+3. Confirmed current market-wide exemptions:
+   * `get_stock_news(scope/mode=global|market|all|sector)` without symbol.
+   * `get_sector_info(mode=ranking|list|overview)` without symbol.
+4. Confirmed `get_market_data` supports multiple symbols but currently has no benchmark-specific exemption.
+5. Added `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.
+6. Updated docs_local roadmap, backlog, next tasks, and related guard design docs.
+
+Boundary:
+
+* Documentation-only task.
+* No business code changes.
+* No feature flag default changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.

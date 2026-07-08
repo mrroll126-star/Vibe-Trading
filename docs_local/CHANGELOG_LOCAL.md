@@ -980,6 +980,29 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ## 2026-07-08
 
+### Added
+
+* Design document: `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.
+* MVP benchmark universe proposal for A-share, US, and Hong Kong market-wide prompts.
+* Acceptance-test plan for future pure benchmark policy helper.
+
+### Updated
+
+* Pre-tool Symbol Guard design now points to benchmark policy as a narrow market-wide exception.
+* Asset-type Routing design now clarifies that benchmark calls still obey asset/tool compatibility.
+* Next tasks now prioritize pure benchmark policy tests before `a-stock-data`.
+
+### Boundary
+
+* Documentation only.
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+
+## 2026-07-08
+
 ### Changed
 
 * Enabled Pre-tool Symbol Intent Guard by default.
