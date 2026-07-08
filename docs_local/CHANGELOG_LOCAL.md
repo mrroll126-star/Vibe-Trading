@@ -976,6 +976,31 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No loader changes.
 * No Web UI code changes.
 * No `a-stock-data` integration.
+
+## 2026-07-08
+
+### Added
+
+* Feature flag `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY`.
+* Feature-flagged AgentLoop integration for market-wide benchmark policy.
+* `_benchmark_policy` metadata on allowed benchmark tool results.
+* Integration tests for allow / block / ask / flag-off behavior.
+
+### Validation
+
+* Benchmark policy tests passed with 39 tests.
+* Symbol regression tests passed with 87 tests.
+* Routing regression tests passed with 56 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* Default off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
 * No sensitive/runtime files committed.
 
 ## 2026-07-08

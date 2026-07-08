@@ -442,3 +442,7 @@ Add a Market-wide Benchmark Routing Policy so broad market prompts can safely us
 Design status:
 
 `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md` now defines the policy. Benchmark routing remains subject to Asset-type Routing Guard. For example, an A-share market-wide prompt may use `000001.SH` as a benchmark for market data, but a financial-statements tool call for `000001.SH` should still be blocked because the benchmark is an index, not a company.
+
+Implementation status:
+
+Feature-flagged benchmark policy integration now runs before Symbol Guard but still calls Asset-type Routing Guard before any provider call. This means an allowed benchmark market-data request can proceed, while company-specific benchmark misuse remains blocked.

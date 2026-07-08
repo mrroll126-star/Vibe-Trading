@@ -316,3 +316,7 @@ Remaining work:
 * Feature-flagged integration into Symbol Intent Guard.
 * Trace/report metadata for `system_selected_benchmark`.
 * Web UI retest after integration.
+
+Current status:
+
+Feature-flagged AgentLoop integration is complete. `_benchmark_policy` metadata is attached to allowed benchmark tool results. The next backlog item is Web UI retest; final report `Benchmark Selection Summary` is still future work.

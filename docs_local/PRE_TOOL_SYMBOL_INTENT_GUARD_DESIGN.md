@@ -773,3 +773,7 @@ Design decision:
 * Keep ambiguous prompts such as "看看市场" under confirmation behavior.
 
 See `docs_local/MARKET_WIDE_BENCHMARK_ROUTING_POLICY.md`.
+
+Implementation update:
+
+The benchmark policy is now feature-flagged in the AgentLoop pre-tool path. When enabled, it runs before the untraceable-symbol block rules, but only for explicit market-wide prompts and documented benchmark symbols. If the prompt is single-target or ambiguous, the normal Symbol Guard behavior still applies.

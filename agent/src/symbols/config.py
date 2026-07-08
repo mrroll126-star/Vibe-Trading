@@ -32,3 +32,10 @@ def is_asset_type_routing_guard_enabled() -> bool:
     if value is None:
         return True
     return value.strip().lower() not in _DISABLED_VALUES
+
+
+def is_market_wide_benchmark_policy_enabled() -> bool:
+    """Return whether market-wide benchmark policy integration is enabled."""
+
+    value = os.getenv("VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY", "")
+    return value.strip().lower() in _ENABLED_VALUES

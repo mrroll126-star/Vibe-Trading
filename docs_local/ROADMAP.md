@@ -291,3 +291,25 @@ Not changed:
 Next roadmap item:
 
 Feature-flagged integration into Symbol Intent Guard, only after user approval.
+
+## 2026-07-08 Feature-flagged Benchmark Policy Integration
+
+Completed:
+
+* Added `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY`.
+* Integrated benchmark policy into AgentLoop pre-tool guard path.
+* Preserved default-off behavior.
+* Added structured block / confirmation results.
+* Added `_benchmark_policy` metadata to allowed benchmark tool results.
+* Added integration tests.
+
+Not changed:
+
+* Provider chains.
+* Loaders.
+* Web UI.
+* `a-stock-data`.
+
+Next roadmap item:
+
+Targeted Web UI retest with the benchmark policy flag enabled.

@@ -1129,3 +1129,25 @@ Boundary:
 * No provider-chain or loader change.
 * No Web UI change.
 * No `a-stock-data` integration.
+
+## 2026-07-08 Feature-flagged Benchmark Policy Integration
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Added `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY`.
+3. Integrated benchmark policy into the shared AgentLoop pre-tool guard path.
+4. Preserved flag-off behavior.
+5. Added `_benchmark_policy` metadata to allowed provider results.
+6. Added structured block / confirmation results for benchmark policy denials.
+7. Added `agent/tests/test_benchmark_policy_integration.py`.
+8. Ran benchmark, symbol, routing, anti-hallucination, compile, and lightweight mock validations.
+
+Boundary:
+
+* Feature flag default off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* Web UI retest not run.

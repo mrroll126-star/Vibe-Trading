@@ -2171,3 +2171,88 @@ Boundary:
 * No loader changes.
 * No Web UI changes.
 * No `a-stock-data` integration.
+
+## 2026-07-08 Feature-flagged Market-wide Benchmark Policy Integration
+
+Purpose:
+
+Connect the pure benchmark policy to the AgentLoop pre-tool guard path behind a default-off feature flag.
+
+Feature flag:
+
+```bash
+VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=1
+```
+
+Default:
+
+Off.
+
+Commands executed:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_benchmark_policy agent.tests.test_benchmark_policy_integration
+```
+
+Result:
+
+* Passed.
+* 39 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 87 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration
+```
+
+Result:
+
+* Passed.
+* 56 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Lightweight mock validation:
+
+| Case | Provider called | Result |
+| --- | ---: | --- |
+| flag on + `A股今天怎么样` + `get_market_data(000001.SH)` | 1 | `allow_benchmark` + `_benchmark_policy` |
+| flag on + `A股今天怎么样` + `get_market_data(600519.SH)` | 0 | benchmark policy `block` |
+| flag on + `看看市场` + `get_market_data(000001.SH)` | 0 | benchmark policy `ask_for_confirmation` |
+| flag on + `贵州茅台今天怎么样` + `get_market_data(000001.SH)` | 0 | Symbol Guard `clarify` |
+| flag on + `A股今天怎么样` + `get_financial_statements(000001.SH)` | 0 | benchmark policy `block` |
+| flag off + `A股今天怎么样` + `get_market_data(000001.SH)` | 0 | existing Symbol Guard `block` |
+
+Boundary:
+
+* Feature flag default remains off.
+* Flag off preserves current Symbol Guard behavior.
+* Benchmark policy does not bypass Asset-type Routing Guard.
+* Benchmark policy does not bypass Data Freshness Guard.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* Web UI retest not run in this task.

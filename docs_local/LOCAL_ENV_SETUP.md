@@ -262,6 +262,7 @@ Current defaults:
 | Symbol Normalizer | `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` | off | Enable only for controlled bare-symbol tests |
 | Pre-tool Symbol Intent Guard | `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD` | on | Disable only for debugging a suspected false positive |
 | Asset-type Routing Guard | `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD` | on | Disable only for debugging a suspected false positive |
+| Market-wide Benchmark Policy | `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY` | off | Enable only for controlled market-wide benchmark retests |
 
 Normal local use:
 
@@ -286,6 +287,14 @@ To test Symbol Normalizer:
 ```bash
 VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
 ```
+
+To test Market-wide Benchmark Policy:
+
+```bash
+VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=1
+```
+
+This allows only documented benchmark symbols for explicit market-wide prompts. It does not allow arbitrary single-stock substitution.
 
 Security boundary:
 

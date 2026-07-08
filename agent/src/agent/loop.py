@@ -50,7 +50,12 @@ from src.providers.content_filter import (
     compute_content_filter_warnings,
 )
 from src.symbols import normalize_symbol
-from src.symbols.config import is_asset_type_routing_guard_enabled, is_pre_tool_symbol_guard_enabled
+from src.symbols.benchmark_policy import evaluate_market_wide_benchmark_intent
+from src.symbols.config import (
+    is_asset_type_routing_guard_enabled,
+    is_market_wide_benchmark_policy_enabled,
+    is_pre_tool_symbol_guard_enabled,
+)
 from src.symbols.intent_guard import STOCK_SYMBOL_GUARDED_TOOLS, evaluate_symbol_intent_guard
 from src.tools.background_tools import get_background_manager
 from src.tools.redaction import redact_payload
@@ -1230,6 +1235,7 @@ class AgentLoop:
         def _run(tc_args: tuple) -> tuple:
             tc, args = tc_args
             result, elapsed_ms = self._invoke_tool(tc.name, args)
+            result = self._append_benchmark_policy_result(tc.name, args, result)
             result = self._append_asset_type_routing_warning_result(tc.name, args, result)
             return tc, result, elapsed_ms
 
@@ -1280,16 +1286,71 @@ class AgentLoop:
             return
 
         result, elapsed_ms = self._invoke_tool(tc.name, args)
+        result = self._append_benchmark_policy_result(tc.name, args, result)
         result = self._append_asset_type_routing_warning_result(tc.name, args, result)
 
         self._finalize_tool_result(tc, result, elapsed_ms, context, messages, trace, react_trace, iteration)
 
     def _pre_tool_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
         """Apply pre-invocation guards shared by serial and parallel tool paths."""
+        benchmark_decision = self._market_wide_benchmark_policy_decision(tool_name, args)
+        if benchmark_decision is not None:
+            if benchmark_decision.get("decision") == "allow_benchmark":
+                return self._asset_type_routing_guard_result(tool_name, args)
+            return self._market_wide_benchmark_policy_result(tool_name, args, benchmark_decision)
+
         guard_result = self._pre_tool_symbol_guard_result(tool_name, args)
         if guard_result is not None:
             return guard_result
         return self._asset_type_routing_guard_result(tool_name, args)
+
+    def _market_wide_benchmark_policy_decision(self, tool_name: str, args: Dict[str, Any]) -> dict | None:
+        """Evaluate optional market-wide benchmark policy before Symbol Guard."""
+        if not is_market_wide_benchmark_policy_enabled():
+            return None
+        decision = evaluate_market_wide_benchmark_intent(
+            original_prompt=self._current_user_message,
+            tool_name=tool_name,
+            tool_args=args,
+        )
+        if decision.get("decision") in {"allow_benchmark", "block", "ask_for_confirmation"}:
+            return decision
+        return None
+
+    def _benchmark_policy_payload(self, decision: dict, args: Dict[str, Any] | None = None) -> dict:
+        """Build the public benchmark policy metadata payload."""
+        return {
+            "decision": decision.get("decision"),
+            "source": (decision.get("metadata") or {}).get("source", "system_selected_benchmark"),
+            "market": decision.get("market"),
+            "symbol": _first_tool_symbol(args or {}),
+            "benchmarks": decision.get("benchmarks") or [],
+            "reason": decision.get("reason"),
+            "warnings": decision.get("warnings") or [],
+        }
+
+    def _market_wide_benchmark_policy_result(self, tool_name: str, args: Dict[str, Any], decision: dict) -> str:
+        """Return a synthetic result for benchmark policy block/confirmation."""
+        message = (
+            "Benchmark Policy Requires Confirmation"
+            if decision.get("decision") == "ask_for_confirmation"
+            else "Benchmark Policy Blocked"
+        )
+        payload = {
+            "ok": False,
+            "status": "error",
+            "error_code": "market_wide_benchmark_policy",
+            "blocked_by": "market_wide_benchmark_policy",
+            "decision": decision.get("decision"),
+            "tool_name": tool_name,
+            "message": message,
+            "reason": decision.get("reason"),
+            "market": decision.get("market"),
+            "benchmarks": decision.get("benchmarks") or [],
+            "warnings": decision.get("warnings") or [],
+            "_benchmark_policy": self._benchmark_policy_payload(decision, args),
+        }
+        return json.dumps(payload, ensure_ascii=False)
 
     def _pre_tool_symbol_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
         """Return a synthetic tool result when symbol intent should block execution."""
@@ -1393,6 +1454,20 @@ class AgentLoop:
             "asset_type": decision.get("asset_type"),
             "warnings": decision.get("warnings") or [],
         }
+        return json.dumps(payload, ensure_ascii=False)
+
+    def _append_benchmark_policy_result(self, tool_name: str, args: Dict[str, Any], result: str) -> str:
+        """Attach benchmark policy metadata to allowed benchmark tool results."""
+        decision = self._market_wide_benchmark_policy_decision(tool_name, args)
+        if decision is None or decision.get("decision") != "allow_benchmark":
+            return result
+        try:
+            payload = json.loads(result)
+        except (TypeError, json.JSONDecodeError):
+            return result
+        if not isinstance(payload, dict):
+            return result
+        payload["_benchmark_policy"] = self._benchmark_policy_payload(decision, args)
         return json.dumps(payload, ensure_ascii=False)
 
     def _asset_type_routing_decision(self, tool_name: str, args: Dict[str, Any]) -> dict | None:

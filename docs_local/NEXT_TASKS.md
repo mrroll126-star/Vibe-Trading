@@ -608,3 +608,16 @@ Future re-enable conditions:
 
 3. **GitHub fork / push strategy**
    * Back up the Phase 1 guardrail baseline after user confirms remote setup.
+
+## Current Recommended Order After Feature-flagged Benchmark Integration
+
+1. **Web UI retest benchmark policy**
+   * Enable `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=1` locally.
+   * Verify A-share / US / HK market-wide prompts use only documented benchmarks.
+   * Verify non-benchmark stocks and ambiguous prompts are blocked or clarified.
+
+2. **a-stock-data adapter planning**
+   * Continue to defer until benchmark policy is retested in the real Web UI path.
+
+3. **GitHub fork / push strategy**
+   * Prepare remote backup after user confirms fork setup.

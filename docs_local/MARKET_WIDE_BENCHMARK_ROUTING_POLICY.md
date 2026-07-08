@@ -324,3 +324,29 @@ Boundary:
 Next:
 
 Only after user approval, consider feature-flagged integration inside or immediately before Symbol Intent Guard.
+
+## 14. Feature-flagged Integration Status
+
+Date: 2026-07-08.
+
+Implemented:
+
+* Feature flag: `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY`
+* Default: off
+* Integration point: AgentLoop pre-tool guard path, before Symbol Intent Guard and before Asset-type Routing Guard.
+* Allow behavior: benchmark universe symbols can pass Symbol Intent Guard for explicit market-wide prompts, then still run through Asset-type Routing Guard.
+* Block / ask behavior: provider is not called.
+* Metadata: allowed tool results receive `_benchmark_policy` with `source=system_selected_benchmark`.
+
+Boundaries:
+
+* Does not disable Symbol Guard.
+* Does not bypass Asset-type Routing Guard.
+* Does not bypass Data Freshness Guard.
+* Does not change provider chains or loaders.
+* Does not affect Web UI code.
+* Not Web UI retested yet.
+
+Next validation:
+
+Run a targeted Web UI retest with `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=1` after user approval.
