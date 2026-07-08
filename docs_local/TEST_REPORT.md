@@ -1668,3 +1668,31 @@ Known issues observed:
 Conclusion:
 
 The stock-specific symbol guard works in the real Web UI path for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`. Keep both feature flags off by default until the default-enable decision is made.
+
+## 2026-07-08 Asset-type-aware Tool Routing Read-only Investigation
+
+Purpose:
+
+Design the next routing layer after symbol intent guard. This was a read-only investigation plus documentation update.
+
+Commands / checks:
+
+* Confirmed branch and Git status.
+* Confirmed ignored sensitive/runtime paths:
+  * `agent/.env`
+  * `agent/runs`
+  * `agent/sessions`
+  * `local_reports`
+* Read tool files under `agent/src/tools`.
+* Read `agent/src/agent/loop.py`, `agent/src/agent/tools.py`, `agent/src/agent/context.py`.
+* Read `agent/src/symbols/normalizer.py`, `agent/src/symbols/config.py`, and `agent/src/symbols/intent_guard.py`.
+
+Investigation result:
+
+* Current tool selection is primarily LLM-driven.
+* Tool descriptions mention markets and use cases, but there is no structured `asset_type` compatibility metadata on `BaseTool`.
+* Symbol Normalizer can output `asset_type`.
+* AgentLoop does not currently choose or block tools based on `asset_type`.
+* `000001.SH` should be allowed for market data, but stock/company-specific tools require routing policy.
+
+No commands were run against live services. No tests were executed because this was a design-only round.

@@ -472,3 +472,26 @@ Future re-enable conditions:
 
 5. **Keep `a-stock-data` adapter deferred**
    * Reason: symbol identity, data freshness, and asset-type routing should be stable before adding new A-share providers.
+
+## Current Recommended Order After Asset-type Routing Design
+
+1. **Implement pure asset-type routing guard + tests**
+   * Scope: pure function only, no AgentLoop integration.
+   * Candidate module: `agent/src/tools/routing_guard.py`.
+   * Business value: prevent index / ETF prompts from reaching unsuitable stock-only tools.
+
+2. **Feature-flagged AgentLoop integration**
+   * Scope: run after symbol intent guard and before provider execution.
+   * Default: off until retested.
+   * Required result shape: structured Tool Routing Blocked / Warning metadata.
+
+3. **Retest Web UI for stock / ETF / index prompts**
+   * Test `600519.SH`, `000001.SH`, `510300.SH`, `QQQ.US`, and `00700.HK`.
+   * Confirm `Tool Routing Summary` appears when tools are blocked or warned.
+
+4. **Then decide default flags**
+   * Pre-tool Symbol Guard: candidate for default-on.
+   * Symbol Normalizer: keep feature-flagged until broader asset boundaries are stable.
+
+5. **Keep `a-stock-data` adapter deferred**
+   * Reason: a new data source should not be added before tool compatibility policy is explicit.

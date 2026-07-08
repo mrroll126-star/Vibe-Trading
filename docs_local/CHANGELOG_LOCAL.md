@@ -898,3 +898,14 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No provider-chain changes.
 * No default feature flag changes.
 * No sensitive files committed.
+
+### Added
+
+* `docs_local/ASSET_TYPE_AWARE_TOOL_ROUTING_DESIGN.md`
+
+### Updated
+
+* Documented that `000001.SH` exposes an index / stock-tool routing issue.
+* Clarified that Pre-tool Symbol Guard is a default-on candidate, but asset-type routing should be designed first.
+* Clarified that Symbol Normalizer should remain feature-flagged.
+* Kept `a-stock-data` downstream.

@@ -694,3 +694,14 @@ Default recommendation:
 
 * `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`: candidate for future default-on after final review.
 * `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`: keep feature-flagged until more asset-type and market boundary tests are complete.
+
+## Asset-type-aware Routing Dependency
+
+Boundary retest showed that `000001.SH` is an explicit, traceable symbol and should not be blocked by symbol intent rules. The remaining issue is different: `000001.SH` is an index, while some tools are stock-specific or require a symbol-bearing membership query.
+
+Conclusion:
+
+* Pre-tool Symbol Intent Guard answers: "Is this tool symbol traceable to the user's prompt?"
+* Asset-type-aware Tool Routing should answer: "Is this tool suitable for this asset type?"
+
+Before enabling the symbol guard by default, design and review asset-type-aware routing so explicit index and ETF prompts do not flow into unsuitable stock-only tools.

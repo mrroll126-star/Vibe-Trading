@@ -575,3 +575,20 @@ Confirmed:
 Still pending before default-enable:
 
 * Boundary Web UI retest for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
+## Dependency: Asset-type-aware Tool Routing
+
+The normalizer can improve input ergonomics, but it can also make wrong-tool routing easier if downstream tools do not understand asset type.
+
+Example:
+
+* `000001.SH` is an explicit index.
+* `get_market_data` is appropriate.
+* Company/stock-specific tools such as financial statements, shareholder count, and sector membership are not automatically appropriate.
+
+Therefore, broader normalizer rollout should wait for an asset-type-aware routing guard design. The recommended future order is:
+
+1. Keep current feature flags off by default.
+2. Implement pure asset-type routing guard and tests.
+3. Add feature-flagged AgentLoop integration.
+4. Retest Web UI for stock / ETF / index prompts.
+5. Revisit whether Symbol Normalizer can become default-on.

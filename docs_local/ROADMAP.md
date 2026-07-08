@@ -152,3 +152,18 @@ Default-enable decision:
 
 * Pre-tool Symbol Guard: candidate for default-on after user approval.
 * Symbol Normalizer: keep feature-flagged for now.
+
+## 2026-07-08 Asset-type-aware Routing Design
+
+Completed:
+
+* Read-only tool compatibility investigation.
+* Added `docs_local/ASSET_TYPE_AWARE_TOOL_ROUTING_DESIGN.md`.
+* Defined MVP asset types: stock, index, ETF, fund, unknown.
+* Drafted compatibility matrix for market data, stock-specific, disclosure, flow, and web tools.
+* Defined proposed future pure function `evaluate_tool_asset_compatibility`.
+
+Phase 1 priority update:
+
+* Asset-type-aware routing should come before default-enabling Symbol Normalizer / Pre-tool Symbol Guard.
+* `a-stock-data` remains downstream.

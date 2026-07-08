@@ -519,3 +519,19 @@ Implementation update:
 * The guard does not cover `web_search`, `read_url`, `search_symbol`, or `read_document`.
 * Symbol Normalizer and Pre-tool Guard should still remain disabled by default until Web UI retesting proves the full flow works for `000001`, Chinese names, and safe bare symbols.
 * `a-stock-data` remains deferred.
+## Asset-type Routing Dependency
+
+The Symbol Normalizer already returns `asset_type` for many common cases, including:
+
+* A-share stocks such as `600519.SH`.
+* A-share ETFs such as `510300.SH` and `159915.SZ`.
+* US ETFs currently recognized by rule, such as `QQQ.US` and `SPY.US`.
+* HK stocks such as `00700.HK`.
+
+However, normalizing a symbol is not the same as deciding which tools are appropriate. The next design layer is `Asset-type-aware Tool Routing`, which should consume `market` and `asset_type` before allowing stock-specific tools.
+
+Current default recommendation:
+
+* Keep `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` off by default.
+* Use it in local tests and controlled workflows.
+* Do not default-enable it until asset-type routing has an implementation plan and Web UI retest.

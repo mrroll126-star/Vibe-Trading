@@ -212,3 +212,19 @@ Yes. Likely requires tool routing or tool metadata changes so the Agent can dist
 Current handling:
 
 Record only. Do not fix in this retest round.
+
+Design status:
+
+Initial design added in `docs_local/ASSET_TYPE_AWARE_TOOL_ROUTING_DESIGN.md`.
+
+Proposed MVP tools:
+
+* `get_sector_info`
+* `get_financial_statements`
+* `get_shareholder_count`
+* `get_margin_trading`
+* `get_block_trades`
+
+Decision:
+
+This should be handled before default-enabling Symbol Normalizer or Pre-tool Symbol Guard.

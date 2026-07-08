@@ -931,3 +931,27 @@ Boundary:
 * No `a-stock-data` integration.
 * No default feature flag changes.
 * No sensitive files committed.
+
+## 2026-07-08 Asset-type-aware Tool Routing Design
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Read current tool implementations and AgentLoop routing path.
+3. Verified that current tools expose descriptions and parameter schemas, but not structured asset-type compatibility metadata.
+4. Confirmed Symbol Normalizer can output `asset_type`, but AgentLoop does not yet consume it for tool routing.
+5. Added `docs_local/ASSET_TYPE_AWARE_TOOL_ROUTING_DESIGN.md`.
+6. Updated docs_local roadmap, backlog, next tasks, symbol guard, normalizer, and test records.
+
+Key conclusion:
+
+`000001.SH` is not primarily a symbol intent failure. It is an asset-type routing problem: an explicit index can be valid for market data while still being unsuitable for stock-only tools.
+
+Boundary:
+
+* Documentation-only design task.
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
