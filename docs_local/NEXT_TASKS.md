@@ -370,3 +370,16 @@ Future re-enable conditions:
 
 4. **Keep `a-stock-data` deferred**
    * Reason: new data sources should come after symbol identity is auditable.
+
+## Current Recommended Order After AgentLoop Guard Integration
+
+1. **Web UI retest pre-tool guard**
+   * Enable `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`.
+   * Test `000001`, `贵州茅台`, `600519`, `QQQ`, and `00700`.
+
+2. **Default-enable decision**
+   * Decide whether the pre-tool guard and/or Symbol Normalizer can be enabled by default.
+   * Current recommendation: keep defaults off until Web UI retest passes.
+
+3. **`a-stock-data` adapter planning**
+   * Still deferred until symbol identity and freshness contracts are stable.

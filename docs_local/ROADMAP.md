@@ -109,13 +109,17 @@ Pre-tool Symbol Intent Guard update:
 
 * Design is complete.
 * Pure guard function with tests is complete.
-* AgentLoop integration should be feature-flagged and limited to `get_market_data`.
+* AgentLoop integration is feature-flagged and limited to `get_market_data`.
+* Feature flag: `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`.
+* Default: off.
+* Web UI retest is still pending.
 * `a-stock-data` remains deferred until symbol identity and data quality are auditable.
 
 Current implementation files:
 
 * `agent/src/symbols/intent_guard.py`
 * `agent/tests/test_symbol_intent_guard.py`
+* `agent/tests/test_symbol_intent_guard_integration.py`
 
 See:
 

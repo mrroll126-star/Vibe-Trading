@@ -1337,3 +1337,54 @@ Boundary:
 * No Web UI behavior change.
 * No provider-chain change.
 * No `a-stock-data` integration.
+
+## 27. Feature-flagged AgentLoop Pre-tool Symbol Guard
+
+Date: 2026-07-08.
+
+Scope:
+
+* Integrate pure guard into AgentLoop.
+* Guard only `get_market_data`.
+* Keep feature flag off by default.
+* Do not modify provider chains, loaders, Web UI, or `a-stock-data`.
+
+Feature flag:
+
+```text
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1
+```
+
+Validation commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_intent_guard_integration
+
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard
+
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Results:
+
+| Check | Result |
+| -- | -- |
+| AgentLoop guard integration tests | Passed, 10 tests. |
+| Symbol-related tests | Passed, 43 tests. |
+| Anti-hallucination regression tests | Passed, 46 tests. |
+| Compile check | Passed. |
+
+Lightweight validation:
+
+| Case | Decision | Provider called |
+| -- | -- | -- |
+| flag on + `000001 -> 000001.SZ` | clarify | no |
+| flag on + `贵州茅台 -> 600519.SH` | clarify | no |
+| flag on + `600519 -> 600519.SH` | allow | yes |
+| flag off + `000001 -> 000001.SZ` | allow existing path | yes |
+
+Web UI retest:
+
+* Not run in this round.

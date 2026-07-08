@@ -463,3 +463,45 @@ Next phase:
 * Feature-flagged AgentLoop integration for `get_market_data` only.
 * Use `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`.
 * Keep the flag off by default.
+
+## 14. Phase C Feature-flagged AgentLoop Integration
+
+Date: 2026-07-08.
+
+Implemented:
+
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`
+* `is_pre_tool_symbol_guard_enabled()`
+* AgentLoop pre-tool guard check before `get_market_data` provider execution
+* Synthetic tool result for `clarify` / `block`
+
+Scope:
+
+* Feature flag default is off.
+* Only `get_market_data` is covered.
+* Flag-off behavior preserves the existing execution path.
+* `clarify` / `block` does not call `_invoke_tool`, `ToolRegistry.execute`, loaders, or provider chains.
+* Non-`get_market_data` tools are not intercepted.
+
+Synthetic result shape includes:
+
+* `ok: false`
+* `status: error`
+* `blocked_by: pre_tool_symbol_intent_guard`
+* `decision`
+* `message`
+* `reason`
+* `matched_rule`
+* `_symbol_intent_guard`
+
+Validation:
+
+* Unit tests confirm flag-off zero-intercept behavior.
+* Unit tests confirm flag-on allow / clarify / block behavior.
+* Lightweight direct validation confirmed provider-call count is `0` for `000001` and `贵州茅台` when the flag is on.
+
+Not done yet:
+
+* Web UI retest.
+* Default-enable decision.
+* Expansion to `get_stock_news`, `get_fund_flow`, or other tools.

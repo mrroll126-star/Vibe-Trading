@@ -751,3 +751,35 @@ Boundary:
 * No provider-chain changes.
 * No Web UI behavior changes.
 * No `a-stock-data` integration.
+
+## 2026-07-08 Feature-flagged AgentLoop Pre-tool Symbol Guard
+
+User approved the second implementation step for Pre-tool Symbol Intent Guard.
+
+Actions performed:
+
+1. Confirmed branch, clean status, and ignored secret/runtime paths.
+2. Re-read AgentLoop tool execution path.
+3. Added `is_pre_tool_symbol_guard_enabled()` for `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`.
+4. Integrated the guard into AgentLoop before `_invoke_tool`.
+5. Kept the feature flag off by default.
+6. Limited interception to `get_market_data`.
+7. Added `agent/tests/test_symbol_intent_guard_integration.py`.
+8. Ran requested unit tests, regression tests, compile check, and lightweight mock validation.
+9. Updated docs_local records.
+
+Key behavior:
+
+* Flag off: existing path runs; provider is called.
+* Flag on + safe symbol: provider is called.
+* Flag on + `000001`: synthetic clarification result; provider is not called.
+* Flag on + Chinese name: synthetic clarification result; provider is not called.
+* Flag on + mismatch/no-symbol prompt: synthetic block result; provider is not called.
+
+Boundary:
+
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* Web UI retest not run yet.

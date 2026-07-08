@@ -509,5 +509,6 @@ Implementation update:
 
 * Pure guard function is implemented in `agent/src/symbols/intent_guard.py`.
 * Unit tests are implemented in `agent/tests/test_symbol_intent_guard.py`.
-* It is not connected to AgentLoop or Web UI yet.
-* Symbol Normalizer should still remain disabled by default until the pre-tool guard is feature-flagged into `get_market_data` and Web UI retested.
+* It is now feature-flagged into AgentLoop for `get_market_data` only.
+* The flag is `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`, and it is off by default.
+* Symbol Normalizer should still remain disabled by default until Web UI retesting proves the full flow works for `000001`, Chinese names, and safe bare symbols.

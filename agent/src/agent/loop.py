@@ -49,6 +49,8 @@ from src.providers.content_filter import (
     MAX_CONSECUTIVE_CONTENT_FILTER_SKIPS,
     compute_content_filter_warnings,
 )
+from src.symbols.config import is_pre_tool_symbol_guard_enabled
+from src.symbols.intent_guard import evaluate_symbol_intent_guard
 from src.tools.background_tools import get_background_manager
 from src.tools.redaction import redact_payload
 
@@ -513,6 +515,7 @@ class AgentLoop:
         self._persistent_memory = persistent_memory
         self._run_iteration: int = 0
         self._data_quality: dict[str, Any] = {}
+        self._current_user_message: str = ""
 
     def cancel(self) -> None:
         """Cancel the current loop.
@@ -539,6 +542,7 @@ class AgentLoop:
         self._called_ok = set()
         self._previous_summary = ""
         self._data_quality = {}
+        self._current_user_message = user_message
 
         state_store = RunStateStore()
         RUNS_DIR.mkdir(parents=True, exist_ok=True)
@@ -1165,7 +1169,14 @@ class AgentLoop:
             event_args = {k: str(v)[:200] for k, v in redacted_args.items()}
             self._emit("tool_call", {"tool": tc.name, "arguments": event_args, "iter": iteration})
             trace.write({"type": "tool_call", "iter": iteration, "tool": tc.name, "call_id": tc.id, "args": redacted_args})
+            guard_result = self._pre_tool_symbol_guard_result(tc.name, args)
+            if guard_result is not None:
+                self._finalize_tool_result(tc, guard_result, 0, context, messages, trace, react_trace, iteration)
+                continue
             runnable.append((tc, args))
+
+        if not runnable:
+            return
 
         # Execute in parallel — each worker gets its own heartbeat + progress emitter.
         def _run(tc_args: tuple) -> tuple:
@@ -1214,9 +1225,57 @@ class AgentLoop:
         trace.write({"type": "tool_call", "iter": iteration, "tool": tc.name, "call_id": tc.id, "args": redacted_args})
         logger.info(f"Tool call: {tc.name}({list(args.keys())})")
 
+        guard_result = self._pre_tool_symbol_guard_result(tc.name, args)
+        if guard_result is not None:
+            self._finalize_tool_result(tc, guard_result, 0, context, messages, trace, react_trace, iteration)
+            return
+
         result, elapsed_ms = self._invoke_tool(tc.name, args)
 
         self._finalize_tool_result(tc, result, elapsed_ms, context, messages, trace, react_trace, iteration)
+
+    def _pre_tool_symbol_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
+        """Return a synthetic tool result when symbol intent should block execution."""
+        if not is_pre_tool_symbol_guard_enabled() or tool_name != "get_market_data":
+            return None
+
+        decision = evaluate_symbol_intent_guard(
+            original_prompt=self._current_user_message,
+            tool_name=tool_name,
+            tool_args=args,
+        )
+        if decision.get("decision") == "allow":
+            return None
+
+        message = (
+            "Symbol Clarification Required"
+            if decision.get("decision") == "clarify"
+            else "Symbol Intent Blocked"
+        )
+        payload = {
+            "ok": False,
+            "status": "error",
+            "error_code": "pre_tool_symbol_intent_guard",
+            "blocked_by": "pre_tool_symbol_intent_guard",
+            "decision": decision.get("decision"),
+            "tool_name": tool_name,
+            "message": message,
+            "reason": decision.get("reason"),
+            "matched_rule": decision.get("matched_rule"),
+            "tool_symbol": decision.get("tool_symbol"),
+            "raw_symbol_candidates": decision.get("raw_symbol_candidates") or [],
+            "warnings": decision.get("warnings") or [],
+            "_symbol_intent_guard": {
+                "decision": decision.get("decision"),
+                "reason": decision.get("reason"),
+                "matched_rule": decision.get("matched_rule"),
+                "tool_symbol": decision.get("tool_symbol"),
+                "raw_symbol_candidates": decision.get("raw_symbol_candidates") or [],
+                "warnings": decision.get("warnings") or [],
+                "details": decision.get("details") or [],
+            },
+        }
+        return json.dumps(payload, ensure_ascii=False)
 
     def _invoke_tool(self, tool_name: str, args: Dict[str, Any]) -> tuple[str, int]:
         """Execute a tool with heartbeat + structured progress emission.

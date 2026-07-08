@@ -729,3 +729,44 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No service startup.
 - No `a-stock-data` integration.
 - No sensitive or runtime files committed.
+
+## 2026-07-08 Feature-flagged AgentLoop Pre-tool Symbol Guard
+
+### Added
+
+- Added `is_pre_tool_symbol_guard_enabled()` in `agent/src/symbols/config.py`.
+- Added `agent/tests/test_symbol_intent_guard_integration.py`.
+
+### Updated
+
+- Updated `agent/src/agent/loop.py`.
+- Updated `agent/src/agent/context.py`.
+- Updated `docs_local/PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md`.
+- Updated `docs_local/SYMBOL_NORMALIZATION_DESIGN.md`.
+- Updated `docs_local/SYMBOL_NORMALIZER_INTEGRATION_PLAN.md`.
+- Updated `docs_local/TEST_REPORT.md`.
+- Updated `docs_local/CODEX_WORKLOG.md`.
+- Updated `docs_local/CHANGELOG_LOCAL.md`.
+- Updated `docs_local/NEXT_TASKS.md`.
+- Updated `docs_local/PRODUCT_BACKLOG.md`.
+- Updated `docs_local/ROADMAP.md`.
+
+### Validation
+
+- AgentLoop guard integration tests passed with 10 tests.
+- Symbol-related tests passed with 43 tests.
+- Anti-hallucination regression tests passed with 46 tests.
+- Compile check passed.
+- Lightweight mock validation passed.
+
+### Boundary
+
+- Feature flag default is off.
+- Only `get_market_data` is guarded.
+- Guarded `clarify` / `block` does not call providers.
+- No provider-chain changes.
+- No loader changes.
+- No Web UI code changes.
+- No service startup.
+- No `a-stock-data` integration.
+- No sensitive or runtime files committed.

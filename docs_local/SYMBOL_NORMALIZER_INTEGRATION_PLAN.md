@@ -492,3 +492,27 @@ Next recommended implementation:
 2. Call the pure guard before `get_market_data` execution in AgentLoop.
 3. If decision is `clarify` or `block`, return a synthetic tool result instead of calling the provider.
 4. Retest Web UI with `000001`, `贵州茅台`, `600519`, `QQQ`, and `00700`.
+
+## 15. Feature-flagged AgentLoop Guard Integration
+
+Date: 2026-07-08.
+
+Implemented:
+
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`
+* AgentLoop integration before `_invoke_tool`
+* Synthetic tool result for `clarify` / `block`
+
+Boundary:
+
+* Default off.
+* Only `get_market_data`.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+
+Next required validation:
+
+* Web UI retest with the flag enabled.
+* Do not default-enable Symbol Normalizer until the Web UI retest passes.

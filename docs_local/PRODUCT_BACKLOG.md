@@ -118,6 +118,7 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Recommended next step: implement pure `evaluate_symbol_intent_guard(...)` plus tests before any AgentLoop integration.
 * Current implementation status: pure function and tests are complete; AgentLoop integration is not started.
 * Implementation files: `agent/src/symbols/intent_guard.py`, `agent/tests/test_symbol_intent_guard.py`.
+* AgentLoop integration status: feature-flagged integration complete for `get_market_data`; Web UI retest pending.
 
 ### 3. A-Share Data Source Enhancement
 
