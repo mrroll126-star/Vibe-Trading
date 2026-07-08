@@ -2256,3 +2256,85 @@ Boundary:
 * No Web UI changes.
 * No `a-stock-data` integration.
 * Web UI retest not run in this task.
+
+## 2026-07-08 Benchmark Batch Handling Fix
+
+Goal:
+
+Fix the A-share market-wide benchmark batch issue found in the Web UI/API same-origin retest. The failing case mixed valid MVP benchmarks with `000688.SH`, which is outside the current benchmark universe.
+
+Root cause:
+
+* Batch symbols were not disclosed with separate `requested_symbols`, `allowed_symbols`, and `rejected_symbols`.
+* AgentLoop public metadata showed only the first tool symbol, so the block appeared to point at `000001.SH` even though the actual rejected symbol was `000688.SH`.
+
+Fix:
+
+* `agent/src/symbols/benchmark_policy.py` now canonicalizes batch symbols and validates each symbol against the benchmark universe.
+* `agent/src/agent/loop.py` now exposes `requested_symbols`, `allowed_symbols`, `rejected_symbols`, and `benchmark_universe` in `_benchmark_policy`.
+* Mixed batches are blocked as a whole; rejected symbols are not silently filtered out.
+
+Commands run:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_benchmark_policy agent.tests.test_benchmark_policy_integration
+```
+
+Result:
+
+* Passed.
+* 51 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 87 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration
+```
+
+Result:
+
+* Passed.
+* 56 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Lightweight mock validation:
+
+| Case | Provider called | Decision | Disclosure |
+| --- | ---: | --- | --- |
+| A-share all benchmark batch | 1 | `allow_benchmark` | `allowed_symbols=[000001.SH,399001.SZ,399006.SZ,000300.SH]` |
+| A-share mixed batch | 0 | `block` | `allowed_symbols=[000001.SH,399001.SZ]`, `rejected_symbols=[000688.SH]` |
+| US all benchmark batch | 1 | `allow_benchmark` | bare `SPY,QQQ,DIA` canonicalized to `.US` |
+| US mixed batch | 0 | `block` | `allowed_symbols=[SPY.US]`, `rejected_symbols=[AAPL.US]` |
+| Flag off A-share mixed batch | 0 | existing Symbol Guard behavior | no `_benchmark_policy` |
+
+Boundary:
+
+* Feature flag remains default off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* Web UI retest after this fix was not run.

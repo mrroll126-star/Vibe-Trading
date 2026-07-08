@@ -611,13 +611,18 @@ Future re-enable conditions:
 
 ## Current Recommended Order After Feature-flagged Benchmark Integration
 
-1. **Web UI retest benchmark policy**
+1. **Web UI/API same-origin retest for fixed benchmark batches**
    * Enable `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=1` locally.
-   * Verify A-share / US / HK market-wide prompts use only documented benchmarks.
-   * Verify non-benchmark stocks and ambiguous prompts are blocked or clarified.
+   * Re-test the A-share market-wide prompt that previously requested `000688.SH` with valid benchmarks.
+   * Confirm mixed batches now disclose `rejected_symbols` accurately and do not call providers.
+   * Confirm all-benchmark A-share batches can proceed.
 
-2. **a-stock-data adapter planning**
-   * Continue to defer until benchmark policy is retested in the real Web UI path.
+2. **Decide whether benchmark policy remains experimental**
+   * Current recommendation: keep default off until at least one more Web UI/API same-origin retest passes.
+   * Reason: benchmark policy allows system-selected market proxies, which is product behavior, not only a safety brake.
 
-3. **GitHub fork / push strategy**
+3. **a-stock-data adapter planning**
+   * Continue to defer until benchmark policy is retested after the batch fix.
+
+4. **GitHub fork / push strategy**
    * Prepare remote backup after user confirms fork setup.

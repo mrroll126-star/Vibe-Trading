@@ -1151,3 +1151,26 @@ Boundary:
 * No Web UI changes.
 * No `a-stock-data` integration.
 * Web UI retest not run.
+
+## 2026-07-08 Benchmark Batch Handling Fix
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Investigated the A-share Web UI/API same-origin retest failure.
+3. Identified that `get_market_data` receives benchmark batches as `codes=[...]`.
+4. Confirmed the failing batch contained valid benchmarks plus `000688.SH`, which is outside the MVP universe.
+5. Updated pure benchmark policy batch validation.
+6. Added metadata for `requested_symbols`, `allowed_symbols`, `rejected_symbols`, and `benchmark_universe`.
+7. Updated AgentLoop `_benchmark_policy` disclosure so blocks do not incorrectly point at the first valid symbol.
+8. Added pure and integration tests for A-share, US, HK, mixed batches, comma-separated input, and flag-off behavior.
+9. Ran benchmark, symbol, routing, anti-hallucination, compile, and lightweight mock validations.
+
+Boundary:
+
+* Feature flag remains default off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* No Web UI retest after this fix.

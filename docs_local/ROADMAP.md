@@ -313,3 +313,20 @@ Not changed:
 Next roadmap item:
 
 Targeted Web UI retest with the benchmark policy flag enabled.
+
+## 2026-07-08 Benchmark Batch Handling Fix
+
+Completed:
+
+* Fixed benchmark policy batch validation.
+* Added clear disclosure of `requested_symbols`, `allowed_symbols`, `rejected_symbols`, and `benchmark_universe`.
+* Preserved conservative behavior: if any requested symbol is outside the approved universe, the whole batch is blocked.
+* Added tests for A-share, US, HK, mixed batches, comma-separated strings, and flag-off behavior.
+
+Still default off:
+
+* `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY`
+
+Next roadmap item:
+
+Run targeted Web UI/API same-origin retest for A-share benchmark batches before considering any broader rollout.

@@ -133,7 +133,85 @@ class BenchmarkPolicyTests(unittest.TestCase):
         self.assertDecision(result, "allow_benchmark", "cn")
         self.assertEqual(self._symbols(result), {"399001.SZ"})
 
+    def test_a_share_market_allows_all_benchmark_batch(self) -> None:
+        result = self._policy(
+            "A股今天怎么样",
+            "get_market_data",
+            {"symbols": ["000001.SH", "399001.SZ", "399006.SZ", "000300.SH"]},
+        )
+        self.assertDecision(result, "allow_benchmark", "cn")
+        self.assertEqual(
+            result["metadata"]["requested_symbols"],
+            ["000001.SH", "399001.SZ", "399006.SZ", "000300.SH"],
+        )
+        self.assertEqual(
+            result["metadata"]["allowed_symbols"],
+            ["000001.SH", "399001.SZ", "399006.SZ", "000300.SH"],
+        )
+        self.assertEqual(result["metadata"]["rejected_symbols"], [])
+
+    def test_a_share_market_blocks_mixed_benchmark_batch(self) -> None:
+        result = self._policy(
+            "A股今天怎么样",
+            "get_market_data",
+            {"symbols": ["000001.SH", "399001.SZ", "000688.SH"]},
+        )
+        self.assertDecision(result, "block", "cn")
+        self.assertEqual(result["reason"], "tool_symbol_not_in_benchmark_universe")
+        self.assertEqual(result["metadata"]["requested_symbols"], ["000001.SH", "399001.SZ", "000688.SH"])
+        self.assertEqual(result["metadata"]["allowed_symbols"], ["000001.SH", "399001.SZ"])
+        self.assertEqual(result["metadata"]["rejected_symbols"], ["000688.SH"])
+        self.assertIn("000300.SH", result["metadata"]["benchmark_universe"])
+
+    def test_a_share_market_blocks_comma_separated_mixed_batch(self) -> None:
+        result = self._policy(
+            "A股今天怎么样",
+            "get_market_data",
+            {"symbols": "000001.SH,399001.SZ,000688.SH"},
+        )
+        self.assertDecision(result, "block", "cn")
+        self.assertEqual(result["metadata"]["rejected_symbols"], ["000688.SH"])
+        self.assertEqual(result["metadata"]["allowed_symbols"], ["000001.SH", "399001.SZ"])
+
+    def test_us_market_allows_bare_benchmark_batch(self) -> None:
+        result = self._policy(
+            "美股今天怎么样",
+            "get_market_data",
+            {"tickers": ["SPY", "QQQ", "DIA"]},
+        )
+        self.assertDecision(result, "allow_benchmark", "us")
+        self.assertEqual(result["metadata"]["requested_symbols"], ["SPY.US", "QQQ.US", "DIA.US"])
+        self.assertEqual(result["metadata"]["allowed_symbols"], ["SPY.US", "QQQ.US", "DIA.US"])
+
+    def test_us_market_blocks_bare_mixed_batch(self) -> None:
+        result = self._policy(
+            "美股今天怎么样",
+            "get_market_data",
+            {"symbols": ["SPY", "AAPL"]},
+        )
+        self.assertDecision(result, "block", "us")
+        self.assertEqual(result["metadata"]["allowed_symbols"], ["SPY.US"])
+        self.assertEqual(result["metadata"]["rejected_symbols"], ["AAPL.US"])
+
+    def test_hk_market_allows_benchmark_batch(self) -> None:
+        result = self._policy(
+            "港股今天怎么样",
+            "get_market_data",
+            {"codes": ["02800.HK", "03033.HK"]},
+        )
+        self.assertDecision(result, "allow_benchmark", "hk")
+        self.assertEqual(result["metadata"]["allowed_symbols"], ["02800.HK", "03033.HK"])
+
+    def test_hk_market_blocks_mixed_batch(self) -> None:
+        result = self._policy(
+            "港股今天怎么样",
+            "get_market_data",
+            {"codes": ["02800.HK", "00700.HK"]},
+        )
+        self.assertDecision(result, "block", "hk")
+        self.assertEqual(result["metadata"]["allowed_symbols"], ["02800.HK"])
+        self.assertEqual(result["metadata"]["rejected_symbols"], ["00700.HK"])
+
 
 if __name__ == "__main__":
     unittest.main()
-

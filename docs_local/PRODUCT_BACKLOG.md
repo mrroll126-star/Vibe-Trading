@@ -320,3 +320,19 @@ Remaining work:
 Current status:
 
 Feature-flagged AgentLoop integration is complete. `_benchmark_policy` metadata is attached to allowed benchmark tool results. The next backlog item is Web UI retest; final report `Benchmark Selection Summary` is still future work.
+
+Batch fix status:
+
+* Web UI/API same-origin retest found an A-share batch issue: `000688.SH` appeared in a batch with valid benchmarks.
+* The fix now blocks mixed batches as a whole and discloses:
+  * `requested_symbols`
+  * `allowed_symbols`
+  * `rejected_symbols`
+  * `benchmark_universe`
+* `000688.SH` is correctly reported as rejected; valid benchmarks such as `000001.SH` are no longer implied as the rejection cause.
+
+Remaining work:
+
+* Re-run targeted Web UI/API same-origin retest after this fix.
+* Keep benchmark policy default off until the retest passes.
+* Add final report `Benchmark Selection Summary` only after runtime behavior is stable.

@@ -350,3 +350,45 @@ Boundaries:
 Next validation:
 
 Run a targeted Web UI retest with `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=1` after user approval.
+
+## 15. Batch Handling Fix Status
+
+Date: 2026-07-08.
+
+Reason for fix:
+
+* Web UI/API same-origin retest showed US, HK, ambiguous-market, and single-target paths mostly behaved as expected.
+* A-share market-wide prompt exposed a batch issue: the Agent requested `000001.SH`, `399001.SZ`, `399006.SZ`, `000300.SH`, and `000688.SH` together.
+* `000688.SH` is not in the MVP benchmark universe.
+* The policy correctly blocked provider execution, but the public metadata pointed at the first symbol, `000001.SH`, instead of clearly disclosing the actual rejected symbol.
+
+MVP batch rule:
+
+* If every requested symbol belongs to the market's benchmark universe, allow the batch.
+* If any requested symbol is outside the universe, block the entire batch.
+* Do not automatically filter rejected symbols.
+* Do not add new symbols such as `000688.SH` to the universe in this fix.
+
+Metadata now disclosed on allow/block:
+
+* `requested_symbols`
+* `allowed_symbols`
+* `rejected_symbols`
+* `benchmark_universe`
+* `market`
+* `source=system_selected_benchmark`
+
+Examples:
+
+| Prompt / tool args | Decision | Provider call | Disclosure |
+| --- | --- | --- | --- |
+| `A股今天怎么样` + `000001.SH,399001.SZ,399006.SZ,000300.SH` | `allow_benchmark` | yes | all four in `allowed_symbols` |
+| `A股今天怎么样` + `000001.SH,399001.SZ,000688.SH` | `block` | no | `allowed_symbols=[000001.SH,399001.SZ]`, `rejected_symbols=[000688.SH]` |
+| `美股今天怎么样` + `SPY,QQQ,DIA` | `allow_benchmark` | yes | canonical `SPY.US,QQQ.US,DIA.US` |
+| `美股今天怎么样` + `SPY,AAPL` | `block` | no | `allowed_symbols=[SPY.US]`, `rejected_symbols=[AAPL.US]` |
+
+Status:
+
+* Pure policy and AgentLoop metadata have been updated.
+* Feature flag still defaults off.
+* Web UI retest after this fix has not been run yet.

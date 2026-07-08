@@ -1319,11 +1319,16 @@ class AgentLoop:
 
     def _benchmark_policy_payload(self, decision: dict, args: Dict[str, Any] | None = None) -> dict:
         """Build the public benchmark policy metadata payload."""
+        metadata = decision.get("metadata") or {}
         return {
             "decision": decision.get("decision"),
-            "source": (decision.get("metadata") or {}).get("source", "system_selected_benchmark"),
+            "source": metadata.get("source", "system_selected_benchmark"),
             "market": decision.get("market"),
             "symbol": _first_tool_symbol(args or {}),
+            "requested_symbols": metadata.get("requested_symbols") or [],
+            "allowed_symbols": metadata.get("allowed_symbols") or [],
+            "rejected_symbols": metadata.get("rejected_symbols") or [],
+            "benchmark_universe": metadata.get("benchmark_universe") or [],
             "benchmarks": decision.get("benchmarks") or [],
             "reason": decision.get("reason"),
             "warnings": decision.get("warnings") or [],

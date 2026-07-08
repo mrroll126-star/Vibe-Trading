@@ -147,7 +147,7 @@ def evaluate_market_wide_benchmark_intent(
             metadata={no_symbol["metadata_key"]: True, "tool_name": tool},
         )
 
-    explicit_symbols = _extract_symbols_from_args(args)
+    requested_symbols = _extract_symbols_from_args(args)
     if _is_user_specified_target(prompt):
         return _decision(
             "not_market_wide",
@@ -175,24 +175,34 @@ def evaluate_market_wide_benchmark_intent(
         return _decision("not_market_wide", None, [], "market_mentioned_without_market_wide_intent")
 
     if tool and tool in _COMPANY_SPECIFIC_TOOLS:
+        benchmark_universe = _benchmark_symbols_for_market(market)
         return _decision(
             "block",
             market,
             [],
             "company_specific_tool_not_eligible_for_benchmark_policy",
             warnings=["Benchmark policy does not bypass asset-type routing or company-specific tool restrictions."],
-            metadata={"tool_name": tool},
+            metadata={
+                "tool_name": tool,
+                "requested_symbols": _canonicalize_symbols_for_market(requested_symbols, market),
+                "allowed_symbols": [],
+                "rejected_symbols": [],
+                "benchmark_universe": benchmark_universe,
+            },
         )
 
-    benchmarks = _benchmarks_for_market(market, explicit_symbols)
-    if explicit_symbols:
-        allowed = _BENCHMARK_SYMBOLS_BY_MARKET.get(market, set())
-        outside = [symbol for symbol in explicit_symbols if symbol not in allowed]
-        if outside:
+    canonical_symbols = _canonicalize_symbols_for_market(requested_symbols, market)
+    universe_symbols = _benchmark_symbols_for_market(market)
+    allowed_symbol_set = set(universe_symbols)
+    allowed_symbols = [symbol for symbol in canonical_symbols if symbol in allowed_symbol_set]
+    rejected_symbols = [symbol for symbol in canonical_symbols if symbol not in allowed_symbol_set]
+    benchmarks = _benchmarks_for_market(market, allowed_symbols)
+    if canonical_symbols:
+        if rejected_symbols:
             return _decision(
                 "block",
                 market,
-                [],
+                benchmarks,
                 "tool_symbol_not_in_benchmark_universe",
                 warnings=[
                     "Benchmark policy only allows documented benchmark symbols for explicit market-wide prompts.",
@@ -200,9 +210,15 @@ def evaluate_market_wide_benchmark_intent(
                 ],
                 metadata={
                     "tool_name": tool or None,
-                    "rejected_symbols": outside,
+                    "requested_symbols": canonical_symbols,
+                    "allowed_symbols": allowed_symbols,
+                    "rejected_symbols": rejected_symbols,
+                    "benchmark_universe": universe_symbols,
                 },
             )
+    else:
+        allowed_symbols = universe_symbols
+        benchmarks = _benchmarks_for_market(market, allowed_symbols)
 
     return _decision(
         "allow_benchmark",
@@ -210,7 +226,13 @@ def evaluate_market_wide_benchmark_intent(
         benchmarks,
         f"explicit_{market}_market_wide_intent",
         warnings=["Benchmark policy does not bypass asset-type routing or data freshness checks."],
-        metadata={"tool_name": tool or None},
+        metadata={
+            "tool_name": tool or None,
+            "requested_symbols": canonical_symbols,
+            "allowed_symbols": allowed_symbols,
+            "rejected_symbols": [],
+            "benchmark_universe": universe_symbols,
+        },
     )
 
 
@@ -245,6 +267,10 @@ def _benchmarks_for_market(market: str, symbols: list[str]) -> list[dict[str, st
         return [dict(item) for item in universe]
     wanted = set(symbols)
     return [dict(item) for item in universe if item["symbol"] in wanted]
+
+
+def _benchmark_symbols_for_market(market: str) -> list[str]:
+    return [item["symbol"] for item in BENCHMARKS_BY_MARKET.get(market, [])]
 
 
 def _no_symbol_market_wide_tool(tool_name: str, args: dict[str, Any]) -> dict[str, str] | None:
@@ -347,7 +373,7 @@ def _is_user_specified_target(prompt: str) -> bool:
 
 def _extract_symbols_from_args(args: dict[str, Any]) -> list[str]:
     symbols: list[str] = []
-    for key in ("codes", "symbols", "symbol", "ticker", "code"):
+    for key in ("codes", "symbols", "symbol", "ticker", "tickers", "code"):
         if key not in args:
             continue
         value = args.get(key)
@@ -361,10 +387,29 @@ def _extract_symbols_from_args(args: dict[str, Any]) -> list[str]:
 
 def _extract_symbols(value: str) -> list[str]:
     text = value.upper()
-    return re.findall(
-        r"(?<![\w.])(?:\d{6}\.(?:SH|SZ|BJ)|\d{1,5}\.HK|[A-Z]{1,5}\.US)(?![\w.])",
-        text,
-    )
+    out: list[str] = []
+    for part in re.split(r"[,;，；\s]+", text):
+        token = part.strip()
+        if not token:
+            continue
+        if re.fullmatch(r"(?:\d{6}\.(?:SH|SZ|BJ)|\d{1,5}\.HK|[A-Z]{1,5}\.US)", token):
+            out.append(token)
+        elif re.fullmatch(r"[A-Z]{1,5}", token):
+            out.append(token)
+    return out
+
+
+def _canonicalize_symbols_for_market(symbols: list[str], market: str | None) -> list[str]:
+    out: list[str] = []
+    for symbol in symbols:
+        upper = str(symbol).strip().upper()
+        if not upper:
+            continue
+        if market == "us" and re.fullmatch(r"[A-Z]{1,5}", upper):
+            out.append(f"{upper}.US")
+        else:
+            out.append(upper)
+    return _unique(out)
 
 
 def _compact(prompt: str) -> str:

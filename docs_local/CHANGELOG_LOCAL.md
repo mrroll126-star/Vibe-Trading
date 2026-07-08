@@ -1085,6 +1085,37 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Fixed
 
+* Market-wide benchmark policy now validates batch symbols one by one.
+* Mixed benchmark batches are blocked as a whole when any requested symbol is outside the approved universe.
+* `_benchmark_policy` now discloses `requested_symbols`, `allowed_symbols`, `rejected_symbols`, and `benchmark_universe`.
+* A-share mixed batch disclosure now correctly identifies `000688.SH` as rejected instead of implying `000001.SH` caused the block.
+
+### Added
+
+* Pure policy tests for A-share, US, HK, mixed batches, and comma-separated symbol strings.
+* AgentLoop integration tests for allowed batches, mixed blocked batches, US bare tickers, and flag-off behavior.
+
+### Validation
+
+* Benchmark policy tests passed with 51 tests.
+* Symbol regression tests passed with 87 tests.
+* Routing regression tests passed with 56 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* Feature flag remains default off.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* Web UI retest after this fix was not run.
+
+## 2026-07-08
+
+### Fixed
+
 * Allowed market-wide `get_stock_news` calls through Pre-tool Symbol Intent Guard when no single symbol is required.
 * Preserved guard behavior for symbol-specific `get_stock_news` calls.
 

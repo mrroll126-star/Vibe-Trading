@@ -92,6 +92,9 @@ class BenchmarkPolicyIntegrationTests(unittest.TestCase):
         self.assertTrue(payload["ok"])
         self.assertEqual(payload["_benchmark_policy"]["decision"], "allow_benchmark")
         self.assertEqual(payload["_benchmark_policy"]["symbol"], "000001.SH")
+        self.assertEqual(payload["_benchmark_policy"]["requested_symbols"], ["000001.SH"])
+        self.assertEqual(payload["_benchmark_policy"]["allowed_symbols"], ["000001.SH"])
+        self.assertEqual(payload["_benchmark_policy"]["rejected_symbols"], [])
 
     def test_a_share_second_benchmark_allows(self) -> None:
         payload, calls = self._run_single(
@@ -133,6 +136,8 @@ class BenchmarkPolicyIntegrationTests(unittest.TestCase):
         self.assertEqual(calls, 0)
         self.assertEqual(payload["blocked_by"], "market_wide_benchmark_policy")
         self.assertEqual(payload["decision"], "block")
+        self.assertEqual(payload["_benchmark_policy"]["allowed_symbols"], [])
+        self.assertEqual(payload["_benchmark_policy"]["rejected_symbols"], ["600519.SH"])
 
     def test_us_non_benchmark_stock_blocks(self) -> None:
         payload, calls = self._run_single(
@@ -143,6 +148,7 @@ class BenchmarkPolicyIntegrationTests(unittest.TestCase):
         )
         self.assertEqual(calls, 0)
         self.assertEqual(payload["blocked_by"], "market_wide_benchmark_policy")
+        self.assertEqual(payload["_benchmark_policy"]["rejected_symbols"], ["AAPL.US"])
 
     def test_ambiguous_market_prompt_asks_for_confirmation(self) -> None:
         payload, calls = self._run_single(
@@ -210,7 +216,69 @@ class BenchmarkPolicyIntegrationTests(unittest.TestCase):
         self.assertTrue(payload["ok"])
         self.assertNotIn("_benchmark_policy", payload)
 
+    def test_a_share_all_benchmark_batch_allows_and_discloses_symbols(self) -> None:
+        payload, calls = self._run_single(
+            "A股今天怎么样",
+            "get_market_data",
+            {"codes": ["000001.SH", "399001.SZ", "399006.SZ", "000300.SH"]},
+            benchmark_flag=True,
+        )
+        self.assertEqual(calls, 1)
+        policy = payload["_benchmark_policy"]
+        self.assertEqual(policy["decision"], "allow_benchmark")
+        self.assertEqual(policy["requested_symbols"], ["000001.SH", "399001.SZ", "399006.SZ", "000300.SH"])
+        self.assertEqual(policy["allowed_symbols"], ["000001.SH", "399001.SZ", "399006.SZ", "000300.SH"])
+        self.assertEqual(policy["rejected_symbols"], [])
+
+    def test_a_share_mixed_benchmark_batch_blocks_and_discloses_rejected(self) -> None:
+        payload, calls = self._run_single(
+            "A股今天怎么样",
+            "get_market_data",
+            {"codes": ["000001.SH", "399001.SZ", "000688.SH"]},
+            benchmark_flag=True,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "market_wide_benchmark_policy")
+        policy = payload["_benchmark_policy"]
+        self.assertEqual(policy["decision"], "block")
+        self.assertEqual(policy["requested_symbols"], ["000001.SH", "399001.SZ", "000688.SH"])
+        self.assertEqual(policy["allowed_symbols"], ["000001.SH", "399001.SZ"])
+        self.assertEqual(policy["rejected_symbols"], ["000688.SH"])
+        self.assertIn("000300.SH", policy["benchmark_universe"])
+
+    def test_us_bare_benchmark_batch_allows(self) -> None:
+        payload, calls = self._run_single(
+            "美股今天怎么样",
+            "get_market_data",
+            {"symbols": ["SPY", "QQQ", "DIA"]},
+            benchmark_flag=True,
+        )
+        self.assertEqual(calls, 1)
+        self.assertEqual(payload["_benchmark_policy"]["allowed_symbols"], ["SPY.US", "QQQ.US", "DIA.US"])
+
+    def test_us_mixed_benchmark_batch_blocks(self) -> None:
+        payload, calls = self._run_single(
+            "美股今天怎么样",
+            "get_market_data",
+            {"symbols": ["SPY", "AAPL"]},
+            benchmark_flag=True,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "market_wide_benchmark_policy")
+        self.assertEqual(payload["_benchmark_policy"]["allowed_symbols"], ["SPY.US"])
+        self.assertEqual(payload["_benchmark_policy"]["rejected_symbols"], ["AAPL.US"])
+
+    def test_flag_off_preserves_existing_behavior_for_mixed_batch(self) -> None:
+        payload, calls = self._run_single(
+            "A股今天怎么样",
+            "get_market_data",
+            {"codes": ["000001.SH", "399001.SZ", "000688.SH"]},
+            benchmark_flag=False,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "pre_tool_symbol_intent_guard")
+        self.assertNotIn("_benchmark_policy", payload)
+
 
 if __name__ == "__main__":
     unittest.main()
-
