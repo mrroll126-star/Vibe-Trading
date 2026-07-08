@@ -315,6 +315,38 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 - No remote service was exposed.
 - Shell tools remained disabled.
 
+## 2026-07-08 Web UI Stock-specific Symbol Guard Retest
+
+### Updated
+
+- Updated `WEB_UI_SMOKE_TEST_REPORT.md` with the real Web UI retest results.
+- Updated `TEST_REPORT.md` with sessions, run IDs, guard evidence, and service shutdown status.
+- Updated `PRE_TOOL_SYMBOL_INTENT_GUARD_DESIGN.md` with Phase F retest conclusions.
+- Updated `PRODUCT_BACKLOG.md`, `NEXT_TASKS.md`, `CODEX_WORKLOG.md`, and `ROADMAP.md`.
+
+### Validation
+
+- Backend started locally with both symbol feature flags enabled for the test run only.
+- Frontend started locally on `127.0.0.1:5899`.
+- Web UI prompts were submitted for `000001`, `贵州茅台`, `600519`, and `600519.SH`.
+- Local traces confirmed `000001` and `贵州茅台` did not call first-batch stock-specific providers before clarification.
+
+### Result
+
+- Web UI stock-specific symbol guard retest passed.
+- `600519` and `600519.SH` remained allowed.
+- Feature flags remain off by default pending a boundary retest.
+
+### Security / Boundary
+
+- No real key was printed.
+- `agent/.env` was not committed.
+- `agent/runs/` and `agent/sessions/` were not committed.
+- Shell tools remained disabled.
+- Services were bound only to `127.0.0.1`.
+- No provider chain was changed.
+- No business code was modified.
+
 ## 2026-07-05 Symbol Normalizer Helper
 
 ### Added

@@ -131,7 +131,9 @@ This backlog records observed defects, product gaps, and future improvement cand
 * Recommended next step: extend the feature-flagged guard to all stock-specific provider tools or add a per-run symbol-intent confirmation gate before any stock-specific provider tool executes.
 * Current implementation update: first-batch stock-specific tool coverage is implemented for `get_market_data`, `get_fund_flow`, `get_stock_news`, `get_research_reports`, and `get_sector_info`.
 * Still not covered: `web_search`, `read_url`, `search_symbol`, and `read_document`.
-* Current validation status: unittest and lightweight mock validation passed; Web UI retest after this extension is still pending.
+* Current validation status: unittest, lightweight mock validation, and Web UI stock-specific guard retest passed.
+* Web UI pass details: `000001` and `贵州茅台` no longer reached first-batch stock-specific providers before clarification; `600519` and `600519.SH` remained allowed.
+* Remaining validation before default-enable: boundary retest for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
 * Default-enable recommendation: not yet.
 
 ### 3. A-Share Data Source Enhancement

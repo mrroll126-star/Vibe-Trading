@@ -612,3 +612,54 @@ Not done:
 * No Web UI retest yet after this extension.
 * No default-enable decision.
 * No `a-stock-data` integration.
+
+## 17. Phase F Web UI Stock-specific Guard Retest
+
+Date: 2026-07-08.
+
+Flags enabled for local retest only:
+
+```text
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1
+```
+
+Tested prompts:
+
+* `000001`
+* `贵州茅台`
+* `600519`
+* `600519.SH`
+
+Result: pass for the first-batch stock-specific guard MVP.
+
+Findings:
+
+* `000001`:
+  * `get_market_data`, `get_fund_flow`, `get_stock_news`, and `get_sector_info` all returned `clarify`.
+  * No first-batch stock provider was called.
+  * Final answer asked the user to choose `000001.SZ` or `000001.SH`.
+* `贵州茅台`:
+  * `get_market_data`, `get_fund_flow`, `get_stock_news`, and `get_sector_info` all returned `clarify`.
+  * No first-batch stock provider was called.
+  * Final answer asked the user to confirm `600519.SH`.
+* `600519`:
+  * Allowed as `600519.SH`.
+  * Stock-specific tools were allowed.
+  * `_data_quality` and Data Source Summary remained present.
+* `600519.SH`:
+  * Explicit symbol was allowed.
+  * No false block.
+
+Conclusion:
+
+The guard now protects the first-batch stock-specific tools in the real Web UI path.
+
+Default-enable recommendation:
+
+* Not yet.
+* Run one more boundary retest before default-enable, covering:
+  * `QQQ`
+  * `00700`
+  * `000001.SZ`
+  * `000001.SH`

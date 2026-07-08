@@ -557,3 +557,21 @@ Next required validation:
 
 * Run the Web UI stock-specific symbol guard retest with both symbol flags enabled.
 * Do not default-enable Symbol Normalizer or Pre-tool Guard until that Web UI retest passes.
+
+## 17. Web UI Stock-specific Guard Retest Status
+
+Date: 2026-07-08.
+
+Status: passed for the first stock-specific guard retest.
+
+Confirmed:
+
+* `000001` was clarified before first-batch stock-specific providers were called.
+* `贵州茅台` was clarified before first-batch stock-specific providers were called.
+* Safe bare `600519` remained allowed.
+* Explicit `600519.SH` remained allowed.
+* `_data_quality` and Data Source Summary remained present for allowed runs.
+
+Still pending before default-enable:
+
+* Boundary Web UI retest for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.

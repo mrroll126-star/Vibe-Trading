@@ -364,6 +364,43 @@ What was not done:
 * No `a-stock-data` integration.
 * No shell tools enabled.
 * No remote service exposed.
+
+## 2026-07-08 Web UI Stock-specific Symbol Guard Retest
+
+User requested a real Web UI retest after extending the guard to stock-specific tools.
+
+Actions performed:
+
+1. Started backend on `127.0.0.1:8899` with:
+   - `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`
+   - `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
+2. Started frontend on `127.0.0.1:5899`.
+3. Submitted four prompts through Web UI:
+   - `000001`
+   - `贵州茅台`
+   - `600519`
+   - `600519.SH`
+4. Audited ignored local session traces.
+5. Stopped backend and frontend.
+6. Confirmed ports `8899` and `5899` were released.
+7. Updated local documentation.
+
+Result:
+
+* `000001`: all requested first-batch stock tools clarified and did not call providers.
+* `贵州茅台`: all requested first-batch stock tools clarified and did not call providers.
+* `600519`: allowed as `600519.SH`.
+* `600519.SH`: explicit symbol allowed.
+* `_data_quality` and Data Source Summary remained present for allowed runs.
+
+What was not done:
+
+* No default-enable decision.
+* No business code changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* No remote service exposure.
+* No shell tools enabled.
 - No `a-stock-data` integration was attempted.
 
 ## 2026-07-05 Phase 0 Closeout

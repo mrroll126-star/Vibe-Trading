@@ -118,7 +118,8 @@ Pre-tool Symbol Intent Guard update:
   * `get_sector_info`
 * Feature flag: `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`.
 * Default: off.
-* Web UI retest after the expanded guard is still pending.
+* Web UI retest after the expanded guard passed for `000001`, `贵州茅台`, `600519`, and `600519.SH`.
+* Remaining before default-enable discussion: boundary Web UI retest for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
 * `a-stock-data` remains deferred until symbol identity and data quality are auditable.
 
 Current implementation files:

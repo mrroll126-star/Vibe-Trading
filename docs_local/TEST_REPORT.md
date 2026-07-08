@@ -1552,3 +1552,66 @@ Status:
 * Passed local unittest and mock validation.
 * Web UI retest was not run in this round.
 * Feature flags should remain off by default until Web UI retest passes.
+
+## 30. Web UI Stock-specific Symbol Guard Retest
+
+Date: 2026-07-08.
+
+Goal:
+
+* Verify the extended stock-specific symbol guard in the real Web UI path.
+* Confirm `000001` and `贵州茅台` do not reach first-batch stock providers before clarification.
+* Confirm safe `600519` and explicit `600519.SH` still work.
+
+Commands:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+```
+
+```bash
+cd frontend
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Prompts:
+
+| Case | Session | Run ID | Result |
+| -- | -- | -- | -- |
+| `000001` | `1a31b77c4894` | `20260708_103045_64_c24182` | Passed. Guard clarified all requested stock-specific tools. |
+| `贵州茅台` | `ba42f63b650e` | `20260708_103113_12_894f58` | Passed. Guard clarified all requested stock-specific tools. |
+| `600519` | `2927b3cd72ba` | `20260708_103129_14_e84c02` | Passed. Allowed as `600519.SH`; report gate blocked stale same-day market facts. |
+| `600519.SH` | `211a82a9a415` | `20260708_103153_15_bc8245` | Passed. Explicit symbol allowed; report gate blocked stale same-day market facts. |
+
+Guard evidence from local session traces:
+
+| Case | `get_market_data` | `get_fund_flow` | `get_stock_news` | `get_sector_info` |
+| -- | -- | -- | -- | -- |
+| `000001` | clarified, no provider | clarified, no provider | clarified, no provider | clarified, no provider |
+| `贵州茅台` | clarified, no provider | clarified, no provider | clarified, no provider | clarified, no provider |
+| `600519` | allowed, provider called | allowed, provider called | allowed, provider called | allowed, provider called |
+| `600519.SH` | allowed, provider called | allowed, provider called | allowed, provider called | allowed, provider called |
+
+Observed data quality on allowed runs:
+
+| Case | Tool | Freshness | Latest date | Provider |
+| -- | -- | -- | -- | -- |
+| `600519` | `get_market_data` | `stale` | 2026-07-07 | tencent |
+| `600519` | `get_fund_flow` | `missing` | n/a | eastmoney |
+| `600519` | `get_stock_news` | `fresh` | 2026-07-07 | eastmoney |
+| `600519.SH` | `get_market_data` | `stale` | 2026-07-07 | tencent |
+| `600519.SH` | `get_fund_flow` | `missing` | n/a | eastmoney |
+| `600519.SH` | `get_stock_news` | `fresh` | 2026-07-07 | eastmoney |
+
+Shutdown:
+
+* Backend and frontend were stopped.
+* `lsof -i :8899` returned no listener.
+* `lsof -i :5899` returned no listener.
+
+Result:
+
+* Web UI stock-specific symbol guard retest passed.
+* Feature flags should still remain off by default until one more boundary retest covers `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.

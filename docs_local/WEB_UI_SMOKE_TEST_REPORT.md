@@ -315,6 +315,100 @@ Recommendation:
 * Do not default-enable the flags yet.
 * Next implementation should extend pre-tool symbol intent guard coverage to the other stock-specific tools, or apply the guard once per run before any stock-specific provider tool is allowed.
 
+## 11. Web UI Stock-specific Symbol Guard Retest
+
+Date: 2026-07-08 10:30-10:32 local time.
+
+Scope: real Web UI retest after extending Pre-tool Symbol Intent Guard to the first batch of stock-specific tools.
+
+Backend command:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1 \
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1 \
+.venv/bin/vibe-trading serve --host 127.0.0.1 --port 8899
+```
+
+Frontend command:
+
+```bash
+cd frontend
+VITE_API_URL=http://127.0.0.1:8899 npm run dev -- --host 127.0.0.1 --port 5899
+```
+
+Services were bound to `127.0.0.1` only. Shell tools remained disabled. The services were stopped after the test, and ports `8899` and `5899` had no listeners.
+
+### 11.1 Retest Summary
+
+| Case | Session | Run ID | Result |
+| -- | -- | -- | -- |
+| `000001` | `1a31b77c4894` | `20260708_103045_64_c24182` | Passed. All four requested stock tools were clarified and did not call providers. |
+| `贵州茅台` | `ba42f63b650e` | `20260708_103113_12_894f58` | Passed. All four requested stock tools were clarified and did not call providers. |
+| `600519` | `2927b3cd72ba` | `20260708_103129_14_e84c02` | Passed. Safe bare code was allowed as `600519.SH`; stock tools ran and Source Summary appeared. |
+| `600519.SH` | `211a82a9a415` | `20260708_103153_15_bc8245` | Passed. Explicit symbol was allowed; no false block. |
+
+### 11.2 Guarded Tool Results
+
+`000001`:
+
+| Tool | Provider called | Guard result |
+| -- | -- | -- |
+| `get_market_data` | No | `clarify`, `ambiguous_000001_requires_confirmation` |
+| `get_fund_flow` | No | `clarify`, `ambiguous_000001_requires_confirmation` |
+| `get_stock_news` | No | `clarify`, `ambiguous_000001_requires_confirmation` |
+| `get_sector_info` | No | `clarify`, `ambiguous_000001_requires_confirmation` |
+
+Final answer asked whether the user meant `000001.SZ` Ping An Bank or `000001.SH` Shanghai Composite. It did not generate a normal market, fund-flow, news, or sector analysis.
+
+`贵州茅台`:
+
+| Tool | Provider called | Guard result |
+| -- | -- | -- |
+| `get_market_data` | No | `clarify`, `chinese_name_requires_confirmation` |
+| `get_fund_flow` | No | `clarify`, `chinese_name_requires_confirmation` |
+| `get_stock_news` | No | `clarify`, `chinese_name_requires_confirmation` |
+| `get_sector_info` | No | `clarify`, `chinese_name_requires_confirmation` |
+
+Final answer asked the user to confirm `600519.SH` before fetching today's market, fund-flow, news, and sector data. It did not silently analyze `600519.SH`.
+
+`600519`:
+
+| Tool | Provider called | Result |
+| -- | -- | -- |
+| `get_market_data` | Yes | Allowed as `600519.SH`; `_data_quality` present; `stale`, latest `2026-07-07`, provider `tencent`. |
+| `get_fund_flow` | Yes | Allowed; `_data_quality` present; `missing`, provider `eastmoney`, connection aborted. |
+| `get_stock_news` | Yes | Allowed; `_data_quality` present; `fresh`, latest `2026-07-07`, provider `eastmoney`. |
+| `get_sector_info` | Yes | Allowed; provider returned sector membership. |
+
+Final report became a `Data Insufficient Report` because the user asked about today and market data was stale.
+
+`600519.SH`:
+
+| Tool | Provider called | Result |
+| -- | -- | -- |
+| `get_market_data` | Yes | Allowed; `_data_quality` present; `stale`, latest `2026-07-07`, provider `tencent`. |
+| `get_fund_flow` | Yes | Allowed; `_data_quality` present; `missing`, provider `eastmoney`, connection aborted. |
+| `get_stock_news` | Yes | Allowed; `_data_quality` present; `fresh`, latest `2026-07-07`, provider `eastmoney`. |
+| `get_sector_info` | Yes | Allowed; provider returned sector membership. |
+
+Final report became a `Data Insufficient Report` because the user asked about today and market data was stale.
+
+### 11.3 Overall Judgment
+
+This Web UI retest passed for the stock-specific guard MVP:
+
+* `000001` no longer reaches the first-batch stock-specific providers before clarification.
+* `贵州茅台` no longer reaches the first-batch stock-specific providers before confirmation.
+* Safe bare code `600519` is allowed.
+* Explicit symbol `600519.SH` is allowed.
+* `_data_quality` and `Data Source Summary` still appear on allowed runs.
+
+Recommendation:
+
+* Do not default-enable the feature flags yet.
+* Before default-enable, run one more boundary set covering `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
+* Keep `a-stock-data` deferred until symbol intent and freshness guardrails remain stable through that boundary retest.
+
 Product conclusion:
 
 * The Phase 1 anti-hallucination MVP is active in the real Web UI final report path.

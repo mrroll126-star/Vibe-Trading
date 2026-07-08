@@ -27,8 +27,9 @@ Highest principle:
 
 ## Current Recommended Order After Web UI Pre-tool Guard Retest
 
-1. **Web UI retest after stock-specific symbol guard extension**
-   * Business value: verifies that `000001` and Chinese names do not trigger any stock-specific provider call before clarification.
+1. **Boundary Web UI retest before default-enable decision**
+   * Business value: verifies safe US/HK bare symbols and explicit ambiguous symbols before making a product default decision.
+   * Suggested cases: `QQQ`, `00700`, `000001.SZ`, `000001.SH`.
    * Risk: consumes LLM tokens and may expose unrelated tool-routing behavior.
    * Boundary: localhost only; shell tools disabled.
 
@@ -101,8 +102,24 @@ Validation:
 
 Remaining gap:
 
-* No Web UI retest has been run after this extension.
-* Do not default-enable Symbol Normalizer or Pre-tool Guard until that retest passes.
+* Web UI retest passed for `000001`, `贵州茅台`, `600519`, and `600519.SH`.
+* Do not default-enable Symbol Normalizer or Pre-tool Guard until a boundary retest also covers `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
+
+## Completed Phase 1 Validation: Web UI Stock-specific Guard Retest
+
+Status: completed on 2026-07-08.
+
+Result:
+
+* `000001`: `get_market_data`, `get_fund_flow`, `get_stock_news`, and `get_sector_info` all clarified and did not call providers.
+* `贵州茅台`: the same four tools clarified and did not call providers.
+* `600519`: allowed as `600519.SH`; stock tools ran; data quality summary appeared.
+* `600519.SH`: allowed; no false block.
+
+Recommendation:
+
+* Keep both feature flags off by default for now.
+* Run one more boundary Web UI retest before default-enable discussion.
 
 ## Completed Phase 1 Validation: Web UI Red-Light Prompt Retest
 
