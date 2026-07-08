@@ -321,7 +321,7 @@ VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1
 
 Rules:
 
-* Default: off.
+* Initial MVP default: off. Current default policy is documented in "Default Policy Update: 2026-07-08" below.
 * First integration: only `get_market_data`.
 * Do not affect provider chains.
 * Do not affect Web UI code.
@@ -692,7 +692,7 @@ The guard is working as a symbol-intent safety layer. The next issue is not basi
 
 Default recommendation:
 
-* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`: candidate for future default-on after final review.
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`: default-on after final review and Web UI retests.
 * `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`: keep feature-flagged until more asset-type and market boundary tests are complete.
 
 ## Asset-type-aware Routing Dependency
@@ -731,3 +731,28 @@ Status:
 
 * Unit and AgentLoop integration tests added.
 * Web UI retest has not been rerun after this fix.
+
+## Default Policy Update: 2026-07-08
+
+Decision:
+
+`VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD` is now enabled by default.
+
+Reason:
+
+The guard has passed pure tests, AgentLoop single-tool tests, AgentLoop parallel-tool tests, and real Web UI retests. It prevents a high-risk投研错误: the model silently changing an ambiguous or name-only user target into a specific ticker and then calling tools against the wrong asset.
+
+Override:
+
+Set one of the following values to explicitly disable it for debugging:
+
+```bash
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=0
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=false
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=no
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=off
+```
+
+Boundary:
+
+This default-on decision does not enable Symbol Normalizer. `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` remains default off because it automatically rewrites user input.

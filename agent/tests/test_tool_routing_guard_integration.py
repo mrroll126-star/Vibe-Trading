@@ -12,6 +12,7 @@ from src.agent.context import ContextBuilder
 from src.agent.loop import AgentLoop
 from src.agent.tools import ToolRegistry
 from src.agent.trace import TraceWriter
+from src.symbols.config import is_asset_type_routing_guard_enabled, is_pre_tool_symbol_guard_enabled
 
 
 class ToolRoutingGuardIntegrationTests(unittest.TestCase):
@@ -41,8 +42,8 @@ class ToolRoutingGuardIntegrationTests(unittest.TestCase):
         tool_name: str,
         args: dict,
         *,
-        asset_flag: bool,
-        symbol_flag: bool = False,
+        asset_flag: bool | None,
+        symbol_flag: bool | None = False,
     ) -> tuple[dict, int]:
         agent, context, messages, trace, react_trace = self._make_agent()
         agent._current_user_message = prompt
@@ -53,11 +54,12 @@ class ToolRoutingGuardIntegrationTests(unittest.TestCase):
             return json.dumps({"ok": True, "tool": name, "args": invoke_args}), 7
 
         agent._invoke_tool = fake_invoke  # type: ignore[method-assign]
-        env = {
-            "VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD": "1" if asset_flag else "",
-            "VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD": "1" if symbol_flag else "",
-        }
-        with patch.dict(os.environ, env, clear=False):
+        env = {}
+        if asset_flag is not None:
+            env["VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD"] = "1" if asset_flag else "0"
+        if symbol_flag is not None:
+            env["VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD"] = "1" if symbol_flag else "0"
+        with patch.dict(os.environ, env, clear=True):
             agent._execute_single(self._tc(tool_name, args), context, messages, trace, react_trace, 1)
         trace.close()
         return self._last_payload(messages), calls["count"]
@@ -67,8 +69,8 @@ class ToolRoutingGuardIntegrationTests(unittest.TestCase):
         prompt: str,
         tool_calls: list[tuple[str, dict]],
         *,
-        asset_flag: bool,
-        symbol_flag: bool = False,
+        asset_flag: bool | None,
+        symbol_flag: bool | None = False,
     ) -> tuple[list[dict], list[str]]:
         agent, context, messages, trace, react_trace = self._make_agent()
         agent._current_user_message = prompt
@@ -79,16 +81,45 @@ class ToolRoutingGuardIntegrationTests(unittest.TestCase):
             return json.dumps({"ok": True, "tool": name, "args": invoke_args}), 7
 
         agent._invoke_tool = fake_invoke  # type: ignore[method-assign]
-        env = {
-            "VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD": "1" if asset_flag else "",
-            "VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD": "1" if symbol_flag else "",
-        }
+        env = {}
+        if asset_flag is not None:
+            env["VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD"] = "1" if asset_flag else "0"
+        if symbol_flag is not None:
+            env["VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD"] = "1" if symbol_flag else "0"
         tcs = [self._tc(name, args) for name, args in tool_calls]
-        with patch.dict(os.environ, env, clear=False):
+        with patch.dict(os.environ, env, clear=True):
             agent._execute_parallel(tcs, context, messages, trace, react_trace, 1)
         trace.close()
         payloads = [json.loads(message["content"]) for message in messages]
         return payloads, called_tools
+
+    def test_guard_helpers_default_on_and_false_values_disable(self) -> None:
+        with patch.dict(os.environ, {}, clear=True):
+            self.assertTrue(is_pre_tool_symbol_guard_enabled())
+            self.assertTrue(is_asset_type_routing_guard_enabled())
+        for value in ("0", "false", "False", "no", "off"):
+            with self.subTest(value=value), patch.dict(
+                os.environ,
+                {
+                    "VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD": value,
+                    "VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD": value,
+                },
+                clear=True,
+            ):
+                self.assertFalse(is_pre_tool_symbol_guard_enabled())
+                self.assertFalse(is_asset_type_routing_guard_enabled())
+
+    def test_default_blocks_etf_financial_statements(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 510300.SH",
+            "get_financial_statements",
+            {"code": "510300.SH"},
+            asset_flag=None,
+            symbol_flag=False,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "asset_type_tool_routing_guard")
+        self.assertEqual(payload["decision"], "block")
 
     def test_flag_off_does_not_intercept_index_sector_info(self) -> None:
         payload, calls = self._run_single(
@@ -351,6 +382,18 @@ class ToolRoutingGuardIntegrationTests(unittest.TestCase):
             [("get_sector_info", {"mode": "ranking"})],
             asset_flag=True,
             symbol_flag=True,
+        )
+        self.assertEqual(called_tools, ["get_sector_info"])
+        self.assertTrue(payloads[0]["ok"])
+        self.assertNotIn("_symbol_intent_guard", payloads[0])
+        self.assertNotIn("_tool_routing_guard", payloads[0])
+
+    def test_default_parallel_market_wide_sector_ranking_is_allowed_without_symbol(self) -> None:
+        payloads, called_tools = self._run_parallel(
+            "请列出行业排名",
+            [("get_sector_info", {"mode": "ranking"})],
+            asset_flag=None,
+            symbol_flag=None,
         )
         self.assertEqual(called_tools, ["get_sector_info"])
         self.assertTrue(payloads[0]["ok"])

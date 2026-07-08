@@ -250,3 +250,43 @@ Current recommendation:
 
 * This DeepSeek setup is good enough for minimal Agent workflow verification.
 * Native `langchain-deepseek` is optional later; do not add it until there is a concrete reason.
+
+## 10. Safety Guard Environment Flags
+
+Date: 2026-07-08.
+
+Current defaults:
+
+| Feature | Environment variable | Default | When to change |
+| --- | --- | --- | --- |
+| Symbol Normalizer | `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` | off | Enable only for controlled bare-symbol tests |
+| Pre-tool Symbol Intent Guard | `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD` | on | Disable only for debugging a suspected false positive |
+| Asset-type Routing Guard | `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD` | on | Disable only for debugging a suspected false positive |
+
+Normal local use:
+
+You do not need to add the two safety guard variables to `agent/.env`. They are on by default.
+
+To explicitly disable a safety guard for debugging:
+
+```bash
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=0
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=0
+```
+
+or:
+
+```bash
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=false
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=false
+```
+
+To test Symbol Normalizer:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
+```
+
+Security boundary:
+
+Do not commit `agent/.env`. Do not put API keys in documentation or chat. Keep `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.

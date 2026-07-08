@@ -560,3 +560,21 @@ Future re-enable conditions:
 
 3. **Keep `a-stock-data` adapter deferred**
    * Reason: provider expansion should follow verified symbol intent, asset routing, and data quality behavior.
+
+## Current Recommended Order After Default-enabled Safety Guards
+
+1. **Design Market-wide Benchmark Routing Policy**
+   * Reason: broad market prompts may need approved benchmark indices, but the current Symbol Intent Guard correctly blocks untraceable invented symbols.
+   * Business value: enables market-wide analysis without reopening silent symbol invention risk.
+   * Scope: design first; no provider-chain change.
+
+2. **Observe default-on safety guards in normal Web UI usage**
+   * Pre-tool Symbol Guard is now default on.
+   * Asset-type Routing Guard is now default on.
+   * Symbol Normalizer remains opt-in.
+
+3. **Keep Symbol Normalizer feature-flagged**
+   * Reason: it rewrites user input, so default-on requires separate product approval.
+
+4. **Keep `a-stock-data` adapter deferred**
+   * Reason: new data-source integration should come after routing policy and source-quality guardrails remain stable under default-on safety guards.

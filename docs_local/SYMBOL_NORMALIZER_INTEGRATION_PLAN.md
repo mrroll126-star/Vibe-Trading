@@ -592,3 +592,30 @@ Therefore, broader normalizer rollout should wait for an asset-type-aware routin
 3. Add feature-flagged AgentLoop integration.
 4. Retest Web UI for stock / ETF / index prompts.
 5. Revisit whether Symbol Normalizer can become default-on.
+
+## Default Policy Update: 2026-07-08
+
+Current decision:
+
+`VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` remains disabled by default.
+
+Reason:
+
+Symbol Normalizer automatically rewrites user input, for example `QQQ -> QQQ.US` or `600519 -> 600519.SH`. This improves usability, but it also changes the semantic meaning of the user request. It should remain opt-in until more markets, asset types, and product workflows have been tested.
+
+How to enable for local testing:
+
+```bash
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1
+```
+
+Related safety guards:
+
+The following guards are now default-on because they restrict unsafe behavior rather than rewriting input:
+
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`
+* `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD`
+
+Boundary:
+
+Do not default-enable Symbol Normalizer until there is a separate product decision and Web UI regression plan.

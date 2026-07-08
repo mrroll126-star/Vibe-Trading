@@ -260,7 +260,7 @@ Asset-type-aware tool routing must be designed before enabling Symbol Normalizer
 
 Default-enable view:
 
-* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`: good candidate for default-on, but should wait for asset routing design and one implementation review.
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`: now default-on after asset routing design, implementation, and Web UI retests.
 * `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER`: keep feature-flagged until more asset-type boundaries are tested.
 
 ## 12. Relationship to a-stock-data
@@ -328,7 +328,7 @@ Feature-flagged AgentLoop integration. The future integration should run after P
 Implemented on 2026-07-08:
 
 * Feature flag: `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD`
-* Default: off
+* Initial integration default: off. Current default policy is documented in "Default Policy Update" below.
 * AgentLoop integration point: after Pre-tool Symbol Intent Guard and before provider execution
 * Integration tests: `agent/tests/test_tool_routing_guard_integration.py`
 
@@ -368,7 +368,7 @@ Fix behavior:
 * `block` / `ask_for_confirmation`: provider is not called.
 * `warn`: provider is called and `_tool_routing_guard` is attached to the result.
 * `allow`: provider is called normally.
-* Feature flag default remains off.
+* Initial parallel-fix default remained off. Current default policy is documented in "Default Policy Update" below.
 
 Market-wide mode handling:
 
@@ -403,3 +403,38 @@ Next Web UI retest should cover:
 * `510300.SH` + financial statements block.
 * `QQQ.US` + `get_stock_news` warning.
 * `get_stock_news(scope=global)` market-wide allow.
+
+## 17. Default Policy Update
+
+Date: 2026-07-08.
+
+Decision:
+
+`VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD` is now enabled by default.
+
+Reason:
+
+The routing guard has passed pure function tests, AgentLoop single-tool tests, AgentLoop parallel readonly tool tests, and targeted Web UI retests. The Web UI retest confirmed:
+
+* ETF financial statements are blocked before provider execution.
+* ETF margin and ETF news calls can continue with `_tool_routing_guard` warnings.
+* Market-wide `get_stock_news(scope=global)` is not blocked by Symbol Intent Guard.
+
+Override:
+
+Set one of the following values to explicitly disable it for debugging:
+
+```bash
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=0
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=false
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=no
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=off
+```
+
+Boundary:
+
+The guard does not change provider chains, loaders, or Web UI code. It only decides whether a tool is suitable for a symbol's asset type before the provider call.
+
+Follow-up backlog:
+
+Add a Market-wide Benchmark Routing Policy so broad market prompts can safely use approved benchmark indices without being treated as silent symbol invention.

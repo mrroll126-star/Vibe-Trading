@@ -1974,3 +1974,75 @@ Boundary:
 * No Web UI code changes.
 * No `a-stock-data` integration.
 * Web UI retest has not been rerun after this fix.
+
+## 2026-07-08 Default-enable Safety Guards
+
+Purpose:
+
+Make the verified safety guards active by default while keeping Symbol Normalizer opt-in.
+
+Default policy:
+
+| Feature | Environment variable | Default | Override |
+| --- | --- | --- | --- |
+| Symbol Normalizer | `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER` | off | `1/true/yes/on` enables |
+| Pre-tool Symbol Intent Guard | `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD` | on | `0/false/no/off` disables |
+| Asset-type Routing Guard | `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD` | on | `0/false/no/off` disables |
+
+Commands executed:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 87 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration
+```
+
+Result:
+
+* Passed.
+* 56 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Behavior verified:
+
+* Default config clarifies ambiguous `000001` before stock-specific provider calls.
+* Default config blocks ETF financial statements for `510300.SH`.
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=0` disables the symbol guard.
+* `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=false` disables the symbol guard.
+* `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=0` disables the routing guard.
+* `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=false` disables the routing guard.
+* `get_stock_news(scope=global)` remains allowed.
+* `get_sector_info(mode=ranking)` remains allowed.
+* Symbol Normalizer remains default off and only turns on with explicit enabled values.
+
+Boundary:
+
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* No shell tools enabled.
+* No remote exposure.

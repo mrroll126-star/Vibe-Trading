@@ -262,3 +262,36 @@ Specific retest cases:
 * `510300.SH` + financial statements should be blocked before provider execution.
 * `QQQ.US` + stock news should warn and include `_tool_routing_guard`.
 * `get_stock_news(scope=global)` should not be blocked by Symbol Intent Guard.
+
+## Added 2026-07-08: Market-wide Benchmark Routing Policy
+
+Type:
+
+Improvement / research.
+
+Impact range:
+
+Market-wide prompts such as "analyze broad market news" may reasonably require benchmark indices or market aggregates. After safety guards are default-on, invented or untraceable symbols are blocked by design. A separate policy is needed to define which benchmark symbols can be used for broad market requests and how to disclose them.
+
+Priority:
+
+Medium-high before broad market research workflows are productized.
+
+Suggested phase:
+
+Phase 1 hardening, before `a-stock-data` adapter work.
+
+Needs business code change:
+
+Likely yes, but start with a design document.
+
+Current handling:
+
+Record only. Do not loosen Symbol Intent Guard ad hoc.
+
+Acceptance direction:
+
+* Define approved benchmark sets for A-share, US, HK, ETF, and global-market prompts.
+* Require trace disclosure when the system selects a benchmark not typed by the user.
+* Keep single-stock prompts under strict symbol-intent rules.
+* Preserve `get_stock_news(scope=global)` market-wide exemption.

@@ -117,9 +117,9 @@ Pre-tool Symbol Intent Guard update:
   * `get_research_reports`
   * `get_sector_info`
 * Feature flag: `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD`.
-* Default: off.
+* Current default: on after Web UI retests and default policy review.
 * Web UI retest after the expanded guard passed for `000001`, `贵州茅台`, `600519`, and `600519.SH`.
-* Remaining before default-enable discussion: boundary Web UI retest for `QQQ`, `00700`, `000001.SZ`, and `000001.SH`.
+* Default-enable review: completed; guard is now default-on.
 * `a-stock-data` remains deferred until symbol identity and data quality are auditable.
 
 Current implementation files:
@@ -150,7 +150,7 @@ New Phase 1 hardening item:
 
 Default-enable decision:
 
-* Pre-tool Symbol Guard: candidate for default-on after user approval.
+* Pre-tool Symbol Guard: now default-on after user approval and retests.
 * Symbol Normalizer: keep feature-flagged for now.
 
 ## 2026-07-08 Asset-type-aware Routing Design
@@ -228,3 +228,25 @@ Next:
 * Run directional Web UI retest for asset routing and market-wide news.
 * Decide safety guard default policy only after retest passes.
 * Keep `a-stock-data` deferred.
+
+## 2026-07-08 Safety Guard Default Policy
+
+Completed:
+
+* Pre-tool Symbol Intent Guard is now default-on.
+* Asset-type Routing Guard is now default-on.
+* Symbol Normalizer remains default-off.
+* All three feature flags remain available for local override.
+
+Why:
+
+The two default-on features are safety guards. They prevent unsafe execution:
+
+* ambiguous or untraceable symbols reaching stock-specific tools;
+* unsuitable tool / asset-type combinations reaching providers.
+
+Symbol Normalizer is different because it automatically rewrites user input, so it remains opt-in.
+
+Next roadmap item:
+
+Design Market-wide Benchmark Routing Policy before adding new providers such as `a-stock-data`.

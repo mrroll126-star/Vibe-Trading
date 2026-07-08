@@ -1061,3 +1061,27 @@ Boundary:
 * No service startup.
 * No `a-stock-data` integration.
 * Web UI retest not rerun in this task.
+
+## 2026-07-08 Default-enable Safety Guards
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Reviewed current feature flag helpers and related integration tests.
+3. Changed default policy:
+   * Pre-tool Symbol Intent Guard: default on.
+   * Asset-type Routing Guard: default on.
+   * Symbol Normalizer: still default off.
+4. Preserved explicit environment-variable overrides.
+5. Updated tests so old flag-off assumptions now explicitly set `0` or `false`.
+6. Ran symbol, routing, anti-hallucination, and compile checks.
+7. Updated docs_local decision records.
+
+Boundary:
+
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* No shell tools enabled.
+* No remote service exposure.

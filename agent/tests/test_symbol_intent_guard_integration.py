@@ -35,7 +35,7 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
     def _last_payload(messages: list) -> dict:
         return json.loads(messages[-1]["content"])
 
-    def _run_single(self, prompt: str, tool_name: str, args: dict, *, flag: bool) -> tuple[dict, int]:
+    def _run_single(self, prompt: str, tool_name: str, args: dict, *, flag: bool | None) -> tuple[dict, int]:
         agent, context, messages, trace, react_trace = self._make_agent()
         agent._current_user_message = prompt
         calls = {"count": 0}
@@ -45,13 +45,15 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
             return json.dumps({"ok": True, "tool": name, "args": invoke_args}), 7
 
         agent._invoke_tool = fake_invoke  # type: ignore[method-assign]
-        env_value = "1" if flag else ""
-        with patch.dict(os.environ, {"VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD": env_value}, clear=False):
+        env = {}
+        if flag is not None:
+            env["VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD"] = "1" if flag else "0"
+        with patch.dict(os.environ, env, clear=True):
             agent._execute_single(self._tc(tool_name, args), context, messages, trace, react_trace, 1)
         trace.close()
         return self._last_payload(messages), calls["count"]
 
-    def _run_parallel(self, prompt: str, tool_name: str, args: dict, *, flag: bool) -> tuple[dict, int]:
+    def _run_parallel(self, prompt: str, tool_name: str, args: dict, *, flag: bool | None) -> tuple[dict, int]:
         agent, context, messages, trace, react_trace = self._make_agent()
         agent._current_user_message = prompt
         calls = {"count": 0}
@@ -61,8 +63,10 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
             return json.dumps({"ok": True, "tool": name, "args": invoke_args}), 7
 
         agent._invoke_tool = fake_invoke  # type: ignore[method-assign]
-        env_value = "1" if flag else ""
-        with patch.dict(os.environ, {"VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD": env_value}, clear=False):
+        env = {}
+        if flag is not None:
+            env["VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD"] = "1" if flag else "0"
+        with patch.dict(os.environ, env, clear=True):
             agent._execute_parallel([self._tc(tool_name, args)], context, messages, trace, react_trace, 1)
         trace.close()
         return self._last_payload(messages), calls["count"]
@@ -75,6 +79,42 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
             flag=False,
         )
         self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+        self.assertNotIn("_symbol_intent_guard", payload)
+
+    def test_default_clarifies_ambiguous_symbol(self) -> None:
+        payload, calls = self._run_single(
+            "请分析 000001",
+            "get_market_data",
+            {"codes": ["000001.SZ"]},
+            flag=None,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "pre_tool_symbol_intent_guard")
+        self.assertEqual(payload["decision"], "clarify")
+
+    def test_false_value_disables_symbol_guard(self) -> None:
+        agent, context, messages, trace, react_trace = self._make_agent()
+        agent._current_user_message = "请分析 000001"
+        calls = {"count": 0}
+
+        def fake_invoke(name, invoke_args):
+            calls["count"] += 1
+            return json.dumps({"ok": True, "tool": name, "args": invoke_args}), 7
+
+        agent._invoke_tool = fake_invoke  # type: ignore[method-assign]
+        with patch.dict(os.environ, {"VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD": "false"}, clear=True):
+            agent._execute_single(
+                self._tc("get_market_data", {"codes": ["000001.SZ"]}),
+                context,
+                messages,
+                trace,
+                react_trace,
+                1,
+            )
+        trace.close()
+        payload = self._last_payload(messages)
+        self.assertEqual(calls["count"], 1)
         self.assertTrue(payload["ok"])
         self.assertNotIn("_symbol_intent_guard", payload)
 
@@ -254,6 +294,17 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
         self.assertTrue(payload["ok"])
         self.assertNotIn("_symbol_intent_guard", payload)
 
+    def test_default_allows_parallel_global_stock_news(self) -> None:
+        payload, calls = self._run_parallel(
+            "请查看今天市场新闻",
+            "get_stock_news",
+            {"scope": "global", "limit": 10},
+            flag=None,
+        )
+        self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+        self.assertNotIn("_symbol_intent_guard", payload)
+
     def test_flag_on_parallel_stock_news_ambiguous_000001_clarifies(self) -> None:
         payload, calls = self._run_parallel(
             "请分析 000001",
@@ -271,6 +322,17 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
             "get_sector_info",
             {"mode": "ranking", "limit": 20},
             flag=True,
+        )
+        self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+        self.assertNotIn("_symbol_intent_guard", payload)
+
+    def test_default_allows_parallel_sector_ranking(self) -> None:
+        payload, calls = self._run_parallel(
+            "请查看行业排行",
+            "get_sector_info",
+            {"mode": "ranking", "limit": 20},
+            flag=None,
         )
         self.assertEqual(calls, 1)
         self.assertTrue(payload["ok"])

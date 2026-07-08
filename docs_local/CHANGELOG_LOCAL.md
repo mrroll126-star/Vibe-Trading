@@ -980,6 +980,36 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ## 2026-07-08
 
+### Changed
+
+* Enabled Pre-tool Symbol Intent Guard by default.
+* Enabled Asset-type Routing Guard by default.
+* Kept Symbol Normalizer disabled by default.
+* Preserved environment-variable overrides for all three flags.
+
+### Added
+
+* Tests for default-on safety guard behavior.
+* Tests for explicit `0` / `false` disabling of safety guards.
+* Docs for the default safety guard policy.
+
+### Validation
+
+* Symbol regression tests passed with 87 tests.
+* Routing regression tests passed with 56 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* No sensitive/runtime files committed.
+
+## 2026-07-08
+
 ### Fixed
 
 * Allowed market-wide `get_stock_news` calls through Pre-tool Symbol Intent Guard when no single symbol is required.
