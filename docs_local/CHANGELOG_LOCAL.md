@@ -977,3 +977,30 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No Web UI code changes.
 * No `a-stock-data` integration.
 * No sensitive/runtime files committed.
+
+## 2026-07-08
+
+### Fixed
+
+* Allowed market-wide `get_stock_news` calls through Pre-tool Symbol Intent Guard when no single symbol is required.
+* Preserved guard behavior for symbol-specific `get_stock_news` calls.
+
+### Added
+
+* Unit tests for `get_stock_news(scope/mode=global|market|all|sector)`.
+* Integration tests for parallel market-wide news allow and symbol-specific news clarify.
+
+### Validation
+
+* Symbol regression tests passed with 83 tests.
+* Routing regression tests passed with 53 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* No sensitive/runtime files committed.

@@ -545,3 +545,18 @@ Future re-enable conditions:
 
 3. **Keep `a-stock-data` adapter planning downstream**
    * Reason: new A-share data sources should come after symbol identity, asset routing, and data quality contracts are stable.
+
+## Current Recommended Order After Market-wide News Guard Fix
+
+1. **Directional Web UI retest**
+   * Retest `510300.SH` + financial statements block.
+   * Retest `QQQ.US` + `get_stock_news` warning.
+   * Retest `get_stock_news(scope=global)` market-wide allow.
+
+2. **Default-enable decision for safety guards**
+   * Candidate: Pre-tool Symbol Guard.
+   * Candidate: Asset-type Routing Guard.
+   * Keep Symbol Normalizer feature-flagged because it rewrites user input.
+
+3. **Keep `a-stock-data` adapter deferred**
+   * Reason: provider expansion should follow verified symbol intent, asset routing, and data quality behavior.

@@ -51,6 +51,22 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
         trace.close()
         return self._last_payload(messages), calls["count"]
 
+    def _run_parallel(self, prompt: str, tool_name: str, args: dict, *, flag: bool) -> tuple[dict, int]:
+        agent, context, messages, trace, react_trace = self._make_agent()
+        agent._current_user_message = prompt
+        calls = {"count": 0}
+
+        def fake_invoke(name, invoke_args):
+            calls["count"] += 1
+            return json.dumps({"ok": True, "tool": name, "args": invoke_args}), 7
+
+        agent._invoke_tool = fake_invoke  # type: ignore[method-assign]
+        env_value = "1" if flag else ""
+        with patch.dict(os.environ, {"VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD": env_value}, clear=False):
+            agent._execute_parallel([self._tc(tool_name, args)], context, messages, trace, react_trace, 1)
+        trace.close()
+        return self._last_payload(messages), calls["count"]
+
     def test_flag_off_does_not_intercept_ambiguous_symbol(self) -> None:
         payload, calls = self._run_single(
             "请分析 000001",
@@ -226,6 +242,50 @@ class SymbolIntentGuardIntegrationTests(unittest.TestCase):
         self.assertNotIn("_data_quality", payload)
         self.assertNotIn("000001.SZ", payload)
         self.assertEqual(payload["error_code"], "pre_tool_symbol_intent_guard")
+
+    def test_flag_on_allows_parallel_global_stock_news(self) -> None:
+        payload, calls = self._run_parallel(
+            "请查看今天市场新闻",
+            "get_stock_news",
+            {"scope": "global", "limit": 10},
+            flag=True,
+        )
+        self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+        self.assertNotIn("_symbol_intent_guard", payload)
+
+    def test_flag_on_parallel_stock_news_ambiguous_000001_clarifies(self) -> None:
+        payload, calls = self._run_parallel(
+            "请分析 000001",
+            "get_stock_news",
+            {"symbol": "000001.SZ"},
+            flag=True,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "pre_tool_symbol_intent_guard")
+        self.assertEqual(payload["decision"], "clarify")
+
+    def test_flag_on_allows_parallel_sector_ranking(self) -> None:
+        payload, calls = self._run_parallel(
+            "请查看行业排行",
+            "get_sector_info",
+            {"mode": "ranking", "limit": 20},
+            flag=True,
+        )
+        self.assertEqual(calls, 1)
+        self.assertTrue(payload["ok"])
+        self.assertNotIn("_symbol_intent_guard", payload)
+
+    def test_flag_on_parallel_sector_info_ambiguous_000001_clarifies(self) -> None:
+        payload, calls = self._run_parallel(
+            "请分析 000001",
+            "get_sector_info",
+            {"symbol": "000001.SZ"},
+            flag=True,
+        )
+        self.assertEqual(calls, 0)
+        self.assertEqual(payload["blocked_by"], "pre_tool_symbol_intent_guard")
+        self.assertEqual(payload["decision"], "clarify")
 
 
 if __name__ == "__main__":

@@ -1040,3 +1040,24 @@ Boundary:
 * No Web UI code changes.
 * No `a-stock-data` integration.
 * Web UI retest after the fix is still pending.
+
+## 2026-07-08 Market-wide Stock News Guard Exemption
+
+Actions performed:
+
+1. Confirmed clean branch and ignored sensitive/runtime paths.
+2. Investigated `get_stock_news(scope=global)` false positive from Web UI retest.
+3. Confirmed `get_stock_news` supports stock-specific `scope=stock` with `code` and market-wide `scope=global` without `code`.
+4. Added market-wide exemption in the pure Symbol Intent Guard.
+5. Kept symbol-specific `get_stock_news` under guard protection.
+6. Added unit and AgentLoop integration tests.
+7. Ran symbol, routing, anti-hallucination, compile, and lightweight mock validations.
+
+Boundary:
+
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No service startup.
+* No `a-stock-data` integration.
+* Web UI retest not rerun in this task.

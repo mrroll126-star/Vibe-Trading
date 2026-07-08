@@ -705,3 +705,29 @@ Conclusion:
 * Asset-type-aware Tool Routing should answer: "Is this tool suitable for this asset type?"
 
 Before enabling the symbol guard by default, design and review asset-type-aware routing so explicit index and ETF prompts do not flow into unsuitable stock-only tools.
+
+## Market-wide News Exemption: 2026-07-08
+
+Issue found during Web UI retest:
+
+* `get_stock_news(scope=global)` was blocked by Pre-tool Symbol Intent Guard because it has no single stock symbol.
+* This is a false positive: broad market / global / sector news calls are market-wide requests, not missing-symbol single-security requests.
+
+Fix:
+
+* `get_stock_news` is allowed without a symbol when it is explicitly market-wide:
+  * `scope=global|market|all|sector`
+  * `mode=global|market|all|sector`
+  * or a query that clearly asks for broad market / macro / sector news and contains no symbol.
+
+Boundary:
+
+* Symbol-specific `get_stock_news` remains guarded.
+* `get_stock_news(symbol=000001.SZ)` with prompt `000001` still clarifies.
+* `get_stock_news(symbol=600519.SH)` with prompt `贵州茅台` still clarifies.
+* `get_stock_news(symbol=600519.SH)` with prompt `600519` still allows.
+
+Status:
+
+* Unit and AgentLoop integration tests added.
+* Web UI retest has not been rerun after this fix.

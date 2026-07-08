@@ -22,6 +22,18 @@ STOCK_SYMBOL_GUARDED_TOOLS = {
 }
 _DECISION_RANK = {"allow": 0, "block": 1, "clarify": 2}
 _SYMBOL_KEYS = ("codes", "symbols", "symbol", "ticker", "code", "query")
+_MARKET_WIDE_NEWS_MODES = {"global", "market", "all", "sector"}
+_MARKET_WIDE_SECTOR_MODES = {"ranking", "list", "overview"}
+_MARKET_WIDE_NEWS_QUERY_HINTS = (
+    "全市场",
+    "市场新闻",
+    "宏观",
+    "行业新闻",
+    "板块新闻",
+    "market news",
+    "macro news",
+    "sector news",
+)
 _CHINESE_NAME_KEYWORDS = {
     "贵州茅台": "600519.SH",
     "平安银行": "000001.SZ",
@@ -72,6 +84,10 @@ def evaluate_symbol_intent_guard(
             },
             details=[],
         )
+
+    market_wide_decision = _market_wide_tool_decision(tool_name, tool_args)
+    if market_wide_decision is not None:
+        return market_wide_decision
 
     prompt = "" if original_prompt is None else str(original_prompt)
     symbols = _extract_tool_symbols(tool_args)
@@ -224,6 +240,70 @@ def _extract_tool_symbols(tool_args: dict) -> list[str]:
         elif value is not None:
             symbols.extend(_extract_symbols_from_string(str(value)))
     return _unique([symbol.upper() for symbol in symbols if symbol])
+
+
+def _market_wide_tool_decision(tool_name: str, tool_args: dict) -> dict | None:
+    if not isinstance(tool_args, dict):
+        return None
+    if tool_name == "get_sector_info":
+        mode = str(tool_args.get("mode") or "").strip().lower()
+        if mode in _MARKET_WIDE_SECTOR_MODES and not _extract_tool_symbols(tool_args):
+            return _decision(
+                "allow",
+                "market_wide_mode",
+                "market_wide_sector_info",
+                tool_name=tool_name,
+                tool_symbol=None,
+                raw_symbol_candidates=[],
+                warnings=[],
+                metadata={
+                    "source": "market_wide",
+                    "guarded_tool": True,
+                    "guarded_tool_group": "market_wide",
+                    "tool_name": tool_name,
+                },
+                details=[],
+            )
+    if tool_name == "get_stock_news":
+        symbols = _extract_tool_symbols(tool_args)
+        for key in ("scope", "mode"):
+            value = str(tool_args.get(key) or "").strip().lower()
+            if value in _MARKET_WIDE_NEWS_MODES and not symbols:
+                return _decision(
+                    "allow",
+                    "market_wide_news_mode",
+                    "market_wide_stock_news",
+                    tool_name=tool_name,
+                    tool_symbol=None,
+                    raw_symbol_candidates=[],
+                    warnings=[],
+                    metadata={
+                        "source": "market_wide",
+                        "guarded_tool": True,
+                        "guarded_tool_group": "market_wide",
+                        "tool_name": tool_name,
+                    },
+                    details=[],
+                )
+        query = str(tool_args.get("query") or "").strip().lower()
+        if query and not symbols and any(hint in query for hint in _MARKET_WIDE_NEWS_QUERY_HINTS):
+            return _decision(
+                "allow",
+                "market_wide_news_mode",
+                "market_wide_stock_news_query",
+                tool_name=tool_name,
+                tool_symbol=None,
+                raw_symbol_candidates=[],
+                warnings=[],
+                metadata={
+                    "source": "market_wide",
+                    "guarded_tool": True,
+                    "guarded_tool_group": "market_wide",
+                    "tool_name": tool_name,
+                },
+                details=[],
+            )
+    return None
 
 
 def _extract_symbols_from_string(value: str) -> list[str]:

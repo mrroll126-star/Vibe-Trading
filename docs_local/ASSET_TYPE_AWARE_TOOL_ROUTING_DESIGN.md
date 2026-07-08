@@ -384,3 +384,22 @@ Still not done:
 * Web UI retest after this parallel-path fix.
 * Default-enable decision.
 * `a-stock-data` integration.
+
+## 16. Market-wide News Guard Interaction
+
+Updated on 2026-07-08:
+
+The Web UI asset-routing retest surfaced a Symbol Intent Guard false positive: `get_stock_news(scope=global)` was blocked because it has no single symbol. This was not an asset-type routing problem; it was a market-wide tool-call exemption problem in the symbol guard.
+
+Current status:
+
+* `get_stock_news(scope=global|market|all|sector)` without a symbol is allowed as market-wide news.
+* `get_stock_news(mode=global|market|all|sector)` without a symbol is allowed.
+* Clearly broad market / macro / sector news queries without symbols are allowed.
+* Symbol-specific `get_stock_news` calls still flow through Symbol Intent Guard first, then Asset-type Routing Guard if enabled.
+
+Next Web UI retest should cover:
+
+* `510300.SH` + financial statements block.
+* `QQQ.US` + `get_stock_news` warning.
+* `get_stock_news(scope=global)` market-wide allow.

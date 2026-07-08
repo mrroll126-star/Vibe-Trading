@@ -245,6 +245,10 @@ Parallel execution fix status:
 
 The first Web UI retest found that parallel readonly tool batches skipped Asset-type Routing Guard. This has been fixed in `AgentLoop._execute_parallel` with tests. Web UI retest is still required before default-enable decisions.
 
+Market-wide news guard status:
+
+The same Web UI retest found that `get_stock_news(scope=global)` was blocked by Symbol Intent Guard. This has been fixed for market-wide news calls. Symbol-specific news calls remain guarded.
+
 Next validation item:
 
 Run local Web UI retest with:
@@ -252,3 +256,9 @@ Run local Web UI retest with:
 * `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=1`
 * `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
 * Optional controlled `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=1`
+
+Specific retest cases:
+
+* `510300.SH` + financial statements should be blocked before provider execution.
+* `QQQ.US` + stock news should warn and include `_tool_routing_guard`.
+* `get_stock_news(scope=global)` should not be blocked by Symbol Intent Guard.

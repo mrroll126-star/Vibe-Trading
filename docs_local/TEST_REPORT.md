@@ -1912,3 +1912,65 @@ Boundary:
 * No Web UI code changes.
 * No `a-stock-data` integration.
 * Web UI retest after the fix has not been run yet.
+
+## 2026-07-08 Market-wide Stock News Guard Exemption
+
+Purpose:
+
+Fix a false positive where `get_stock_news(scope=global)` was blocked by Pre-tool Symbol Intent Guard even though it is a market-wide news request and does not require a single symbol.
+
+Commands executed:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration
+```
+
+Result:
+
+* Passed.
+* 83 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration
+```
+
+Result:
+
+* Passed.
+* 53 tests.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* Passed.
+* 46 tests.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Result:
+
+* Passed.
+
+Lightweight mock validation:
+
+| Case | Provider/tool called | Result |
+| --- | ---: | --- |
+| `get_stock_news(scope=global)` | 1 | allow |
+| `get_stock_news(symbol=000001.SZ)`, prompt `000001` | 0 | clarify |
+| `get_sector_info(mode=ranking)` | 1 | allow |
+| `get_sector_info(symbol=000001.SZ)`, prompt `000001` | 0 | clarify |
+
+Boundary:
+
+* Feature flag default remains off.
+* Symbol-specific news calls remain guarded.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No `a-stock-data` integration.
+* Web UI retest has not been rerun after this fix.

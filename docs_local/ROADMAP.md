@@ -213,3 +213,18 @@ Next:
 * Repeat Web UI asset-type routing retest.
 * Decide default policy only after Web UI retest passes.
 * Keep `a-stock-data` deferred.
+
+## 2026-07-08 Market-wide Stock News Guard Fix
+
+Completed:
+
+* Allowed market-wide `get_stock_news` calls through Symbol Intent Guard.
+* Preserved guard behavior for symbol-specific `get_stock_news`.
+* Added pure and AgentLoop integration tests.
+* Confirmed `get_sector_info(mode=ranking)` remains allowed.
+
+Next:
+
+* Run directional Web UI retest for asset routing and market-wide news.
+* Decide safety guard default policy only after retest passes.
+* Keep `a-stock-data` deferred.

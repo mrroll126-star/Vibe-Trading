@@ -174,6 +174,94 @@ class SymbolIntentGuardTests(unittest.TestCase):
         )
         self.assertDecision(result, "block", "tool_symbol_not_traceable_to_user_prompt")
 
+    def test_get_stock_news_global_scope_allows_without_symbol(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请查看今天市场新闻",
+            "get_stock_news",
+            {"scope": "global", "limit": 10},
+        )
+        self.assertDecision(result, "allow", "market_wide_news_mode")
+
+    def test_get_stock_news_market_scope_allows_without_symbol(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请查看今天市场新闻",
+            "get_stock_news",
+            {"scope": "market", "limit": 10},
+        )
+        self.assertDecision(result, "allow", "market_wide_news_mode")
+
+    def test_get_stock_news_all_scope_allows_without_symbol(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请查看今天市场新闻",
+            "get_stock_news",
+            {"scope": "all", "limit": 10},
+        )
+        self.assertDecision(result, "allow", "market_wide_news_mode")
+
+    def test_get_stock_news_sector_scope_allows_without_symbol(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请查看今天行业新闻",
+            "get_stock_news",
+            {"scope": "sector", "limit": 10},
+        )
+        self.assertDecision(result, "allow", "market_wide_news_mode")
+
+    def test_get_stock_news_global_mode_allows_without_symbol(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请查看今天市场新闻",
+            "get_stock_news",
+            {"mode": "global", "limit": 10},
+        )
+        self.assertDecision(result, "allow", "market_wide_news_mode")
+
+    def test_get_stock_news_market_query_allows_without_symbol(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请查看今天市场新闻",
+            "get_stock_news",
+            {"query": "A股市场新闻", "limit": 10},
+        )
+        self.assertDecision(result, "allow", "market_wide_news_mode")
+
+    def test_get_stock_news_symbol_ambiguous_000001_still_clarifies(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 000001",
+            "get_stock_news",
+            {"symbol": "000001.SZ"},
+        )
+        self.assertDecision(result, "clarify", "ambiguous_000001_requires_confirmation")
+
+    def test_get_stock_news_symbol_chinese_name_still_clarifies(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 贵州茅台",
+            "get_stock_news",
+            {"symbol": "600519.SH"},
+        )
+        self.assertDecision(result, "clarify", "chinese_name_requires_confirmation")
+
+    def test_get_stock_news_symbol_safe_bare_still_allows(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 600519",
+            "get_stock_news",
+            {"symbol": "600519.SH"},
+        )
+        self.assertDecision(result, "allow", "safe_bare_symbol_mapping")
+
+    def test_get_sector_info_ranking_allows_without_symbol(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请查看行业排行",
+            "get_sector_info",
+            {"mode": "ranking", "limit": 20},
+        )
+        self.assertDecision(result, "allow", "market_wide_mode")
+
+    def test_get_sector_info_symbol_ambiguous_000001_still_clarifies(self) -> None:
+        result = evaluate_symbol_intent_guard(
+            "请分析 000001",
+            "get_sector_info",
+            {"symbol": "000001.SZ"},
+        )
+        self.assertDecision(result, "clarify", "ambiguous_000001_requires_confirmation")
+
     def test_query_field_extracts_standard_symbol_for_guarded_tool(self) -> None:
         result = evaluate_symbol_intent_guard(
             "请分析 600519",
