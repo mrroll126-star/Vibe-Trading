@@ -435,3 +435,22 @@ Default remains off.
 Next step:
 
 Design a controlled live smoke test before any real endpoint is added or called.
+
+Controlled live smoke design:
+
+Added on 2026-07-09:
+
+* `docs_local/A_STOCK_DATA_LIVE_SMOKE_TEST_PLAN.md`
+
+Recommendation:
+
+* Use an external one-off smoke script first.
+* Do not enter AgentLoop.
+* Do not modify `get_financial_statements`.
+* Do not call live endpoints until user explicitly approves.
+* Keep `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0` by default.
+
+Candidate endpoint:
+
+* `sina_financial_report(code, report_type, num)` from the upstream Skill.
+* First live smoke should inspect raw output shape only.

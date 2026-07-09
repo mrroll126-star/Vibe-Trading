@@ -1229,6 +1229,26 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No Web UI changes.
 * No vendor code committed.
 
+## 2026-07-09
+
+### Added
+
+* `docs_local/A_STOCK_DATA_LIVE_SMOKE_TEST_PLAN.md`.
+
+### Changed
+
+* Adapter design, financial fallback plan, roadmap, next tasks, worklog, and test report now reflect that the next step is a controlled smoke design, not direct live integration.
+
+### Boundary
+
+* No live `a-stock-data` request.
+* No dependency installation.
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No vendor code committed.
+
 ## 2026-07-08
 
 ### Fixed

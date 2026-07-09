@@ -495,6 +495,25 @@ Still deferred:
 * Any provider-chain or loader integration.
 * Any fund-flow/news/research-report adapter.
 
+Live smoke design status:
+
+Added on 2026-07-09:
+
+* `docs_local/A_STOCK_DATA_LIVE_SMOKE_TEST_PLAN.md`
+
+Recommended first live candidate:
+
+* `sina_financial_report` from the upstream Skill.
+* Statement mapping:
+  * `income` -> `lrb`
+  * `balance` -> `fzb`
+  * `cashflow` -> `llb`
+* `indicators` remains unknown for this candidate.
+
+Recommended execution mode:
+
+* Option A: external one-off smoke script outside AgentLoop and outside `get_financial_statements`.
+
 Phase D: CLI/direct tests.
 
 * Mock first.

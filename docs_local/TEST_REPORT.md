@@ -2558,3 +2558,52 @@ Boundary:
 * No Web UI changes.
 * No vendor code committed.
 * No sensitive/runtime files committed.
+
+## 2026-07-09 a-stock-data Controlled Live Smoke Test Design
+
+Goal:
+
+Design a controlled live smoke test for the a-stock-data financial fallback without running live requests.
+
+Files added:
+
+* `docs_local/A_STOCK_DATA_LIVE_SMOKE_TEST_PLAN.md`
+
+Files updated:
+
+* `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`
+* `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md`
+* `docs_local/NEXT_TASKS.md`
+* `docs_local/ROADMAP.md`
+* `docs_local/CODEX_WORKLOG.md`
+* `docs_local/CHANGELOG_LOCAL.md`
+* `docs_local/TEST_REPORT.md`
+
+Readonly discovery:
+
+* Local readonly clone exists at `/Users/jz-home/Documents/Codex/workspace/Projects/Investment/_vendor_readonly/a-stock-data`.
+* Candidate endpoint: `sina_financial_report(code, report_type, num)`.
+* Candidate source: Sina Finance `quotes.sina.cn`.
+* Candidate raw shape: `list[dict]` with `报告期`.
+* Required dependency for candidate: `requests`.
+* Token/cookie requirement: none found for this endpoint.
+
+Commands run:
+
+* Git status and remote checks.
+* Readonly `sed` / `rg` over project files and readonly vendor docs.
+
+Not run:
+
+* No live public endpoint request.
+* No Web UI.
+* No Agent task.
+* No dependency installation.
+
+Boundary:
+
+* Documentation-only design task.
+* No business code changes.
+* No provider-chain or loader changes.
+* No vendor code committed.
+* No `local_reports` generated or committed.

@@ -1305,3 +1305,27 @@ Boundary:
 * No Web UI changes.
 * No dependency installation.
 * No vendor code committed.
+
+## 2026-07-09 a-stock-data Controlled Live Smoke Test Design
+
+Actions performed:
+
+1. Confirmed branch state and remote tracking.
+2. Confirmed sensitive/runtime paths remain ignored and untracked.
+3. Re-read `fetch_a_stock_financials`, fallback eligibility, primary fallback trigger, and the normalizer.
+4. Re-read existing fallback integration tests.
+5. Read the local readonly `a-stock-data` clone under `_vendor_readonly`.
+6. Identified the upstream `sina_financial_report` snippet as the best first smoke candidate.
+7. Added `docs_local/A_STOCK_DATA_LIVE_SMOKE_TEST_PLAN.md`.
+8. Updated related `docs_local` files.
+
+Boundary:
+
+* Design-only task.
+* No live request.
+* No dependency installation.
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No vendor code committed.

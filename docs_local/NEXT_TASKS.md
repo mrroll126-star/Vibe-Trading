@@ -27,21 +27,21 @@ Highest principle:
 
 ## Current Recommended Order After Remote Backup
 
-1. **Design controlled live smoke test for a-stock-data financial fallback**
-   * Business value: checks whether the selected A-share financial endpoint is usable before any production-style run.
-   * Suggested scope: `600519.SH` and `300750.SZ`, one statement type, short timeout.
-   * Risk: public endpoint drift, throttling, or inconsistent financial fields.
-   * Boundary: design first; no live call until explicitly approved.
+1. **Implement one-off a-stock-data financial smoke script after user approval**
+   * Business value: checks raw output shape without entering AgentLoop or changing provider behavior.
+   * Suggested scope: `600519.SH` and `300750.SZ`, start with `income -> lrb`.
+   * Risk: public endpoint drift, timeout, or anti-bot response.
+   * Boundary: no live request until explicitly approved; output only under ignored `local_reports`.
 
-2. **Push latest local commits to the user's fork**
-   * Business value: backs up the Phase C hook and documentation.
-   * Risk: remote backup only; no PR should be created unless requested.
-   * Boundary: run sensitive-file checks before push.
+2. **If dependencies are missing, confirm installation scope first**
+   * Business value: avoids polluting global Python or committing environment churn.
+   * Risk: unnecessary dependency installation.
+   * Boundary: install only into `.venv` after approval.
 
-3. **Optional Web UI benchmark policy observation**
-   * Business value: gathers more evidence before deciding whether the experimental benchmark policy should remain optional.
-   * Risk: consumes LLM tokens; can expose unrelated tool-selection behavior.
-   * Boundary: keep benchmark policy default off.
+3. **After smoke, decide whether to implement live fetch behind the stub**
+   * Business value: turns a proven endpoint into a controlled fallback.
+   * Risk: bringing live public endpoint risk into tool runtime.
+   * Boundary: feature flag remains default off.
 
 4. **Optional live smoke test after user approval**
    * Business value: checks whether the selected public endpoint is usable from this machine.

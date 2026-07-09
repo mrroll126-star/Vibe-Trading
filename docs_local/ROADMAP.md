@@ -461,3 +461,25 @@ Not changed:
 Next roadmap item:
 
 Design a controlled live smoke test. Do not run it until the user confirms.
+
+## 2026-07-09 a-stock-data Controlled Live Smoke Test Design
+
+Completed:
+
+* Read the current mock-first fallback hook and normalizer.
+* Read the upstream readonly `a-stock-data` clone.
+* Identified `sina_financial_report(code, report_type, num)` as the recommended first candidate.
+* Added `docs_local/A_STOCK_DATA_LIVE_SMOKE_TEST_PLAN.md`.
+* Recommended Option A: one-off external smoke script outside AgentLoop and outside `get_financial_statements`.
+
+Not changed:
+
+* No business code.
+* No live request.
+* No dependency installation.
+* No provider-chain or loader changes.
+* No Web UI changes.
+
+Next roadmap item:
+
+After user approval, implement the one-off smoke script and keep outputs in ignored `local_reports`.
