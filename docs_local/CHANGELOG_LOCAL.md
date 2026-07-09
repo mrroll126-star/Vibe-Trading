@@ -1319,3 +1319,27 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No Web UI code changes.
 * No `a-stock-data` integration.
 * No sensitive/runtime files committed.
+
+## 2026-07-09
+
+### Added
+
+* Live Sina financial fetch behind `fetch_a_stock_financials(...)`.
+* Mocked tests for successful statement fetches, unsupported `indicators`, request failure, and empty upstream rows.
+
+### Validation
+
+* a-stock-data normalizer and fallback tests passed with 56 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Symbol/routing/benchmark regression tests passed with 194 tests.
+* Compile check passed.
+* Direct function smoke passed for `600519.SH` and `300750.SZ` across income, balance, and cashflow.
+
+### Boundary
+
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
+* No provider-chain or loader changes.
+* No Web UI changes.
+* No `.env` read.
+* No dependency installation.
+* No `local_reports` committed.

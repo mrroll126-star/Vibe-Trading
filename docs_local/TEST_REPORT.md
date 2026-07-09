@@ -2711,3 +2711,100 @@ Boundary:
 * No Web UI changes.
 * No dependency installation.
 * No `local_reports` committed.
+
+## 2026-07-09 a-stock-data Phase D Live Fetch Behind Flag
+
+Goal:
+
+Implement the live Sina financial fetch inside `fetch_a_stock_financials(...)` while keeping the official fallback path feature-flagged and default off.
+
+Files changed:
+
+* `agent/src/adapters/a_stock_data/financials.py`
+* `agent/tests/test_a_stock_data_financials_fallback.py`
+
+Dependency check:
+
+```bash
+.venv/bin/python - <<'PY'
+import requests
+print(requests.__version__)
+PY
+```
+
+Result:
+
+* `requests 2.34.2`
+* No dependency installation.
+
+Unit and regression tests:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_a_stock_data_normalizer agent.tests.test_a_stock_data_financials_fallback
+```
+
+Result:
+
+* 56 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* 46 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration agent.tests.test_benchmark_policy agent.tests.test_benchmark_policy_integration
+```
+
+Result:
+
+* 194 tests passed.
+
+Compile check:
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests scripts/smoke_a_stock_data_financials.py
+```
+
+Result:
+
+* Passed.
+
+Direct function smoke:
+
+```bash
+PYTHONPATH=agent .venv/bin/python - <<'PY'
+from src.adapters.a_stock_data.financials import fetch_a_stock_financials
+from src.adapters.a_stock_data.normalizer import normalize_a_stock_financials_result
+
+for symbol in ("600519.SH", "300750.SZ"):
+    for statement in ("income", "balance", "cashflow"):
+        raw = fetch_a_stock_financials(symbol, statement_type=statement, num=3, timeout=15)
+        norm = normalize_a_stock_financials_result(raw, symbol, source=raw.get("source"), upstream=raw.get("upstream"), statement_type=statement)
+        quality = norm.get("_data_quality", {}).get(symbol, {})
+        print(symbol, statement, raw.get("ok"), len(raw.get("data") or []), norm.get("ok"), quality.get("latest_data_date"), quality.get("freshness_status"), raw.get("error"))
+PY
+```
+
+Result:
+
+| Symbol | Statement | Raw OK | Rows | Normalizer OK | Latest Date | Freshness | Error |
+| --- | --- | --- | ---: | --- | --- | --- | --- |
+| `600519.SH` | `income` | true | 3 | true | `2026-03-31` | `unknown` | none |
+| `600519.SH` | `balance` | true | 3 | true | `2026-03-31` | `unknown` | none |
+| `600519.SH` | `cashflow` | true | 3 | true | `2026-03-31` | `unknown` | none |
+| `300750.SZ` | `income` | true | 3 | true | `2026-03-31` | `unknown` | none |
+| `300750.SZ` | `balance` | true | 3 | true | `2026-03-31` | `unknown` | none |
+| `300750.SZ` | `cashflow` | true | 3 | true | `2026-03-31` | `unknown` | none |
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not change provider chain or loader.
+* Did not generate or commit `local_reports`.
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.

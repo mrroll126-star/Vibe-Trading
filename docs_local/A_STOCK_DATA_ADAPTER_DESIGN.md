@@ -24,6 +24,17 @@ Do not add more data before the system can prove where the data came from, wheth
 
 This document is design only. It does not integrate `a-stock-data`, modify provider chains, modify loaders, or change Web UI behavior.
 
+Phase D update:
+
+The financial-statement adapter path is no longer design-only. A live Sina financial fetch now exists behind `fetch_a_stock_financials(...)`, but it remains constrained by the existing feature flag and fallback-only hook:
+
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
+* Existing primary financial providers still run first.
+* The adapter supports only financial statements for confirmed A-share stocks.
+* Supported statements are `income`, `balance`, and `cashflow`.
+* `indicators`, fund flow, news, reports, provider-chain integration, loader integration, and Web UI integration remain out of scope.
+* This document remains the design reference for broader future adapter work.
+
 ## 2. Current A-share Data Baseline
 
 Current market-data fallback chain:

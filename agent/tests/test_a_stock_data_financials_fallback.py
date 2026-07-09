@@ -3,7 +3,7 @@ from __future__ import annotations
 import json
 import os
 import unittest
-from unittest.mock import patch
+from unittest.mock import Mock, patch
 
 from src.adapters.a_stock_data.financials import (
     fetch_a_stock_financials,
@@ -213,10 +213,75 @@ class AStockDataFinancialsFallbackTests(unittest.TestCase):
         self.assertIn("fallback failed", quality["source_error"])
         self.assertIn("a_stock_data_fallback_failed", quality["warnings"])
 
-    def test_default_fetch_stub_normalizes_to_missing_without_exception(self) -> None:
-        raw = fetch_a_stock_financials("600519.SH", statement_type="income")
+    def test_fetch_income_parses_sina_rows(self) -> None:
+        response = _mock_response(
+            {
+                "result": {
+                    "data": {
+                        "report_list": {
+                            "20260331": {
+                                "data": [
+                                    {"item_title": "营业收入", "item_value": "100", "item_tongbi": "5%"},
+                                    {"item_title": "净利润", "item_value": "20", "item_tongbi": ""},
+                                ]
+                            }
+                        }
+                    }
+                }
+            }
+        )
+        with patch("src.adapters.a_stock_data.financials.requests.get", return_value=response) as get:
+            raw = fetch_a_stock_financials("600519.SH", statement_type="income", num=3, timeout=7)
+
+        self.assertTrue(raw["ok"])
+        self.assertEqual(raw["source"], "sina_financial_report")
+        self.assertEqual(raw["upstream"], "a-stock-data")
+        self.assertEqual(raw["data"][0]["报告期"], "2026-03-31")
+        self.assertEqual(raw["data"][0]["营业收入"], "100")
+        self.assertEqual(raw["data"][0]["营业收入_同比"], "5%")
+        self.assertEqual(raw["data"][0]["净利润"], "20")
+        args, kwargs = get.call_args
+        self.assertIn("CompanyFinanceService.getFinanceReport2022", args[0])
+        self.assertEqual(kwargs["params"]["paperCode"], "sh600519")
+        self.assertEqual(kwargs["params"]["source"], "lrb")
+        self.assertEqual(kwargs["timeout"], 7)
+
+    def test_fetch_balance_uses_fzb(self) -> None:
+        with patch("src.adapters.a_stock_data.financials.requests.get", return_value=_mock_response(_payload_with_period())) as get:
+            raw = fetch_a_stock_financials("300750.SZ", statement_type="balance")
+
+        self.assertTrue(raw["ok"])
+        self.assertEqual(get.call_args.kwargs["params"]["paperCode"], "sz300750")
+        self.assertEqual(get.call_args.kwargs["params"]["source"], "fzb")
+
+    def test_fetch_cashflow_uses_llb(self) -> None:
+        with patch("src.adapters.a_stock_data.financials.requests.get", return_value=_mock_response(_payload_with_period())) as get:
+            raw = fetch_a_stock_financials("300750.SZ", statement_type="cashflow")
+
+        self.assertTrue(raw["ok"])
+        self.assertEqual(get.call_args.kwargs["params"]["source"], "llb")
+
+    def test_fetch_unsupported_indicators_returns_missing_payload(self) -> None:
+        with patch("src.adapters.a_stock_data.financials.requests.get") as get:
+            raw = fetch_a_stock_financials("600519.SH", statement_type="indicators")
+
+        get.assert_not_called()
         self.assertFalse(raw["ok"])
-        self.assertEqual(raw["error"], "a_stock_data_live_fetch_not_implemented")
+        self.assertIn("unsupported_statement_type", raw["error"])
+
+    def test_fetch_request_error_returns_missing_payload(self) -> None:
+        with patch("src.adapters.a_stock_data.financials.requests.get", side_effect=RuntimeError("network down")):
+            raw = fetch_a_stock_financials("600519.SH", statement_type="income")
+
+        self.assertFalse(raw["ok"])
+        self.assertIn("sina_financial_report_request_failed", raw["error"])
+
+    def test_fetch_empty_rows_returns_no_rows_error(self) -> None:
+        with patch("src.adapters.a_stock_data.financials.requests.get", return_value=_mock_response({"result": {"data": {"report_list": {}}}})):
+            raw = fetch_a_stock_financials("600519.SH", statement_type="income")
+
+        self.assertFalse(raw["ok"])
+        self.assertEqual(raw["error"], "sina_financial_report_returned_no_rows")
 
     def _execute_with_primary_failure(self, code: str):
         with patch.dict(os.environ, {"VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER": "1"}, clear=True):
@@ -224,6 +289,28 @@ class AStockDataFinancialsFallbackTests(unittest.TestCase):
                 with patch("src.tools.financial_statements_tool.fetch_a_stock_financials") as fallback:
                     result = json.loads(FinancialStatementsTool().execute(code=code))
         return result, fallback
+
+def _payload_with_period() -> dict:
+    return {
+        "result": {
+            "data": {
+                "report_list": {
+                    "20260331": {
+                        "data": [
+                            {"item_title": "项目", "item_value": "1", "item_tongbi": None},
+                        ]
+                    }
+                }
+            }
+        }
+    }
+
+
+def _mock_response(payload: dict) -> Mock:
+    response = Mock()
+    response.json.return_value = payload
+    response.raise_for_status.return_value = None
+    return response
 
 
 if __name__ == "__main__":

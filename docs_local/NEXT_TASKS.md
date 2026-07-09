@@ -663,3 +663,21 @@ Future re-enable conditions:
 
 4. **Keep direct adapter execution deferred**
    * Reason: the normalizer contract is ready, but no approved live source path has been selected yet.
+
+## Current Recommended Order After a-stock-data Phase D Live Fetch
+
+1. **Push the Phase D commit to the user's fork**
+   * Business value: back up the first live external-data adapter implementation.
+   * Risk: low after the usual sensitive-file check.
+   * Requires user confirmation before push.
+
+2. **Controlled `get_financial_statements` fallback smoke**
+   * Business value: verify the official fallback hook calls the live fetch only when primary data is missing/error.
+   * Scope: direct tool/API-level test only; no Web UI.
+   * Required flags: `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1`.
+
+3. **Keep Web UI and Agent research tasks deferred**
+   * Reason: the adapter is still an optional fallback. Direct tool behavior should be proven before user-facing research flows consume it.
+
+4. **Keep `a-stock-data` fund flow/news/reports deferred**
+   * Reason: only financial statements have passed controlled smoke and normalization.

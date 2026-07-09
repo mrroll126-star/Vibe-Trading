@@ -521,3 +521,28 @@ Completed:
 Next roadmap item:
 
 Design live fetch implementation behind `fetch_a_stock_financials(...)` for `income`, `balance`, and `cashflow`, feature-flagged and default off.
+
+## 2026-07-09 a-stock-data Phase D Live Fetch Behind Flag
+
+Completed:
+
+* Implemented live Sina financial fetch behind `fetch_a_stock_financials(...)`.
+* Supported MVP statement mappings:
+  * `income -> lrb`
+  * `balance -> fzb`
+  * `cashflow -> llb`
+* Kept `indicators` out of scope.
+* Kept `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` default off.
+* Kept the official fallback hook fallback-only after primary failure or empty primary data.
+* Ran direct function smoke for `600519.SH` and `300750.SZ`; all six symbol/statement combinations returned 3 rows with latest date `2026-03-31`.
+
+Not changed:
+
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No fund-flow, news, reports, or indicators adapter.
+
+Next roadmap item:
+
+Decide whether to run a controlled `get_financial_statements` fallback smoke with the feature flag on and primary provider failure simulated or forced in a narrow test harness. Do not run Web UI yet.

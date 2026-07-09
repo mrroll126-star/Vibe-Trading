@@ -1378,3 +1378,27 @@ Boundary:
 * Did not modify provider chain or loader.
 * Did not install dependencies.
 * Did not commit live result files.
+
+## 2026-07-09 a-stock-data Phase D Live Fetch Behind Flag
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Confirmed `requests 2.34.2` is available in `.venv`.
+3. Implemented live Sina financial fetch behind `fetch_a_stock_financials(...)`.
+4. Kept the official fallback hook under `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`.
+5. Kept the feature flag default off.
+6. Added mocked unit tests for income, balance, cashflow, unsupported statement, request error, and empty rows.
+7. Ran focused a-stock-data tests and guardrail regression tests.
+8. Ran a direct function smoke for `600519.SH` and `300750.SZ` across income, balance, and cashflow.
+9. Updated docs_local.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not modify provider chain or loader.
+* Did not add fund-flow, news, reports, or indicators support.
+* Did not install dependencies.
+* Did not commit `local_reports`.

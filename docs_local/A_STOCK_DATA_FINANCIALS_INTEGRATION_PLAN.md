@@ -2,7 +2,7 @@
 
 Date: 2026-07-09
 
-Status: design only.
+Status: Phase D live fetch implemented behind feature flag.
 
 This document plans Phase C for the `a-stock-data` work: a feature-flagged fallback path for `get_financial_statements`.
 
@@ -22,12 +22,36 @@ Implemented:
 * `get_financial_statements` fallback hook after the existing primary path.
 * Unit tests and regression tests.
 
-Still not implemented:
+At the end of Phase C, still not implemented:
 
 * No live `a-stock-data` endpoint call.
 * No dependency installation.
 * No provider-chain or loader integration.
 * No Web UI changes.
+
+Phase D implementation update:
+
+Phase D live Sina financial fetch was implemented on 2026-07-09.
+
+Implemented:
+
+* `fetch_a_stock_financials(...)` now calls the Sina financial statement endpoint used by the `a-stock-data` candidate path.
+* Supported statement mappings:
+  * `income -> lrb`
+  * `balance -> fzb`
+  * `cashflow -> llb`
+* `indicators` remains unsupported and returns an unavailable payload.
+* The existing fallback hook still runs only after the primary financial provider fails or returns no usable data.
+* The feature flag remains `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`.
+* The flag remains off by default.
+* The live fetch path returns metadata for `source=sina_financial_report` and `upstream=a-stock-data`.
+
+Still out of scope:
+
+* No dependency installation.
+* No provider-chain or loader integration.
+* No Web UI changes.
+* No fund-flow, news, research-report, or indicators adapter.
 
 ## 1. Goal
 
