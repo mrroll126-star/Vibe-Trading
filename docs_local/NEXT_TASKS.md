@@ -25,28 +25,28 @@ Highest principle:
 
 * LLM must not invent market data.
 
-## Current Recommended Order After Web UI Pre-tool Guard Retest
+## Current Recommended Order After Remote Backup
 
-1. **Boundary Web UI retest before default-enable decision**
-   * Business value: verifies safe US/HK bare symbols and explicit ambiguous symbols before making a product default decision.
-   * Suggested cases: `QQQ`, `00700`, `000001.SZ`, `000001.SH`.
-   * Risk: consumes LLM tokens and may expose unrelated tool-routing behavior.
-   * Boundary: localhost only; shell tools disabled.
+1. **Review and approve `get_financial_statements` a-stock-data fallback design**
+   * Business value: prepares the first A-share data enhancement without disturbing the market-data chain.
+   * Suggested document: `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`.
+   * Risk: choosing the wrong fallback order could hide existing provider behavior.
+   * Boundary: design approval only; no live endpoint calls until explicitly approved.
 
-2. **Decide whether to default-enable Symbol Normalizer and Pre-tool Guard later**
-   * Business value: determines whether natural symbols can become normal product behavior.
-   * Risk: must wait for a full Web UI pass after the expanded guard.
-   * Boundary: decide from a full pass, not from the current partial pass.
+2. **Implement feature-flagged `get_financial_statements` fallback only after approval**
+   * Business value: adds auditable A-share financial-statement backup coverage.
+   * Risk: public endpoints can change or throttle; financial fields need careful normalization.
+   * Boundary: flag default off; confirmed A-share stocks only; no provider-chain replacement.
 
-3. **Optional stricter No Estimate Guard**
-   * Business value: prevents estimated market-fact phrases from remaining in the main report body when the user explicitly says no estimates.
-   * Risk: automatic rewrite can overcorrect or remove useful context.
-   * Boundary: design first; consider block/rewrite only for explicit no-estimate prompts.
+3. **Mock and unit-test fallback behavior**
+   * Business value: proves success, empty, error, no-date, and ineligible-symbol cases before live data.
+   * Risk: mocked tests can miss endpoint changes.
+   * Boundary: no network in unit tests.
 
-4. **`a-stock-data` adapter planning**
-   * Business value: prepares richer A-share data after guardrails exist.
-   * Risk: adding data sources before contracts are complete can hide failures.
-   * Boundary: planning first; no provider replacement.
+4. **Optional live smoke test after user approval**
+   * Business value: checks whether the selected public endpoint is usable from this machine.
+   * Risk: network instability, throttling, or endpoint shape drift.
+   * Boundary: localhost only; shell tools disabled; no trading.
 
 5. **Extend data quality to remaining A-share tools**
    * Business value: brings northbound flow, margin trading, shareholder count, sector info, and financial statements into the same audit model.

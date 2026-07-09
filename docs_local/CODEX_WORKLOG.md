@@ -1241,3 +1241,43 @@ Boundary:
 * No provider-chain changes.
 * No service startup.
 * No `agent/.env` content read or printed.
+
+## 2026-07-09 GitHub Remote Backup Execution
+
+Actions performed:
+
+1. Created the GitHub fork under `mrroll126-star/Vibe-Trading`.
+2. Added a project-specific GitHub SSH key after user confirmation.
+3. Confirmed SSH authentication to GitHub.
+4. Reconfigured remotes so `origin` points to the user's fork and `upstream` points to HKUDS/Vibe-Trading.
+5. Pushed `feature/bootstrap-local-setup` to the user's fork.
+6. Confirmed the remote branch exists at commit `01bbc89`.
+7. Confirmed ignored sensitive/runtime paths remain untracked.
+
+Boundary:
+
+* No PR created.
+* No push to upstream.
+* No `agent/.env` content read or printed.
+* No business code changes during remote backup.
+
+## 2026-07-09 a-stock-data Financial Statements Phase C Design
+
+Actions performed:
+
+1. Confirmed the working tree was clean.
+2. Re-read current `get_financial_statements` implementation.
+3. Re-read the pure `a-stock-data` financial normalizer helper.
+4. Added `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`.
+5. Updated adapter design, roadmap, next tasks, changelog, test report, and backlog.
+
+Boundary:
+
+* Design-only task.
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No live public endpoint calls.
+* No dependency installation.
+* No `a-stock-data` runtime integration.

@@ -392,3 +392,23 @@ Remaining work:
 * Keep the feature flag default off.
 * Do not run live public endpoints until the user approves.
 * Do not copy upstream vendor code into this repository.
+
+Phase C design status:
+
+Complete.
+
+Added:
+
+* `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`
+
+Recommended implementation:
+
+* Add a fallback-only `get_financial_statements` path for confirmed A-share stocks.
+* Keep Eastmoney as primary.
+* Keep `a-stock-data` behind `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0` by default.
+* Require `_data_quality` in fallback results.
+* Block indexes, ETFs, US, HK, ambiguous raw codes, and unconfirmed Chinese names before fallback.
+
+Next implementation gate:
+
+User approval is required before changing `financial_statements_tool.py` or calling any live `a-stock-data` endpoint.

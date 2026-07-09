@@ -2450,3 +2450,45 @@ Boundary:
 * No dependency installation.
 * No vendor code copied.
 * No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-09 a-stock-data Financial Statements Phase C Design
+
+Goal:
+
+Design the next integration step for `a-stock-data`: a feature-flagged fallback for `get_financial_statements`.
+
+Files added:
+
+* `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`
+
+Files updated:
+
+* `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md`
+* `docs_local/NEXT_TASKS.md`
+* `docs_local/ROADMAP.md`
+* `docs_local/CODEX_WORKLOG.md`
+* `docs_local/CHANGELOG_LOCAL.md`
+* `docs_local/TEST_REPORT.md`
+* `docs_local/PRODUCT_BACKLOG.md`
+
+Code/runtime status:
+
+* No business code changed.
+* No provider chain changed.
+* No loader changed.
+* No Web UI changed.
+* No live endpoint test run.
+* No dependency installed.
+
+Validation:
+
+* Documentation-only design task.
+* Current `get_financial_statements` source routing was reviewed:
+  * A-share: Eastmoney.
+  * Hong Kong: Eastmoney HK F10.
+  * US: SEC EDGAR.
+* Existing pure `a-stock-data` financial normalizer helper was reviewed.
+
+Recommended implementation gate:
+
+Do not implement until the user approves the Phase C design. If approved, implement mock tests first and keep `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0` by default.

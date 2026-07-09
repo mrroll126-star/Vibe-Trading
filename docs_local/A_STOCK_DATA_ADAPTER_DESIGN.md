@@ -459,6 +459,22 @@ Phase C: feature-flagged single-tool integration.
 * Keep existing source as primary unless user approves fallback order.
 * Add adapter only as a controlled fallback or explicit internal provider path.
 
+Status:
+
+Design document added on 2026-07-09:
+
+* `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`
+
+Recommended Phase C shape:
+
+* Feature flag: `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0` by default.
+* Existing Eastmoney A-share financial statements remain primary.
+* `a-stock-data` can be used only as fallback after existing provider failure or empty unusable rows.
+* Eligible symbols: confirmed A-share stocks only.
+* Ineligible: indexes, ETFs, HK, US, ambiguous raw symbols, and Chinese names without confirmation.
+* Fallback output must include `_data_quality`.
+* No live endpoint call should be added without user approval.
+
 Phase D: CLI/direct tests.
 
 * Mock first.

@@ -1177,6 +1177,28 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No business code changes.
 * No sensitive/runtime files committed.
 
+## 2026-07-09
+
+### Added
+
+* `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`.
+
+### Changed
+
+* `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md` now links Phase C to the dedicated financial-statements fallback plan.
+* `docs_local/NEXT_TASKS.md` now prioritizes reviewing the Phase C design before implementation.
+* Roadmap, worklog, test report, and backlog now reflect that GitHub backup is complete and a-stock-data remains design-only.
+
+### Boundary
+
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No live public endpoint calls.
+* No `a-stock-data` runtime integration.
+* No sensitive/runtime files committed.
+
 ## 2026-07-08
 
 ### Fixed

@@ -391,3 +391,46 @@ upstream = HKUDS/Vibe-Trading
 ```
 
 Then push only `feature/bootstrap-local-setup` to the user's fork after explicit user confirmation.
+
+## 2026-07-09 GitHub Remote Backup Completed
+
+Completed:
+
+* Created the user's fork under `mrroll126-star/Vibe-Trading`.
+* Reconfigured remotes:
+  * `origin` points to the user's fork through a project-specific SSH alias.
+  * `upstream` points to `HKUDS/Vibe-Trading`.
+* Pushed `feature/bootstrap-local-setup` to the user's fork.
+* Confirmed the remote branch points to `01bbc89`.
+* Confirmed sensitive/runtime paths remain ignored and untracked.
+
+Next roadmap item:
+
+Continue with `get_financial_statements` feature-flagged fallback integration design.
+
+## 2026-07-09 a-stock-data Financial Statements Phase C Design
+
+Completed:
+
+* Added `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`.
+* Confirmed current `get_financial_statements` source routing:
+  * A-share: Eastmoney.
+  * Hong Kong: Eastmoney HK F10.
+  * US: SEC EDGAR.
+* Defined a conservative fallback-only design for confirmed A-share stocks.
+* Kept the default flag off:
+  * `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0`
+* Required `_data_quality` and Source Summary compatibility.
+
+Not changed:
+
+* No business code.
+* No provider chain.
+* No loader registry.
+* No Web UI.
+* No live public endpoint call.
+* No `a-stock-data` runtime integration.
+
+Next roadmap item:
+
+If approved, implement the feature-flagged `get_financial_statements` fallback with mock tests first.
