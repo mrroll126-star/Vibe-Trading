@@ -681,3 +681,21 @@ Future re-enable conditions:
 
 4. **Keep `a-stock-data` fund flow/news/reports deferred**
    * Reason: only financial statements have passed controlled smoke and normalization.
+
+## Current Recommended Order After a-stock-data Phase E Direct Tool Smoke
+
+1. **Push the Phase E commit to the user's fork**
+   * Business value: back up the controlled official-tool fallback validation.
+   * Risk: low after sensitive-file checks.
+   * Requires user confirmation before push.
+
+2. **Decide next validation boundary**
+   * Option A: run one more direct tool smoke with optional local JSON output under ignored `local_reports`.
+   * Option B: keep Web UI deferred and improve financial-statement `_data_quality` visibility first.
+   * Current recommendation: keep Web UI deferred.
+
+3. **Do not expand to fund flow/news/reports yet**
+   * Reason: only financial statements have a live fetch, normalizer, fallback hook, and direct tool smoke.
+
+4. **Keep feature flag default off**
+   * Reason: live fallback works, but it is still an optional external-data path and should not affect normal runs without explicit opt-in.

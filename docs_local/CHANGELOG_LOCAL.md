@@ -1343,3 +1343,27 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No `.env` read.
 * No dependency installation.
 * No `local_reports` committed.
+
+## 2026-07-09
+
+### Added
+
+* `scripts/smoke_get_financial_statements_a_stock_fallback.py`.
+
+### Validation
+
+* Controlled direct tool fallback smoke passed with 7/7 cases.
+* Positive fallback cases returned `provider=a_stock_data` and `source=sina_financial_report`.
+* Negative ETF, US, and index cases did not call fallback.
+* a-stock-data financial tests passed with 56 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* Feature flag remains default off.
+* No Web UI run.
+* No AgentLoop research task.
+* No provider-chain or loader changes.
+* No `.env` read.
+* No `local_reports` committed.

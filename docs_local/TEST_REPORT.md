@@ -2808,3 +2808,72 @@ Boundary:
 * Did not change provider chain or loader.
 * Did not generate or commit `local_reports`.
 * `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
+
+## 2026-07-09 a-stock-data Phase E Controlled Direct Tool Fallback Smoke
+
+Goal:
+
+Verify the official `get_financial_statements` tool path can use the live a-stock-data Sina financial fallback when the feature flag is enabled and the primary provider is forced to fail.
+
+Script added:
+
+```text
+scripts/smoke_get_financial_statements_a_stock_fallback.py
+```
+
+Direct smoke command:
+
+```bash
+.venv/bin/python scripts/smoke_get_financial_statements_a_stock_fallback.py
+```
+
+Result:
+
+```text
+OK positive 600519.SH income: provider=a_stock_data source=sina_financial_report rows=8 latest=2026-03-31
+OK positive 300750.SZ income: provider=a_stock_data source=sina_financial_report rows=8 latest=2026-03-31
+OK positive 600519.SH balance: provider=a_stock_data source=sina_financial_report rows=8 latest=2026-03-31
+OK positive 600519.SH cashflow: provider=a_stock_data source=sina_financial_report rows=8 latest=2026-03-31
+OK negative 510300.SH income: fallback_called=False reason=etf_not_eligible_for_company_financials
+OK negative QQQ.US income: fallback_called=False reason=not_a_share_market
+OK negative 000001.SH income: fallback_called=False reason=index_not_eligible_for_company_financials
+Summary: 7/7 cases passed
+```
+
+Regression tests:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_a_stock_data_normalizer agent.tests.test_a_stock_data_financials_fallback
+```
+
+Result:
+
+* 56 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* 46 tests passed.
+
+Compile check:
+
+```bash
+.venv/bin/python -m compileall -q scripts/smoke_get_financial_statements_a_stock_fallback.py
+```
+
+Result:
+
+* Passed.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not run AgentLoop research tasks.
+* Did not change provider chain or loader.
+* Did not generate or commit `local_reports`.
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.

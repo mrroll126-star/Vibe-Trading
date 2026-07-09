@@ -1402,3 +1402,33 @@ Boundary:
 * Did not add fund-flow, news, reports, or indicators support.
 * Did not install dependencies.
 * Did not commit `local_reports`.
+
+## 2026-07-09 a-stock-data Phase E Controlled Direct Tool Fallback Smoke
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Re-read the official `get_financial_statements` tool path.
+3. Added `scripts/smoke_get_financial_statements_a_stock_fallback.py`.
+4. In the script process only, set `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1`.
+5. Forced the primary provider to return `forced_primary_failure_for_smoke`.
+6. Verified positive A-share stock fallback cases:
+   * `600519.SH income`
+   * `300750.SZ income`
+   * `600519.SH balance`
+   * `600519.SH cashflow`
+7. Verified negative cases did not call fallback:
+   * `510300.SH income`
+   * `QQQ.US income`
+   * `000001.SH income`
+8. Ran regression tests and compile check.
+9. Updated docs_local.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not run AgentLoop research tasks.
+* Did not modify provider chain or loader.
+* Did not generate or commit `local_reports`.

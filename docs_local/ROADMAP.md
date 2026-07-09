@@ -546,3 +546,32 @@ Not changed:
 Next roadmap item:
 
 Decide whether to run a controlled `get_financial_statements` fallback smoke with the feature flag on and primary provider failure simulated or forced in a narrow test harness. Do not run Web UI yet.
+
+## 2026-07-09 a-stock-data Phase E Controlled Direct Tool Fallback Smoke
+
+Completed:
+
+* Added a direct smoke script for the official `get_financial_statements` tool path.
+* Forced primary provider failure in-process instead of depending on real Eastmoney failure.
+* Temporarily enabled `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1` only inside the script process.
+* Verified live fallback succeeds for:
+  * `600519.SH income`
+  * `300750.SZ income`
+  * `600519.SH balance`
+  * `600519.SH cashflow`
+* Verified fallback is refused for:
+  * `510300.SH income`
+  * `QQQ.US income`
+  * `000001.SH income`
+
+Not changed:
+
+* No Web UI.
+* No AgentLoop research task.
+* No provider-chain changes.
+* No loader changes.
+* Feature flag remains default off.
+
+Next roadmap item:
+
+Back up the Phase E commit to the fork after user confirmation. Then decide whether the next validation should be a narrow API/tool smoke or whether to keep Web UI deferred until more data-quality metadata is added to financial statements.

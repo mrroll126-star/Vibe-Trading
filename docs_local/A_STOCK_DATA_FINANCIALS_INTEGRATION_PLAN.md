@@ -53,6 +53,33 @@ Still out of scope:
 * No Web UI changes.
 * No fund-flow, news, research-report, or indicators adapter.
 
+Phase E controlled direct tool fallback smoke was completed on 2026-07-09.
+
+Validation approach:
+
+* Called the official `FinancialStatementsTool().execute(...)` path directly.
+* Temporarily enabled `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1` only inside the smoke process.
+* Forced the primary Eastmoney/SEC result to fail with `forced_primary_failure_for_smoke`.
+* Verified eligible A-share stocks fallback to `a_stock_data`.
+* Verified ETF, US, and A-share index symbols do not call the fallback.
+
+Result:
+
+* `600519.SH income`: fallback success.
+* `300750.SZ income`: fallback success.
+* `600519.SH balance`: fallback success.
+* `600519.SH cashflow`: fallback success.
+* `510300.SH income`: fallback refused; ETF not eligible.
+* `QQQ.US income`: fallback refused; not A-share market.
+* `000001.SH income`: fallback refused; index not eligible.
+
+Boundary:
+
+* No Web UI.
+* No AgentLoop research task.
+* No provider-chain or loader change.
+* Feature flag remains default off.
+
 ## 1. Goal
 
 Add an optional A-share financial-statements fallback path after the existing Vibe-Trading financial-statements source fails or returns no usable rows.
