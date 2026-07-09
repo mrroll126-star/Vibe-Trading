@@ -2809,6 +2809,127 @@ Boundary:
 * Did not generate or commit `local_reports`.
 * `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
 
+## 2026-07-10 a-stock-data Phase F Direct/API Output Structure Observation
+
+Goal:
+
+Inspect whether the official `get_financial_statements` fallback output structure is suitable for report-layer Source Summary consumption.
+
+Script added:
+
+```text
+scripts/inspect_get_financial_statements_fallback_output.py
+```
+
+Command:
+
+```bash
+.venv/bin/python scripts/inspect_get_financial_statements_fallback_output.py --symbols 600519.SH --statement-types income --timeout 15 --output-dir local_reports
+```
+
+Live requests:
+
+* 1 live fallback request.
+* Symbol: `600519.SH`.
+* Statement: `income`.
+
+Local report:
+
+```text
+local_reports/get_financial_statements_fallback_output_inspection_20260709_160211.json
+```
+
+This file is ignored by Git and was not committed.
+
+Observed compact summary:
+
+| Field | Value |
+| --- | --- |
+| ok | true |
+| symbol | `600519.SH` |
+| statement_type | `income` |
+| provider | `a_stock_data` |
+| source | `sina_financial_report` |
+| upstream | `a-stock-data` |
+| row_count | 8 |
+| latest_data_date | `2026-03-31` |
+| freshness_status | `unknown` |
+| has_data_quality | true |
+| primary_error | `forced_primary_failure_for_output_inspection` |
+
+Top-level keys:
+
+```text
+_data_quality, data, fallback, market, ok, period, provider, source, statement, statement_type, symbol, upstream
+```
+
+First row keys:
+
+```text
+eps, net_profit, raw, report_date, revenue
+```
+
+Warnings:
+
+```text
+primary_financials_unavailable
+a_stock_data_fallback_used
+```
+
+Report-summary compatibility:
+
+| Requirement | Result |
+| --- | --- |
+| has_provider | true |
+| has_source | true |
+| has_data_quality | true |
+| has_latest_data_date | true |
+| has_warnings | true |
+| has_primary_error | true |
+
+Regression tests:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_a_stock_data_normalizer agent.tests.test_a_stock_data_financials_fallback
+```
+
+Result:
+
+* 56 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* 46 tests passed.
+
+Compile check:
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests scripts
+```
+
+Result:
+
+* Passed.
+
+Guard regression:
+
+* Full guard/benchmark regression was not run in this round because no guard, benchmark, AgentLoop, provider-chain, loader, or Web UI code was modified.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not run AgentLoop research tasks.
+* Did not change provider chain or loader.
+* Did not install dependencies.
+* Did not commit `local_reports`.
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
+
 ## 2026-07-09 a-stock-data Phase E Controlled Direct Tool Fallback Smoke
 
 Goal:

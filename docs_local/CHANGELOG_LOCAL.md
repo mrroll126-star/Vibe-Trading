@@ -1367,3 +1367,29 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No provider-chain or loader changes.
 * No `.env` read.
 * No `local_reports` committed.
+
+## 2026-07-10
+
+### Added
+
+* `scripts/inspect_get_financial_statements_fallback_output.py`.
+
+### Validation
+
+* Direct/API output inspection passed for `600519.SH income`.
+* Exactly one live fallback request was made.
+* Output contains provider/source/upstream, rows, `_data_quality`, latest data date, fallback warnings, and primary error.
+* Report-summary compatibility checks passed.
+* a-stock-data financial tests passed with 56 tests.
+* Data-quality/report regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* Feature flag remains default off.
+* No Web UI run.
+* No AgentLoop research task.
+* No provider-chain or loader changes.
+* No dependency installation.
+* No `.env` read.
+* No `local_reports` committed.

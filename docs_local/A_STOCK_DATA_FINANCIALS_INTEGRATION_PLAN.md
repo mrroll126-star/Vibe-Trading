@@ -80,6 +80,48 @@ Boundary:
 * No provider-chain or loader change.
 * Feature flag remains default off.
 
+Phase F direct/API output structure observation was completed on 2026-07-10.
+
+Validation approach:
+
+* Added `scripts/inspect_get_financial_statements_fallback_output.py`.
+* Called the official `FinancialStatementsTool().execute(...)` path directly.
+* Temporarily enabled `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1` only inside the script process.
+* Forced the primary Eastmoney result to fail with `forced_primary_failure_for_output_inspection`.
+* Ran exactly one live fallback request:
+  * `600519.SH income`
+
+Observed output structure:
+
+* Top-level keys:
+  * `_data_quality`
+  * `data`
+  * `fallback`
+  * `market`
+  * `ok`
+  * `period`
+  * `provider`
+  * `source`
+  * `statement`
+  * `statement_type`
+  * `symbol`
+  * `upstream`
+* Rows live under `data["600519.SH"]`.
+* Provider/source/upstream are available at top level and inside `_data_quality`.
+* `_data_quality["600519.SH"]` contains `latest_data_date`, `freshness_status`, `row_count`, `source_success`, `warnings`, and `primary_error`.
+* `warnings` includes:
+  * `primary_financials_unavailable`
+  * `a_stock_data_fallback_used`
+* `primary_error` is preserved as `forced_primary_failure_for_output_inspection`.
+
+Report-summary compatibility:
+
+The output is compatible with the current `Data Source Summary` formatter because it includes provider/source, `_data_quality`, `latest_data_date`, warnings, and source status fields.
+
+Minimum future improvement:
+
+Financial statements currently use `freshness_status=unknown` even when `latest_data_date` exists. This is acceptable for MVP disclosure, but a future filing-specific freshness policy could classify financial statements by reporting period age rather than market-data recency.
+
 ## 1. Goal
 
 Add an optional A-share financial-statements fallback path after the existing Vibe-Trading financial-statements source fails or returns no usable rows.

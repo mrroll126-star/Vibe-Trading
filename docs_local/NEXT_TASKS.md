@@ -699,3 +699,20 @@ Future re-enable conditions:
 
 4. **Keep feature flag default off**
    * Reason: live fallback works, but it is still an optional external-data path and should not affect normal runs without explicit opt-in.
+
+## Current Recommended Order After a-stock-data Phase F Output Inspection
+
+1. **Push the Phase F commit to the user's fork**
+   * Business value: back up the output-structure observation script and documentation.
+   * Risk: low after sensitive-file checks.
+   * Requires user confirmation before push.
+
+2. **Controlled CLI/tool-level report observation**
+   * Business value: confirm that the report-layer Source Summary can display financial fallback metadata in a user-facing report-like artifact.
+   * Scope: no Web UI and no full Agent research task yet.
+
+3. **Web UI test only after CLI/tool-level observation passes**
+   * Reason: the fallback output is structurally compatible, but user-facing report rendering should be tested in smaller steps first.
+
+4. **Keep the adapter feature flag default off**
+   * Reason: the live external source is useful but still optional and should require explicit opt-in.

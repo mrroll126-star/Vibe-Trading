@@ -1432,3 +1432,28 @@ Boundary:
 * Did not run AgentLoop research tasks.
 * Did not modify provider chain or loader.
 * Did not generate or commit `local_reports`.
+
+## 2026-07-10 a-stock-data Phase F Direct/API Output Structure Observation
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Re-read `get_financial_statements`, the a-stock-data financial adapter, normalizer, report summary formatter, existing tests, and smoke scripts.
+3. Added `scripts/inspect_get_financial_statements_fallback_output.py`.
+4. In the script process only, set `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1`.
+5. Forced primary provider failure with `forced_primary_failure_for_output_inspection`.
+6. Ran exactly one live fallback request for `600519.SH income`.
+7. Confirmed the output contains provider, source, upstream, rows, `_data_quality`, `latest_data_date`, warnings, and `primary_error`.
+8. Wrote a compact local JSON summary under ignored `local_reports`.
+9. Ran focused a-stock-data tests, data-quality/report tests, and compile check.
+10. Updated docs_local.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not run AgentLoop research tasks.
+* Did not modify provider chain or loader.
+* Did not install dependencies.
+* Did not commit `local_reports`.

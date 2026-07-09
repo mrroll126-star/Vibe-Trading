@@ -35,6 +35,21 @@ The financial-statement adapter path is no longer design-only. A live Sina finan
 * `indicators`, fund flow, news, reports, provider-chain integration, loader integration, and Web UI integration remain out of scope.
 * This document remains the design reference for broader future adapter work.
 
+Phase F output-structure observation update:
+
+The official `get_financial_statements` fallback output was inspected directly on 2026-07-10. The observed fallback result contains the fields needed by report-layer Source Summary:
+
+* top-level `provider=a_stock_data`
+* top-level `source=sina_financial_report`
+* top-level `upstream=a-stock-data`
+* rows under `data[SYMBOL]`
+* `_data_quality[SYMBOL]`
+* `latest_data_date`
+* `warnings`
+* `primary_error`
+
+This means the current financial fallback shape is suitable for report-layer consumption without changing provider chains, loaders, or Web UI.
+
 ## 2. Current A-share Data Baseline
 
 Current market-data fallback chain:

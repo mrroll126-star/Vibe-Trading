@@ -575,3 +575,32 @@ Not changed:
 Next roadmap item:
 
 Back up the Phase E commit to the fork after user confirmation. Then decide whether the next validation should be a narrow API/tool smoke or whether to keep Web UI deferred until more data-quality metadata is added to financial statements.
+
+## 2026-07-10 a-stock-data Phase F Direct/API Output Structure Observation
+
+Completed:
+
+* Added a direct output-inspection script for the official `get_financial_statements` fallback output.
+* Ran one live fallback request for `600519.SH income`.
+* Confirmed the result shape includes:
+  * `provider=a_stock_data`
+  * `source=sina_financial_report`
+  * `upstream=a-stock-data`
+  * rows under `data[SYMBOL]`
+  * `_data_quality[SYMBOL]`
+  * `latest_data_date`
+  * fallback warnings
+  * `primary_error`
+* Confirmed current output is compatible with report-layer Source Summary.
+
+Not changed:
+
+* No Web UI.
+* No AgentLoop research task.
+* No provider-chain changes.
+* No loader changes.
+* Feature flag remains default off.
+
+Next roadmap item:
+
+Back up the Phase F commit to the fork after user confirmation. Then consider a controlled CLI/tool-level report observation before any Web UI test.
