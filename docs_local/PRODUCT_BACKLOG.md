@@ -336,3 +336,43 @@ Remaining work:
 * Re-run targeted Web UI/API same-origin retest after this fix.
 * Keep benchmark policy default off until the retest passes.
 * Add final report `Benchmark Selection Summary` only after runtime behavior is stable.
+
+## Added 2026-07-09: a-stock-data Adapter Planning
+
+Type:
+
+Research / improvement.
+
+Impact range:
+
+A-share data-source enhancement. This affects financial statements, fund flow, research reports, news, sector information, and possibly market data later.
+
+Priority:
+
+High after Phase 1 guardrails; still design-first before code integration.
+
+Current status:
+
+Design document added: `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md`.
+
+Recommended MVP:
+
+Tool-level A-share financial statements fallback, behind `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0` by default.
+
+Why this first:
+
+* It is useful for investment research.
+* It is company-specific, so Asset-type Routing Guard can clearly block indexes and ETFs before adapter execution.
+* It is less time-sensitive than intraday fund flow.
+* It does not disturb the existing market-data fallback chain.
+
+Explicit non-goals:
+
+* Do not replace the current A-share market-data fallback chain.
+* Do not vendor-copy the upstream Skill into this repository.
+* Do not bypass Symbol Guard, Asset-type Routing Guard, Freshness Guard, Source Summary, or Report Gate.
+* Do not use iwencai key-gated semantic search in the MVP.
+
+Next engineering step:
+
+Pure adapter normalization helpers and tests only; no live provider calls.

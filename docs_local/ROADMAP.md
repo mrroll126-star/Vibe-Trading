@@ -330,3 +330,23 @@ Still default off:
 Next roadmap item:
 
 Run targeted Web UI/API same-origin retest for A-share benchmark batches before considering any broader rollout.
+
+## 2026-07-09 a-stock-data Adapter Design
+
+Completed:
+
+* Confirmed the Phase 1 guardrail baseline is strong enough to start A-share data-source enhancement planning.
+* Read current Vibe-Trading A-share data-source and tool structure.
+* Read `a-stock-data` README / SKILL / LICENSE / changelog from a readonly vendor clone outside the project repository.
+* Added `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md`.
+* Recommended a tool-level MVP instead of replacing the market-data provider chain.
+
+Status update:
+
+* Benchmark Policy MVP passed the batch-fix API/Web UI same-origin retest.
+* Benchmark Policy remains default off because it is product behavior, not only a safety brake.
+* `a-stock-data` remains design-only; no integration code has been written.
+
+Recommended next roadmap item:
+
+Build pure adapter normalization helpers and tests for the recommended MVP, without provider calls or tool integration.

@@ -1112,6 +1112,29 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No `a-stock-data` integration.
 * Web UI retest after this fix was not run.
 
+## 2026-07-09
+
+### Added
+
+* `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md`.
+* Readonly discovery notes for `simonlin1212/a-stock-data`.
+* Recommended MVP: feature-flagged A-share financial statements fallback design.
+
+### Changed
+
+* Roadmap, next tasks, backlog, test report, and data-source report now reflect that Benchmark Policy MVP passed batch-fix retest and `a-stock-data` is entering design only.
+
+### Boundary
+
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI code changes.
+* No dependency installation.
+* No live public endpoint tests.
+* No vendor code committed.
+* No `a-stock-data` integration.
+
 ## 2026-07-08
 
 ### Fixed

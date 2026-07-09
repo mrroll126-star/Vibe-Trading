@@ -1174,3 +1174,26 @@ Boundary:
 * No Web UI changes.
 * No `a-stock-data` integration.
 * No Web UI retest after this fix.
+
+## 2026-07-09 a-stock-data Adapter Design
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Read current Vibe-Trading A-share loader registry, market-data helper, A-share tools, data-quality helpers, and guardrail design docs.
+3. Created a readonly clone of `simonlin1212/a-stock-data` outside the project repository under `_vendor_readonly`.
+4. Read upstream README, SKILL, LICENSE, changelog, and package structure.
+5. Added `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md`.
+6. Updated roadmap, next tasks, backlog, test report, changelog, and data-source discovery report.
+
+Boundary:
+
+* Design-only task.
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No dependency installation.
+* No live public endpoint tests.
+* No vendor code copied into this repository.
+* No `a-stock-data` integration.

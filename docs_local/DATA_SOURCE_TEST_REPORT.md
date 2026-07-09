@@ -305,3 +305,63 @@ Recommended short-term US provider order:
 3. `eastmoney` only as opportunistic fallback, not primary.
 4. Key-gated providers later after real keys are configured and tested.
 5. Avoid relying on `yfinance` until TLS/curl issue is fixed.
+
+## 12. a-stock-data Readonly Discovery
+
+Date: 2026-07-09.
+
+Readonly clone:
+
+`/Users/jz-home/Documents/Codex/workspace/Projects/Investment/_vendor_readonly/a-stock-data`
+
+Observed upstream:
+
+* Repository: `https://github.com/simonlin1212/a-stock-data`
+* Commit: `bcda405`
+* Version described by README/SKILL: v3.3.0.
+* License: Apache-2.0.
+
+Project shape:
+
+* Skill-style Markdown with embedded Python snippets.
+* Not a conventional Python package in the current repository shape.
+* Not an MCP server.
+* Not an HTTP service.
+* Dependencies described by upstream: `mootdx`, `requests`, `pandas`, `stockstats`.
+* Most data sources are no-key; iwencai semantic search requires an API key.
+
+Advertised A-share capabilities:
+
+| Area | Examples |
+| --- | --- |
+| Market data | K-line, realtime quote, index, ETF, order book, tick trades |
+| Research reports | Eastmoney stock reports, industry reports, PDF download, iwencai semantic search |
+| Fund flow | Eastmoney minute and 120-day daily fund flow |
+| News / announcements | Eastmoney news, global news, CNINFO announcements |
+| Fundamentals | quarterly snapshot, F10, stock info, Sina statements |
+| Sector / concepts | Eastmoney sector/concept membership, industry ranking |
+| Northbound | THS realtime minute flow plus self-cached history |
+| Margin / block trades / shareholder count | Eastmoney datacenter endpoints |
+| Dragon tiger / lockup / dividend | Eastmoney datacenter endpoints |
+| Limit-up / sentiment | Eastmoney pools and THS limit-up reasons |
+| ETF options | Sina option contracts, T-quotes, Greeks, IV |
+| Investor interaction / popularity | CNINFO IRM, THS hot list, Eastmoney hot rank |
+
+Design conclusion:
+
+Do not integrate this as a whole dependency. Treat it as a candidate source of endpoint knowledge and field mappings. Start with a narrow, feature-flagged tool-level adapter design.
+
+Recommended MVP:
+
+* A-share financial statements fallback.
+* No provider-chain replacement.
+* No live endpoint calls until pure normalization helpers and tests exist.
+* All output must include `_data_quality` and be visible in Source Summary.
+
+Still unknown:
+
+* Exact endpoint stability for this machine.
+* Per-endpoint field completeness.
+* Which fields always contain reliable dates.
+* Whether each endpoint supports batch symbols.
+* How much attribution is required if code snippets are adapted.

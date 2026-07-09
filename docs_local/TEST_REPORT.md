@@ -2338,3 +2338,65 @@ Boundary:
 * No Web UI changes.
 * No `a-stock-data` integration.
 * Web UI retest after this fix was not run.
+
+## 2026-07-09 a-stock-data Adapter Design Checks
+
+Goal:
+
+Readonly investigation and design only. No integration code was written.
+
+Commands / checks:
+
+```bash
+pwd
+git branch --show-current
+git status --short
+git log --oneline -8
+git ls-files agent/.env agent/runs agent/sessions local_reports
+```
+
+Result:
+
+* Current branch: `feature/bootstrap-local-setup`.
+* Latest commit at start: `401369a fix: validate benchmark symbol batches`.
+* No sensitive/runtime files tracked.
+
+Readonly project files inspected:
+
+* `agent/backtest/loaders/registry.py`
+* `agent/src/market_data.py`
+* A-share specialty tools under `agent/src/tools/`
+* `agent/src/data_quality/`
+* Guardrail docs under `docs_local/`
+
+Readonly vendor discovery:
+
+```bash
+git clone --depth=1 https://github.com/simonlin1212/a-stock-data /Users/jz-home/Documents/Codex/workspace/Projects/Investment/_vendor_readonly/a-stock-data
+```
+
+Result:
+
+* Readonly clone created outside the project repository.
+* No vendor code copied into `Vibe-Trading`.
+* No dependencies installed.
+* No live public endpoint calls made.
+
+Design output:
+
+* Added `docs_local/A_STOCK_DATA_ADAPTER_DESIGN.md`.
+
+Testing:
+
+* No unit tests were run because this was a documentation-only design task.
+* No Web UI or API research task was run.
+* No live data smoke test was run.
+
+Boundary:
+
+* No business code changes.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No `a-stock-data` integration.
+* No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.

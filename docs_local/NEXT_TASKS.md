@@ -626,3 +626,21 @@ Future re-enable conditions:
 
 4. **GitHub fork / push strategy**
    * Prepare remote backup after user confirms fork setup.
+
+## Current Recommended Order After a-stock-data Adapter Design
+
+1. **Pure adapter normalization helpers + tests**
+   * Scope: no provider calls, no tool integration, no provider-chain change.
+   * Recommended MVP target: A-share financial statements fallback contract.
+   * Required output: normalized provider/source/as_of_date/rows/_data_quality envelope.
+
+2. **GitHub fork / push strategy**
+   * The local branch now contains a substantial Phase 1 guardrail and design baseline.
+   * Backing it up to the user's fork is becoming more important before larger implementation work.
+
+3. **Optional benchmark policy observation**
+   * Benchmark Policy MVP passed the batch-fix retest but remains default off.
+   * Observe a few more market-wide tasks before deciding whether to promote it from experimental.
+
+4. **Defer direct a-stock-data integration**
+   * Do not install dependencies or call live public endpoints until pure normalization tests exist.
