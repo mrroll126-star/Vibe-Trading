@@ -402,6 +402,57 @@ Phase B: pure adapter normalization helpers + tests.
 * No provider calls.
 * No tool integration.
 
+Status:
+
+Completed on 2026-07-09.
+
+Added files:
+
+* `agent/src/adapters/a_stock_data/normalizer.py`
+* `agent/src/adapters/a_stock_data/__init__.py`
+* `agent/src/adapters/__init__.py`
+* `agent/tests/test_a_stock_data_normalizer.py`
+
+Normalized contract:
+
+* `provider`: always `a_stock_data`.
+* `source`: upstream adapter source name, defaulting to `a_stock_data`.
+* `upstream`: descriptive upstream source name, defaulting to `unknown`.
+* `statement_type`: optional passthrough for income / balance sheet / cash flow style routing.
+* `data`: keyed by symbol, with normalized rows.
+* `_data_quality`: keyed by symbol, using the same fields expected by Source Summary.
+
+Current status rules:
+
+* Empty, `None`, malformed, or explicit upstream error payloads return `ok=false` and `freshness_status=missing`.
+* Rows with a date return `ok=true`, preserve `latest_data_date`, and use `freshness_status=unknown` because there is no requested date in this pure helper.
+* Rows without a date return `ok=true`, `freshness_status=unknown`, and warning `no_as_of_date`.
+
+Supported first-pass date fields:
+
+* `report_date`
+* `reportDate`
+* `date`
+* `end_date`
+* `endDate`
+* `period`
+* `报告期`
+* `公告日期`
+* `截止日期`
+
+Supported first-pass financial field aliases:
+
+* `revenue` / `operating_revenue` / `营业收入`
+* `net_profit` / `netProfit` / `净利润` / `归母净利润`
+* `total_assets` / `totalAssets` / `总资产`
+* `total_liabilities` / `totalLiabilities` / `总负债`
+* `cash_flow` / `operating_cash_flow` / `经营现金流` / `经营活动现金流`
+* `eps` / `basic_eps` / `每股收益` / `基本每股收益`
+
+Boundary:
+
+This helper does not import, execute, clone, or vendor `a-stock-data`. It does not read local files, call the network, install dependencies, or change any tool/provider behavior.
+
 Phase C: feature-flagged single-tool integration.
 
 * Recommended first target: `get_financial_statements`.

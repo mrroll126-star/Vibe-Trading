@@ -629,10 +629,10 @@ Future re-enable conditions:
 
 ## Current Recommended Order After a-stock-data Adapter Design
 
-1. **Pure adapter normalization helpers + tests**
-   * Scope: no provider calls, no tool integration, no provider-chain change.
-   * Recommended MVP target: A-share financial statements fallback contract.
-   * Required output: normalized provider/source/as_of_date/rows/_data_quality envelope.
+1. **Feature-flagged single-tool integration design**
+   * Scope: plan how the pure normalizer would attach to `get_financial_statements` without changing provider-chain behavior.
+   * Recommended flag: `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0`.
+   * Required decision: whether `a-stock-data` is fallback-only, explicit-source-only, or comparison-only in the MVP.
 
 2. **GitHub fork / push strategy**
    * The local branch now contains a substantial Phase 1 guardrail and design baseline.
@@ -644,3 +644,21 @@ Future re-enable conditions:
 
 4. **Defer direct a-stock-data integration**
    * Do not install dependencies or call live public endpoints until pure normalization tests exist.
+
+## Current Recommended Order After a-stock-data Normalizer Phase B
+
+1. **Design feature-flagged `get_financial_statements` integration**
+   * Business value: use the new normalizer contract in one controlled A-share financial-statements path.
+   * Risk: medium, because this would be the first real tool integration.
+   * Boundary: design first; no live endpoint or provider-chain replacement.
+
+2. **Create GitHub fork / remote backup**
+   * Business value: protect the growing local Phase 1 codebase before the first real external-data integration.
+   * Risk: low if no push is done until the user confirms fork setup.
+
+3. **Optional live smoke design for a-stock-data**
+   * Business value: define what one approved live test would call and how it would be rate-limited.
+   * Risk: medium due to public endpoint reliability and IP throttling.
+
+4. **Keep direct adapter execution deferred**
+   * Reason: the normalizer contract is ready, but no approved live source path has been selected yet.

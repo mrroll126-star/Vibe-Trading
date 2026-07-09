@@ -350,3 +350,24 @@ Status update:
 Recommended next roadmap item:
 
 Build pure adapter normalization helpers and tests for the recommended MVP, without provider calls or tool integration.
+
+## 2026-07-09 a-stock-data Financial Normalizer Phase B
+
+Completed:
+
+* Added a pure `a-stock-data` financial normalizer helper.
+* Added tests for normal rows, Chinese date fields, empty/error payloads, malformed input, rows without dates, warnings, nested rows, and Source Summary contract keys.
+* Confirmed existing anti-hallucination, symbol guard, routing guard, and benchmark policy regression tests still pass.
+
+Not changed:
+
+* Provider chains.
+* Loader registry.
+* `get_financial_statements` runtime behavior.
+* Web UI.
+* Dependency set.
+* Runtime services.
+
+Next roadmap item:
+
+Design feature-flagged `get_financial_statements` integration before any live `a-stock-data` calls.

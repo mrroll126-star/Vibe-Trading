@@ -376,3 +376,19 @@ Explicit non-goals:
 Next engineering step:
 
 Pure adapter normalization helpers and tests only; no live provider calls.
+
+Phase B status:
+
+Complete.
+
+Added:
+
+* Pure financial normalizer under `agent/src/adapters/a_stock_data/`.
+* Unit tests under `agent/tests/test_a_stock_data_normalizer.py`.
+
+Remaining work:
+
+* Decide exact `get_financial_statements` integration mode.
+* Keep the feature flag default off.
+* Do not run live public endpoints until the user approves.
+* Do not copy upstream vendor code into this repository.

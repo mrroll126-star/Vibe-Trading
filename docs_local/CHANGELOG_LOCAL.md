@@ -1135,6 +1135,30 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No vendor code committed.
 * No `a-stock-data` integration.
 
+## 2026-07-09
+
+### Added
+
+* Pure `a-stock-data` financial normalizer helper under `agent/src/adapters/a_stock_data/`.
+* Unit tests for the normalizer contract.
+
+### Validation
+
+* New normalizer tests passed with 20 tests.
+* Anti-hallucination regression tests passed with 46 tests.
+* Symbol / routing / benchmark regression tests passed with 194 tests.
+* Compile check passed.
+
+### Boundary
+
+* No provider-chain changes.
+* No loader changes.
+* No financial statements tool integration.
+* No Web UI code changes.
+* No dependency installation.
+* No live endpoint tests.
+* No vendor code committed.
+
 ## 2026-07-08
 
 ### Fixed

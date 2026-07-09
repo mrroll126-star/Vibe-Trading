@@ -1197,3 +1197,24 @@ Boundary:
 * No live public endpoint tests.
 * No vendor code copied into this repository.
 * No `a-stock-data` integration.
+
+## 2026-07-09 a-stock-data Financial Normalizer Phase B
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Re-read the current financial statements tool shape and existing Source Summary `_data_quality` expectations.
+3. Added a pure `a_stock_data` adapter normalization module.
+4. Added 20 unittest cases for success, empty, upstream error, malformed input, Chinese date fields, missing date, nested rows, warnings, and Source Summary contract keys.
+5. Ran the new tests, anti-hallucination regressions, symbol/routing/benchmark regressions, compile check, and a light pure-function validation.
+6. Updated docs_local.
+
+Boundary:
+
+* No live `a-stock-data` call.
+* No dependency installation.
+* No provider-chain changes.
+* No loader changes.
+* No `financial_statements_tool` integration.
+* No Web UI changes.
+* No vendor code copied into this repository.

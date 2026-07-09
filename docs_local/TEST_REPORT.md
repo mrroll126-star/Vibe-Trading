@@ -2400,3 +2400,53 @@ Boundary:
 * No Web UI changes.
 * No `a-stock-data` integration.
 * No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
+
+## 2026-07-09 a-stock-data Financial Normalizer Phase B
+
+Goal:
+
+Build pure normalization helpers for a future `a-stock-data` A-share financial-statements adapter. This was a contract and test task only.
+
+Files added:
+
+* `agent/src/adapters/__init__.py`
+* `agent/src/adapters/a_stock_data/__init__.py`
+* `agent/src/adapters/a_stock_data/normalizer.py`
+* `agent/tests/test_a_stock_data_normalizer.py`
+
+Commands run:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_a_stock_data_normalizer
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration agent.tests.test_benchmark_policy agent.tests.test_benchmark_policy_integration
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Results:
+
+* New a-stock-data normalizer tests: 20 tests passed.
+* Anti-hallucination regression tests: 46 tests passed.
+* Symbol / routing / benchmark regression tests: 194 tests passed.
+* Compile check: passed.
+
+Light pure-function validation:
+
+| Case | Result |
+| --- | --- |
+| `report_date` rows | `ok=true`, `freshness_status=unknown`, `latest_data_date=2026-03-31` |
+| `报告期` rows | `ok=true`, `freshness_status=unknown`, `latest_data_date=2026-03-31` |
+| Empty rows | `ok=false`, `freshness_status=missing` |
+| Explicit error payload | `ok=false`, `freshness_status=missing` |
+| Rows without date | `ok=true`, `freshness_status=unknown`, warning `no_as_of_date` |
+
+Boundary:
+
+* No provider-chain changes.
+* No loader changes.
+* No `financial_statements_tool` integration.
+* No Web UI changes.
+* No live data calls.
+* No dependency installation.
+* No vendor code copied.
+* No `agent/.env`, `agent/runs`, `agent/sessions`, or `local_reports` committed.
