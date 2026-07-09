@@ -30,7 +30,14 @@ from typing import Any
 
 from backtest.loaders.eastmoney_client import get_json, resolve_secid
 from backtest.loaders.sec_edgar_client import cik_for, get_company_facts
+from src.adapters.a_stock_data.financials import (
+    fetch_a_stock_financials,
+    is_a_stock_financials_fallback_eligible,
+    should_try_a_stock_financials_fallback,
+)
+from src.adapters.a_stock_data.normalizer import normalize_a_stock_financials_result
 from src.agent.tools import BaseTool
+from src.symbols.config import is_a_stock_data_adapter_enabled
 
 logger = logging.getLogger(__name__)
 
@@ -399,6 +406,70 @@ def _classify_market(code: str) -> str | None:
     return None
 
 
+def _with_a_stock_fallback_audit(
+    fallback_result: dict[str, Any],
+    *,
+    code: str,
+    statement: str,
+    period: str,
+    primary_envelope: dict[str, Any],
+) -> dict[str, Any]:
+    """Add financial fallback audit metadata to a normalized result."""
+
+    fallback_result["market"] = "a_share"
+    fallback_result["statement"] = statement
+    fallback_result["period"] = period
+    fallback_result.setdefault("fallback", {})["primary"] = {
+        "source": primary_envelope.get("source"),
+        "ok": primary_envelope.get("ok"),
+        "error": primary_envelope.get("error"),
+    }
+    quality = fallback_result.get("_data_quality")
+    if isinstance(quality, dict):
+        meta = quality.get(code)
+        if isinstance(meta, dict):
+            warnings = meta.setdefault("warnings", [])
+            for warning in (
+                "primary_financials_unavailable",
+                "a_stock_data_fallback_used",
+            ):
+                if warning not in warnings:
+                    warnings.append(warning)
+            meta["primary_source"] = primary_envelope.get("source")
+            meta["primary_status"] = "ok" if primary_envelope.get("ok") else "failed_or_missing"
+            meta["primary_error"] = primary_envelope.get("error")
+            if not fallback_result.get("ok"):
+                fallback_warnings = (
+                    "a_stock_data_fallback_failed",
+                )
+                for warning in fallback_warnings:
+                    if warning not in warnings:
+                        warnings.append(warning)
+    return fallback_result
+
+
+def _append_fallback_not_eligible(
+    envelope: dict[str, Any],
+    *,
+    code: str,
+    eligibility: dict[str, Any],
+) -> dict[str, Any]:
+    """Attach an audit warning when fallback is intentionally refused."""
+
+    warnings = envelope.setdefault("warnings", [])
+    for warning in ("a_stock_data_fallback_not_eligible", str(eligibility.get("reason") or "")):
+        if warning and warning not in warnings:
+            warnings.append(warning)
+    envelope.setdefault("fallback", {})["a_stock_data"] = {
+        "attempted": False,
+        "reason": eligibility.get("reason"),
+        "symbol": code,
+        "market": eligibility.get("market"),
+        "asset_type": eligibility.get("asset_type"),
+    }
+    return envelope
+
+
 class FinancialStatementsTool(BaseTool):
     """Fetch a stock's three financial statements or key per-period indicators."""
 
@@ -503,4 +574,53 @@ class FinancialStatementsTool(BaseTool):
         }
         if all_failed:
             envelope["error"] = result["error"]
-        return json.dumps(envelope, ensure_ascii=False)
+        if not is_a_stock_data_adapter_enabled():
+            return json.dumps(envelope, ensure_ascii=False)
+
+        if not should_try_a_stock_financials_fallback(envelope):
+            return json.dumps(envelope, ensure_ascii=False)
+
+        eligibility = is_a_stock_financials_fallback_eligible(code, market=market)
+        if not eligibility.get("eligible"):
+            return json.dumps(
+                _append_fallback_not_eligible(
+                    envelope,
+                    code=code,
+                    eligibility=eligibility,
+                ),
+                ensure_ascii=False,
+            )
+
+        try:
+            raw_fallback = fetch_a_stock_financials(
+                code,
+                statement_type=statement,
+                period=period,
+            )
+        except Exception as exc:  # noqa: BLE001 - fallback must never crash the tool
+            logger.warning("a-stock-data financial fallback failed for %s: %s", code, exc)
+            raw_fallback = {
+                "ok": False,
+                "error": f"a_stock_data_fallback_exception: {exc}",
+                "data": [],
+                "source": "a_stock_data",
+                "upstream": "exception",
+            }
+
+        fallback = normalize_a_stock_financials_result(
+            raw_fallback,
+            code,
+            source=raw_fallback.get("source") if isinstance(raw_fallback, dict) else None,
+            upstream=raw_fallback.get("upstream") if isinstance(raw_fallback, dict) else None,
+            statement_type=statement,
+        )
+        return json.dumps(
+            _with_a_stock_fallback_audit(
+                fallback,
+                code=code,
+                statement=statement,
+                period=period,
+                primary_envelope=envelope,
+            ),
+            ensure_ascii=False,
+        )

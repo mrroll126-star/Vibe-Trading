@@ -412,3 +412,24 @@ Recommended implementation:
 Next implementation gate:
 
 User approval is required before changing `financial_statements_tool.py` or calling any live `a-stock-data` endpoint.
+
+Phase C mock-first status:
+
+Complete.
+
+Added:
+
+* Feature flag `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`, default off.
+* Mock-first fallback hook for `get_financial_statements`.
+* Internal eligibility checks for A-share stock only.
+* Tests for flag-off behavior, eligible fallback, ineligible symbols, fallback error, and not-implemented stub.
+
+Still blocked from live use:
+
+* No real endpoint has been selected.
+* No live smoke test has been approved.
+* No production provider-chain integration exists.
+
+Next backlog item:
+
+Design controlled live smoke test, then ask user for explicit approval before running it.

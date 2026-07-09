@@ -475,6 +475,26 @@ Recommended Phase C shape:
 * Fallback output must include `_data_quality`.
 * No live endpoint call should be added without user approval.
 
+Phase C mock-first implementation status:
+
+Completed on 2026-07-09.
+
+Implemented:
+
+* Feature flag `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`, default off.
+* `agent/src/adapters/a_stock_data/financials.py`.
+* Mockable `fetch_a_stock_financials(...)` default stub.
+* Fallback eligibility and primary-result trigger helpers.
+* `get_financial_statements` hook after the existing primary path.
+* Unit tests proving flag-off zero behavior, primary-success no fallback, eligible A-share fallback, ineligible symbol refusal, and default not-implemented behavior.
+
+Still deferred:
+
+* Live `a-stock-data` endpoint selection.
+* Live smoke testing.
+* Any provider-chain or loader integration.
+* Any fund-flow/news/research-report adapter.
+
 Phase D: CLI/direct tests.
 
 * Mock first.

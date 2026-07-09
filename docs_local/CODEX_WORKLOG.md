@@ -1281,3 +1281,27 @@ Boundary:
 * No live public endpoint calls.
 * No dependency installation.
 * No `a-stock-data` runtime integration.
+
+## 2026-07-09 a-stock-data Financial Statements Phase C Mock-first Hook
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Re-read `get_financial_statements`, the pure a-stock-data normalizer, feature flag helpers, and guardrail paths.
+3. Added `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`, default off.
+4. Added mockable `fetch_a_stock_financials(...)` stub.
+5. Added fallback eligibility and primary-result trigger helpers.
+6. Added the fallback hook after the existing financial-statements primary path.
+7. Added unittest coverage for config, eligibility, fallback-trigger, mock integration, and default not-implemented behavior.
+8. Ran new tests, anti-hallucination regressions, symbol/routing/benchmark regressions, compile check, and light mock validation.
+9. Updated docs_local.
+
+Boundary:
+
+* Mock-first only.
+* No live `a-stock-data` call.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No dependency installation.
+* No vendor code committed.

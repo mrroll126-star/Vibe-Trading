@@ -39,3 +39,10 @@ def is_market_wide_benchmark_policy_enabled() -> bool:
 
     value = os.getenv("VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY", "")
     return value.strip().lower() in _ENABLED_VALUES
+
+
+def is_a_stock_data_adapter_enabled() -> bool:
+    """Return whether optional a-stock-data adapter hooks are enabled."""
+
+    value = os.getenv("VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER", "")
+    return value.strip().lower() in _ENABLED_VALUES

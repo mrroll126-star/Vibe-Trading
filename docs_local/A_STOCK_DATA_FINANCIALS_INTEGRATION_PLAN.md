@@ -8,6 +8,27 @@ This document plans Phase C for the `a-stock-data` work: a feature-flagged fallb
 
 No business code is changed by this document. No live `a-stock-data` endpoint is called. No provider chain is changed.
 
+Implementation update:
+
+Phase C mock-first integration was implemented on 2026-07-09.
+
+Implemented:
+
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`
+* Default off behavior.
+* Mockable `fetch_a_stock_financials(...)` stub.
+* Internal fallback eligibility helper.
+* Internal primary-missing/error fallback trigger helper.
+* `get_financial_statements` fallback hook after the existing primary path.
+* Unit tests and regression tests.
+
+Still not implemented:
+
+* No live `a-stock-data` endpoint call.
+* No dependency installation.
+* No provider-chain or loader integration.
+* No Web UI changes.
+
 ## 1. Goal
 
 Add an optional A-share financial-statements fallback path after the existing Vibe-Trading financial-statements source fails or returns no usable rows.
@@ -382,3 +403,35 @@ Do not touch:
 * US/HK financial statements.
 * `a-stock-data` fund flow or news.
 
+## 17. Phase C Mock-first Implementation Result
+
+Files added:
+
+* `agent/src/adapters/a_stock_data/financials.py`
+* `agent/tests/test_a_stock_data_financials_fallback.py`
+
+Files changed:
+
+* `agent/src/tools/financial_statements_tool.py`
+* `agent/src/symbols/config.py`
+* `agent/src/adapters/a_stock_data/__init__.py`
+
+Runtime behavior:
+
+* Flag off: old financial-statements behavior is preserved.
+* Flag on + primary success: old financial-statements result is returned; fallback is not called.
+* Flag on + primary failure/empty + eligible A-share stock: fallback stub is called and normalized through `normalize_a_stock_financials_result(...)`.
+* Flag on + index/ETF/US/HK/ambiguous/Chinese name: fallback is not called.
+* Default fetch stub returns `a_stock_data_live_fetch_not_implemented` and normalizes to `missing`.
+
+Feature flag:
+
+```text
+VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0
+```
+
+Default remains off.
+
+Next step:
+
+Design a controlled live smoke test before any real endpoint is added or called.

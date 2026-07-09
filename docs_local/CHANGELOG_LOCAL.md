@@ -1199,6 +1199,36 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No `a-stock-data` runtime integration.
 * No sensitive/runtime files committed.
 
+## 2026-07-09
+
+### Added
+
+* Feature flag `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`, default off.
+* Mock-first `a-stock-data` financial fallback helper.
+* Unit tests for config, eligibility, fallback trigger, and `get_financial_statements` mock integration.
+
+### Changed
+
+* `get_financial_statements` can now, when the flag is explicitly enabled, call the mockable fallback hook only after the existing primary result is missing/error and the symbol is an eligible A-share stock.
+* Documentation updated with implementation status and test results.
+
+### Validation
+
+* 51 a-stock-data adapter tests passed.
+* 46 anti-hallucination regression tests passed.
+* 194 symbol/routing/benchmark regression tests passed.
+* Compile check passed.
+
+### Boundary
+
+* Default remains off.
+* No live `a-stock-data` call.
+* No dependency installation.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No vendor code committed.
+
 ## 2026-07-08
 
 ### Fixed

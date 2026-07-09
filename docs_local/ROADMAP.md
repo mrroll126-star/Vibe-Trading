@@ -434,3 +434,30 @@ Not changed:
 Next roadmap item:
 
 If approved, implement the feature-flagged `get_financial_statements` fallback with mock tests first.
+
+## 2026-07-09 a-stock-data Financial Statements Phase C Mock-first Hook
+
+Completed:
+
+* Added `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER`, default off.
+* Added mockable fallback stub for A-share financial statements.
+* Added fallback eligibility helper:
+  * Allows confirmed A-share stocks.
+  * Refuses indexes, ETFs, US, HK, ambiguous symbols, and Chinese names.
+* Added primary result trigger helper:
+  * Fallback only after missing/error/empty/unavailable primary financial data.
+* Integrated fallback hook after the existing primary `get_financial_statements` path.
+* Added unittest coverage and regression validation.
+
+Not changed:
+
+* No live `a-stock-data` call.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No dependency installation.
+* No vendor code committed.
+
+Next roadmap item:
+
+Design a controlled live smoke test. Do not run it until the user confirms.

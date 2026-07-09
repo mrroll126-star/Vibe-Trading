@@ -27,21 +27,21 @@ Highest principle:
 
 ## Current Recommended Order After Remote Backup
 
-1. **Review and approve `get_financial_statements` a-stock-data fallback design**
-   * Business value: prepares the first A-share data enhancement without disturbing the market-data chain.
-   * Suggested document: `docs_local/A_STOCK_DATA_FINANCIALS_INTEGRATION_PLAN.md`.
-   * Risk: choosing the wrong fallback order could hide existing provider behavior.
-   * Boundary: design approval only; no live endpoint calls until explicitly approved.
+1. **Design controlled live smoke test for a-stock-data financial fallback**
+   * Business value: checks whether the selected A-share financial endpoint is usable before any production-style run.
+   * Suggested scope: `600519.SH` and `300750.SZ`, one statement type, short timeout.
+   * Risk: public endpoint drift, throttling, or inconsistent financial fields.
+   * Boundary: design first; no live call until explicitly approved.
 
-2. **Implement feature-flagged `get_financial_statements` fallback only after approval**
-   * Business value: adds auditable A-share financial-statement backup coverage.
-   * Risk: public endpoints can change or throttle; financial fields need careful normalization.
-   * Boundary: flag default off; confirmed A-share stocks only; no provider-chain replacement.
+2. **Push latest local commits to the user's fork**
+   * Business value: backs up the Phase C hook and documentation.
+   * Risk: remote backup only; no PR should be created unless requested.
+   * Boundary: run sensitive-file checks before push.
 
-3. **Mock and unit-test fallback behavior**
-   * Business value: proves success, empty, error, no-date, and ineligible-symbol cases before live data.
-   * Risk: mocked tests can miss endpoint changes.
-   * Boundary: no network in unit tests.
+3. **Optional Web UI benchmark policy observation**
+   * Business value: gathers more evidence before deciding whether the experimental benchmark policy should remain optional.
+   * Risk: consumes LLM tokens; can expose unrelated tool-selection behavior.
+   * Boundary: keep benchmark policy default off.
 
 4. **Optional live smoke test after user approval**
    * Business value: checks whether the selected public endpoint is usable from this machine.

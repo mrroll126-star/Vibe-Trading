@@ -2492,3 +2492,69 @@ Validation:
 Recommended implementation gate:
 
 Do not implement until the user approves the Phase C design. If approved, implement mock tests first and keep `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=0` by default.
+
+## 2026-07-09 a-stock-data Financial Statements Phase C Mock-first Hook
+
+Goal:
+
+Implement a feature-flagged, mock-first fallback hook for `get_financial_statements`.
+
+Files added:
+
+* `agent/src/adapters/a_stock_data/financials.py`
+* `agent/tests/test_a_stock_data_financials_fallback.py`
+
+Files changed:
+
+* `agent/src/tools/financial_statements_tool.py`
+* `agent/src/symbols/config.py`
+* `agent/src/adapters/a_stock_data/__init__.py`
+
+Feature flag:
+
+```text
+VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER
+```
+
+Default:
+
+```text
+off
+```
+
+Commands run:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_a_stock_data_normalizer agent.tests.test_a_stock_data_financials_fallback
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer agent.tests.test_market_data_symbol_normalization agent.tests.test_symbol_intent_guard agent.tests.test_symbol_intent_guard_integration agent.tests.test_tool_routing_guard agent.tests.test_tool_routing_guard_integration agent.tests.test_benchmark_policy agent.tests.test_benchmark_policy_integration
+.venv/bin/python -m compileall -q agent/src agent/tests
+```
+
+Results:
+
+* a-stock-data normalizer + financial fallback tests: 51 tests passed.
+* Data quality / anti-hallucination regressions: 46 tests passed.
+* Symbol / routing / benchmark regressions: 194 tests passed.
+* Compile check: passed.
+
+Light mock validation:
+
+| Case | Result |
+| --- | --- |
+| flag off + primary failure | fallback not called; original Eastmoney-style failure returned |
+| flag on + primary success | fallback not called; primary result returned |
+| flag on + `600519.SH` primary failure | fallback called; normalized `provider=a_stock_data` |
+| flag on + `510300.SH` primary failure | fallback not called; ETF not eligible |
+| flag on + `QQQ.US` primary failure | fallback not called; non-A-share not eligible |
+| default fetch stub | returns `a_stock_data_live_fetch_not_implemented`; normalizes to missing |
+
+Boundary:
+
+* No live `a-stock-data` calls.
+* No dependency installation.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No vendor code committed.
+* No sensitive/runtime files committed.
