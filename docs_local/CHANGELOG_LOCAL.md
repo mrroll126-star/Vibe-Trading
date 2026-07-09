@@ -1249,6 +1249,30 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No Web UI changes.
 * No vendor code committed.
 
+## 2026-07-09
+
+### Added
+
+* `scripts/smoke_a_stock_data_financials.py`.
+
+### Validation
+
+* Confirmed `requests 2.34.2` is available in `.venv`.
+* Compile check passed.
+* Controlled live smoke succeeded for:
+  * `600519.SH income`
+  * `300750.SZ income`
+
+### Boundary
+
+* No AgentLoop integration.
+* No `get_financial_statements` live hook change.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No dependency installation.
+* No `local_reports` committed.
+
 ## 2026-07-08
 
 ### Fixed

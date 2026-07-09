@@ -1329,3 +1329,28 @@ Boundary:
 * No loader changes.
 * No Web UI changes.
 * No vendor code committed.
+
+## 2026-07-09 a-stock-data One-off Financial Live Smoke Script
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Confirmed `requests 2.34.2` is available in `.venv`.
+3. Added `scripts/smoke_a_stock_data_financials.py`.
+4. Confirmed `local_reports` is ignored.
+5. Ran compile check for the script.
+6. Ran one controlled live smoke against the Sina financial statement endpoint:
+   * `600519.SH income`
+   * `300750.SZ income`
+7. Confirmed both returned 3 rows and normalized successfully.
+8. Wrote local JSON output under `local_reports`.
+9. Updated docs_local.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not enter AgentLoop.
+* Did not modify official fallback hook behavior.
+* Did not modify provider chain or loader.
+* Did not install dependencies.
+* Did not commit live result files.

@@ -25,28 +25,28 @@ Highest principle:
 
 * LLM must not invent market data.
 
-## Current Recommended Order After Remote Backup
+## Current Recommended Order After a-stock-data One-off Smoke
 
-1. **Implement one-off a-stock-data financial smoke script after user approval**
-   * Business value: checks raw output shape without entering AgentLoop or changing provider behavior.
-   * Suggested scope: `600519.SH` and `300750.SZ`, start with `income -> lrb`.
-   * Risk: public endpoint drift, timeout, or anti-bot response.
-   * Boundary: no live request until explicitly approved; output only under ignored `local_reports`.
+1. **Design live fetch implementation behind `fetch_a_stock_financials(...)`**
+   * Business value: converts the proven Sina smoke endpoint into a controlled fallback path.
+   * Suggested scope: income first, then balance/cashflow.
+   * Risk: endpoint drift, field units, and financial-line semantics need scrutiny.
+   * Boundary: feature flag remains default off; no Web UI until direct function tests pass.
 
-2. **If dependencies are missing, confirm installation scope first**
-   * Business value: avoids polluting global Python or committing environment churn.
-   * Risk: unnecessary dependency installation.
-   * Boundary: install only into `.venv` after approval.
+2. **Run balance/cashflow smoke before implementation if desired**
+   * Business value: verifies all three statement mappings before adding live hook code.
+   * Risk: more live requests and field-shape variation.
+   * Boundary: one-off script only; `local_reports` remains ignored.
 
-3. **After smoke, decide whether to implement live fetch behind the stub**
-   * Business value: turns a proven endpoint into a controlled fallback.
-   * Risk: bringing live public endpoint risk into tool runtime.
-   * Boundary: feature flag remains default off.
+3. **Push latest commits to fork**
+   * Business value: backs up the smoke script and docs.
+   * Risk: remote backup only.
+   * Boundary: no PR, no tag, no upstream push.
 
-4. **Optional live smoke test after user approval**
-   * Business value: checks whether the selected public endpoint is usable from this machine.
-   * Risk: network instability, throttling, or endpoint shape drift.
-   * Boundary: localhost only; shell tools disabled; no trading.
+4. **Optional Web UI benchmark policy observation**
+   * Business value: gathers more evidence before deciding whether the experimental benchmark policy should remain optional.
+   * Risk: consumes LLM tokens.
+   * Boundary: keep benchmark policy default off.
 
 5. **Extend data quality to remaining A-share tools**
    * Business value: brings northbound flow, margin trading, shareholder count, sector info, and financial statements into the same audit model.

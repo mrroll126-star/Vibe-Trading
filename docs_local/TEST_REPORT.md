@@ -2607,3 +2607,69 @@ Boundary:
 * No provider-chain or loader changes.
 * No vendor code committed.
 * No `local_reports` generated or committed.
+
+## 2026-07-09 a-stock-data One-off Financial Live Smoke Script
+
+Goal:
+
+Implement and run one controlled live smoke script for the candidate Sina financial-statement endpoint.
+
+Script added:
+
+* `scripts/smoke_a_stock_data_financials.py`
+
+Dependency check:
+
+```bash
+.venv/bin/python - <<'PY'
+import requests
+print(requests.__version__)
+PY
+```
+
+Result:
+
+* `requests 2.34.2`
+* No dependency installation needed.
+
+Compile check:
+
+```bash
+.venv/bin/python -m compileall -q scripts/smoke_a_stock_data_financials.py
+```
+
+Result:
+
+* Passed.
+
+Live smoke command:
+
+```bash
+.venv/bin/python scripts/smoke_a_stock_data_financials.py --symbols 600519.SH,300750.SZ --statements income --num 3 --timeout 15 --sleep 1.2 --output-dir local_reports
+```
+
+Result:
+
+| Symbol | Statement | Status | Rows | Latest Date | Normalizer |
+| --- | --- | --- | ---: | --- | --- |
+| `600519.SH` | `income` | success | 3 | `2026-03-31` | ok |
+| `300750.SZ` | `income` | success | 3 | `2026-03-31` | ok |
+
+Local report:
+
+```text
+local_reports/a_stock_data_smoke_20260709_152952.json
+```
+
+This report is ignored by Git and was not committed.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not require an LLM key.
+* Did not enter AgentLoop.
+* Did not modify `get_financial_statements`.
+* Did not modify provider chain or loader.
+* Did not modify Web UI.
+* Did not install dependencies.
+* Did not commit `local_reports`.

@@ -483,3 +483,27 @@ Not changed:
 Next roadmap item:
 
 After user approval, implement the one-off smoke script and keep outputs in ignored `local_reports`.
+
+## 2026-07-09 a-stock-data One-off Financial Live Smoke
+
+Completed:
+
+* Added `scripts/smoke_a_stock_data_financials.py`.
+* Ran a controlled live smoke for:
+  * `600519.SH income`
+  * `300750.SZ income`
+* Both returned 3 rows.
+* Both included `报告期`.
+* Both normalized successfully with latest detected date `2026-03-31`.
+
+Not changed:
+
+* No AgentLoop integration.
+* No official fallback hook live implementation.
+* No provider-chain or loader changes.
+* No Web UI changes.
+* No dependency installation.
+
+Next roadmap item:
+
+Decide whether to implement live fetch behind `fetch_a_stock_financials(...)`, still feature-flagged and default off.

@@ -338,3 +338,48 @@ If smoke fails:
 3. Consider mootdx finance snapshot for `indicators`.
 4. Consider another A-share financial data source.
 
+## 12. Smoke Run Record
+
+Run date:
+
+```text
+2026-07-09
+```
+
+Script:
+
+```text
+scripts/smoke_a_stock_data_financials.py
+```
+
+Command:
+
+```bash
+.venv/bin/python scripts/smoke_a_stock_data_financials.py --symbols 600519.SH,300750.SZ --statements income --num 3 --timeout 15 --sleep 1.2 --output-dir local_reports
+```
+
+Output file:
+
+```text
+local_reports/a_stock_data_smoke_20260709_152952.json
+```
+
+This file is local-only and must not be committed.
+
+Summary:
+
+| Symbol | Statement | Status | Rows | Date Field | Latest Date | Normalizer |
+| --- | --- | --- | ---: | --- | --- | --- |
+| `600519.SH` | `income` | success | 3 | `报告期` | `2026-03-31` | ok |
+| `300750.SZ` | `income` | success | 3 | `报告期` | `2026-03-31` | ok |
+
+Observed raw shape:
+
+* `list[dict]`
+* Rows contain `报告期`.
+* Rows contain many Chinese financial statement line items and `_同比` fields.
+* Raw rows do not include explicit `source` / `upstream`; the script supplies `sina_financial_report` and `a-stock-data` metadata before normalization.
+
+Decision:
+
+The Sina financial-statement candidate is suitable for a future controlled live implementation behind `fetch_a_stock_financials(...)`, but it should remain feature-flagged and default off.

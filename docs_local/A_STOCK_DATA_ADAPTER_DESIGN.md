@@ -514,6 +514,17 @@ Recommended execution mode:
 
 * Option A: external one-off smoke script outside AgentLoop and outside `get_financial_statements`.
 
+One-off smoke result:
+
+Completed on 2026-07-09.
+
+* Script: `scripts/smoke_a_stock_data_financials.py`
+* `600519.SH income`: success, 3 rows, `报告期` detected, normalized ok.
+* `300750.SZ income`: success, 3 rows, `报告期` detected, normalized ok.
+* Local output: `local_reports/a_stock_data_smoke_20260709_152952.json`
+
+The output file is ignored and not committed.
+
 Phase D: CLI/direct tests.
 
 * Mock first.

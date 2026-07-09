@@ -454,3 +454,13 @@ Candidate endpoint:
 
 * `sina_financial_report(code, report_type, num)` from the upstream Skill.
 * First live smoke should inspect raw output shape only.
+
+One-off smoke result:
+
+* Script: `scripts/smoke_a_stock_data_financials.py`
+* `600519.SH income`: success, 3 rows, latest date `2026-03-31`, normalized ok.
+* `300750.SZ income`: success, 3 rows, latest date `2026-03-31`, normalized ok.
+
+Implementation implication:
+
+The next code step, if approved, should implement live `income` support behind `fetch_a_stock_financials(...)` using the same request and parser logic proven by the one-off script. Balance and cash-flow can be added after their smoke checks or in the same feature-flagged implementation with tests.
