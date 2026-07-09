@@ -371,3 +371,23 @@ Not changed:
 Next roadmap item:
 
 Design feature-flagged `get_financial_statements` integration before any live `a-stock-data` calls.
+
+## 2026-07-09 GitHub Remote Backup Strategy
+
+Completed:
+
+* Confirmed current `origin` still points to HKUDS/Vibe-Trading.
+* Confirmed current branch has no tracking branch and local Phase 1 commits are not pushed.
+* Confirmed ignored sensitive/runtime paths remain untracked.
+* Added `docs_local/GITHUB_REMOTE_STRATEGY.md`.
+
+Recommended next roadmap item:
+
+User creates a GitHub fork, then local remotes are changed to:
+
+```text
+origin   = user fork
+upstream = HKUDS/Vibe-Trading
+```
+
+Then push only `feature/bootstrap-local-setup` to the user's fork after explicit user confirmation.

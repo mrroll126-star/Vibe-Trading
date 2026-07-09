@@ -1159,6 +1159,24 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No live endpoint tests.
 * No vendor code committed.
 
+## 2026-07-09
+
+### Added
+
+* `docs_local/GITHUB_REMOTE_STRATEGY.md`.
+
+### Changed
+
+* `docs_local/NEXT_TASKS.md` now prioritizes creating the user's fork and remote backup before deeper `a-stock-data` integration.
+
+### Boundary
+
+* No push.
+* No PR.
+* No remote changes.
+* No business code changes.
+* No sensitive/runtime files committed.
+
 ## 2026-07-08
 
 ### Fixed

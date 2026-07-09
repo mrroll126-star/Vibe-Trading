@@ -647,14 +647,15 @@ Future re-enable conditions:
 
 ## Current Recommended Order After a-stock-data Normalizer Phase B
 
-1. **Design feature-flagged `get_financial_statements` integration**
+1. **Create GitHub fork / remote backup**
+   * Business value: protect the growing local Phase 1 baseline before the first real external-data integration.
+   * Risk: low if the user confirms the fork URL and no push is attempted to HKUDS.
+   * Next action: create a user fork, then set `origin` to the fork and `upstream` to HKUDS.
+
+2. **Design feature-flagged `get_financial_statements` integration**
    * Business value: use the new normalizer contract in one controlled A-share financial-statements path.
    * Risk: medium, because this would be the first real tool integration.
    * Boundary: design first; no live endpoint or provider-chain replacement.
-
-2. **Create GitHub fork / remote backup**
-   * Business value: protect the growing local Phase 1 codebase before the first real external-data integration.
-   * Risk: low if no push is done until the user confirms fork setup.
 
 3. **Optional live smoke design for a-stock-data**
    * Business value: define what one approved live test would call and how it would be rate-limited.

@@ -1218,3 +1218,26 @@ Boundary:
 * No `financial_statements_tool` integration.
 * No Web UI changes.
 * No vendor code copied into this repository.
+
+## 2026-07-09 GitHub Remote Strategy
+
+Actions performed:
+
+1. Confirmed the working tree was clean.
+2. Confirmed current branch `feature/bootstrap-local-setup`.
+3. Confirmed `origin` still points to `https://github.com/HKUDS/Vibe-Trading`.
+4. Confirmed default remote branch is `main`.
+5. Confirmed current feature branch has no remote tracking branch.
+6. Confirmed the branch is 41 commits ahead of `origin/main`.
+7. Confirmed sensitive/runtime paths remain ignored and are not tracked.
+8. Added `docs_local/GITHUB_REMOTE_STRATEGY.md`.
+
+Boundary:
+
+* No push.
+* No PR.
+* No remote changes.
+* No business code changes.
+* No provider-chain changes.
+* No service startup.
+* No `agent/.env` content read or printed.
