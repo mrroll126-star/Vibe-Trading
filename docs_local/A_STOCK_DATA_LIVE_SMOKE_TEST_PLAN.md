@@ -383,3 +383,44 @@ Observed raw shape:
 Decision:
 
 The Sina financial-statement candidate is suitable for a future controlled live implementation behind `fetch_a_stock_financials(...)`, but it should remain feature-flagged and default off.
+
+## 13. Balance / Cashflow Follow-up Smoke
+
+Run date:
+
+```text
+2026-07-09
+```
+
+Command:
+
+```bash
+.venv/bin/python scripts/smoke_a_stock_data_financials.py --symbols 600519.SH,300750.SZ --statements balance,cashflow --num 3 --timeout 15 --sleep 1.2 --output-dir local_reports
+```
+
+Output file:
+
+```text
+local_reports/a_stock_data_smoke_20260709_153849.json
+```
+
+This file is local-only and must not be committed.
+
+Summary:
+
+| Symbol | Statement | Status | Rows | Date Field | Latest Date | Normalizer |
+| --- | --- | --- | ---: | --- | --- | --- |
+| `600519.SH` | `balance` | success | 3 | `报告期` | `2026-03-31` | ok |
+| `600519.SH` | `cashflow` | success | 3 | `报告期` | `2026-03-31` | ok |
+| `300750.SZ` | `balance` | success | 3 | `报告期` | `2026-03-31` | ok |
+| `300750.SZ` | `cashflow` | success | 3 | `报告期` | `2026-03-31` | ok |
+
+Decision update:
+
+The candidate Sina endpoint has now passed one-off smoke checks for all three MVP statement mappings:
+
+* `income -> lrb`
+* `balance -> fzb`
+* `cashflow -> llb`
+
+`indicators` remains out of scope for this endpoint.

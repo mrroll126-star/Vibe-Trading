@@ -1354,3 +1354,27 @@ Boundary:
 * Did not modify provider chain or loader.
 * Did not install dependencies.
 * Did not commit live result files.
+
+## 2026-07-09 a-stock-data Balance/Cashflow Follow-up Smoke
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Re-ran compile check for the one-off smoke script.
+3. Ran controlled live smoke for:
+   * `600519.SH balance`
+   * `600519.SH cashflow`
+   * `300750.SZ balance`
+   * `300750.SZ cashflow`
+4. Confirmed all four calls returned 3 rows and normalized successfully.
+5. Wrote local JSON output under ignored `local_reports`.
+6. Updated docs_local.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not enter AgentLoop.
+* Did not modify the official fallback hook.
+* Did not modify provider chain or loader.
+* Did not install dependencies.
+* Did not commit live result files.

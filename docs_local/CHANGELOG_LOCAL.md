@@ -1273,6 +1273,26 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No dependency installation.
 * No `local_reports` committed.
 
+## 2026-07-09
+
+### Validation
+
+* Controlled follow-up smoke succeeded for:
+  * `600519.SH balance`
+  * `600519.SH cashflow`
+  * `300750.SZ balance`
+  * `300750.SZ cashflow`
+
+### Boundary
+
+* No AgentLoop integration.
+* No official fallback hook live implementation.
+* No provider-chain changes.
+* No loader changes.
+* No Web UI changes.
+* No dependency installation.
+* No `local_reports` committed.
+
 ## 2026-07-08
 
 ### Fixed

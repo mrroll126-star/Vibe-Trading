@@ -33,15 +33,15 @@ Highest principle:
    * Risk: endpoint drift, field units, and financial-line semantics need scrutiny.
    * Boundary: feature flag remains default off; no Web UI until direct function tests pass.
 
-2. **Run balance/cashflow smoke before implementation if desired**
-   * Business value: verifies all three statement mappings before adding live hook code.
-   * Risk: more live requests and field-shape variation.
-   * Boundary: one-off script only; `local_reports` remains ignored.
-
-3. **Push latest commits to fork**
-   * Business value: backs up the smoke script and docs.
+2. **Push latest commits to fork**
+   * Business value: backs up the smoke script, income smoke, and balance/cashflow follow-up evidence.
    * Risk: remote backup only.
    * Boundary: no PR, no tag, no upstream push.
+
+3. **Optional: decide how to handle `indicators`**
+   * Business value: completes the statement mapping story.
+   * Risk: `indicators` likely needs a different endpoint such as mootdx finance snapshot.
+   * Boundary: design first; no new live source without approval.
 
 4. **Optional Web UI benchmark policy observation**
    * Business value: gathers more evidence before deciding whether the experimental benchmark policy should remain optional.

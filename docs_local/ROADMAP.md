@@ -507,3 +507,17 @@ Not changed:
 Next roadmap item:
 
 Decide whether to implement live fetch behind `fetch_a_stock_financials(...)`, still feature-flagged and default off.
+
+## 2026-07-09 a-stock-data Balance/Cashflow Follow-up Smoke
+
+Completed:
+
+* Ran the existing one-off smoke script for balance and cash-flow statements.
+* Validated both `600519.SH` and `300750.SZ`.
+* All four calls returned 3 rows.
+* All four included `报告期`.
+* All four normalized successfully with latest detected date `2026-03-31`.
+
+Next roadmap item:
+
+Design live fetch implementation behind `fetch_a_stock_financials(...)` for `income`, `balance`, and `cashflow`, feature-flagged and default off.

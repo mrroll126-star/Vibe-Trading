@@ -2673,3 +2673,41 @@ Boundary:
 * Did not modify Web UI.
 * Did not install dependencies.
 * Did not commit `local_reports`.
+
+## 2026-07-09 a-stock-data Balance/Cashflow Follow-up Smoke
+
+Goal:
+
+Use the existing one-off script to validate the remaining two Sina statement mappings before any live fetch implementation.
+
+Command:
+
+```bash
+.venv/bin/python scripts/smoke_a_stock_data_financials.py --symbols 600519.SH,300750.SZ --statements balance,cashflow --num 3 --timeout 15 --sleep 1.2 --output-dir local_reports
+```
+
+Result:
+
+| Symbol | Statement | Status | Rows | Latest Date | Normalizer |
+| --- | --- | --- | ---: | --- | --- |
+| `600519.SH` | `balance` | success | 3 | `2026-03-31` | ok |
+| `600519.SH` | `cashflow` | success | 3 | `2026-03-31` | ok |
+| `300750.SZ` | `balance` | success | 3 | `2026-03-31` | ok |
+| `300750.SZ` | `cashflow` | success | 3 | `2026-03-31` | ok |
+
+Local report:
+
+```text
+local_reports/a_stock_data_smoke_20260709_153849.json
+```
+
+This report is ignored by Git and was not committed.
+
+Boundary:
+
+* No AgentLoop integration.
+* No official fallback hook live implementation.
+* No provider-chain or loader changes.
+* No Web UI changes.
+* No dependency installation.
+* No `local_reports` committed.
