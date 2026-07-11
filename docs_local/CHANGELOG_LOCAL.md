@@ -1422,6 +1422,33 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No `.env` content read or printed.
 * No `local_reports`, `agent/runs`, or `agent/sessions` committed.
 
+## 2026-07-11
+
+### Added
+
+* `docs_local/FINANCIAL_CAPABILITY_CONTRACT.md`.
+
+### Changed
+
+* Updated roadmap and next-task guidance to make MVP Research Workspace Design
+  the next product step.
+
+### Notes
+
+* Raw financial statements are now defined as available capabilities.
+* Indicators are documented as future derived metrics, not an independent MVP
+  data source.
+* Financial data quality should evolve toward reporting-period status rather
+  than market-data freshness terminology.
+
+### Boundary
+
+* Documentation only.
+* No AgentLoop changes.
+* No provider-chain or loader changes.
+* No Web UI changes.
+* No live data calls.
+
 ## 2026-07-10
 
 ### Added

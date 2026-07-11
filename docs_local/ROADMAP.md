@@ -666,3 +666,38 @@ Next roadmap item:
 Back up the Agent-level observation commit to the fork after user confirmation.
 Then decide whether to handle `indicators` first, design a financial filing
 freshness policy, or run a user-approved Web UI observation.
+
+## 2026-07-11 Financial Capability Contract
+
+Completed:
+
+* Created `docs_local/FINANCIAL_CAPABILITY_CONTRACT.md`.
+* Defined currently available financial capabilities:
+  * income statement
+  * balance sheet
+  * cash-flow statement
+* Defined unsupported or future capabilities:
+  * independent indicators endpoint
+  * valuation metrics
+  * analyst forecasts
+  * peer comparison
+  * ESG/qualitative sources
+* Defined the difference between raw financial statements and derived metrics.
+* Proposed a future `financial_data_quality` model based on reporting periods
+  rather than market-data freshness.
+
+Phase progress update:
+
+```text
+Phase 1: Environment bootstrap        100%
+Phase 2: Agent foundation             100%
+Phase 3: Trusted data layer           100%
+Phase 3.5: A-share data enhancement    90%
+Phase 4: Research Workspace             0%
+Phase 5: Metrics Engine                 0%
+Phase 6: Portfolio / Trading Workflow   0%
+```
+
+Next roadmap item:
+
+Design the MVP Research Workspace before writing UI code.

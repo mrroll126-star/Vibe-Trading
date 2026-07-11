@@ -726,10 +726,19 @@ Completed:
 
 ## Current Recommended Order After Agent-level Financial Fallback Observation
 
-1. **Push the Agent-level observation commit to the user's fork**
-   * Business value: back up the first controlled AgentLoop consumption proof.
-   * Risk: low after sensitive-file checks.
-   * Requires user confirmation before push.
+Completed:
+
+* Agent-level observation commit was pushed to the user's fork.
+* Tag `phase3-agent-data-fallback-20260711` was created and pushed.
+* Financial Capability Contract was drafted.
+
+## Current Recommended Order After Financial Capability Contract
+
+1. **MVP Research Workspace Design**
+   * Business value: turn the trusted data/Agent foundation into the first
+     usable research product surface.
+   * Scope: design only first; no UI code until the layout, workflow, and report
+     schema are clear.
 
 2. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
@@ -743,6 +752,9 @@ Completed:
      data.
    * Scope: design first; no behavior change without approval.
 
-4. **Web UI observation only after explicit approval**
-   * Reason: CLI Agent-level chain works; Web UI introduces session rendering,
-     token cost, and user-facing report behavior.
+4. **Report Schema**
+   * Business value: give Research Workspace and Agent output one shared shape:
+     market snapshot, financial health, AI memo, and data confidence.
+
+5. **Web UI prototype only after design approval**
+   * Reason: the product workflow should lead the UI, not the other way around.

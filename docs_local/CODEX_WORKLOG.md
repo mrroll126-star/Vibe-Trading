@@ -1488,6 +1488,33 @@ Boundary:
 * Did not default-enable the adapter.
 * Did not commit `agent/runs` or `local_reports`.
 
+## 2026-07-11 Financial Capability Contract
+
+Actions performed:
+
+1. Confirmed worktree was clean and HEAD was tagged with
+   `phase3-agent-data-fallback-20260711`.
+2. Added `docs_local/FINANCIAL_CAPABILITY_CONTRACT.md`.
+3. Documented current raw financial statement capabilities:
+   * income
+   * balance
+   * cashflow
+4. Documented that indicators should be treated as derived metrics, not as a
+   standalone fallback endpoint in the MVP.
+5. Documented unsupported request behavior for forecasts, indicators, and peer
+   comparison.
+6. Proposed a future financial data quality model based on reporting periods.
+7. Updated roadmap and next-task guidance toward MVP Research Workspace Design.
+
+Boundary:
+
+* Documentation only.
+* No AgentLoop changes.
+* No tool/provider-chain changes.
+* No Web UI changes.
+* No live data calls.
+* No `.env` read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:
