@@ -716,3 +716,21 @@ Future re-enable conditions:
 
 4. **Keep the adapter feature flag default off**
    * Reason: the live external source is useful but still optional and should require explicit opt-in.
+
+## Current Recommended Order After a-stock-data Phase G Report Observation
+
+1. **Push the Phase G commit to the user's fork**
+   * Business value: back up the tool-level report observation script and documentation.
+   * Risk: low after sensitive-file checks.
+   * Requires user confirmation before push.
+
+2. **Controlled CLI research-task observation**
+   * Business value: confirm a non-Web report-like workflow can surface the financial fallback summary before involving the full Web UI.
+   * Scope: still no broad AgentLoop/Web UI testing unless explicitly approved.
+
+3. **Web UI test only after CLI observation passes**
+   * Reason: Source Summary is working at helper level; the next risk is integration into a user-facing flow.
+
+4. **Consider financial filing freshness policy**
+   * Business value: avoid labeling valid financial filing data as generic `unknown`.
+   * Scope: design first; no behavior change without approval.

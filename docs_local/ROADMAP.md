@@ -581,7 +581,8 @@ Back up the Phase E commit to the fork after user confirmation. Then decide whet
 Completed:
 
 * Added a direct output-inspection script for the official `get_financial_statements` fallback output.
-* Ran one live fallback request for `600519.SH income`.
+* Ran the report observation script for `600519.SH income`.
+* Actual live fallback requests in Phase G: 2, because the script was re-run once during pre-commit verification.
 * Confirmed the result shape includes:
   * `provider=a_stock_data`
   * `source=sina_financial_report`
@@ -604,3 +605,31 @@ Not changed:
 Next roadmap item:
 
 Back up the Phase F commit to the fork after user confirmation. Then consider a controlled CLI/tool-level report observation before any Web UI test.
+
+## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
+
+Completed:
+
+* Added a tool-level report observation script.
+* Ran one live fallback request for `600519.SH income`.
+* Confirmed report-summary helpers disclose:
+  * `get_financial_statements`
+  * `sina_financial_report`
+  * `row_count=8`
+  * `latest_data_date=2026-03-31`
+  * `primary_financials_unavailable`
+  * `a_stock_data_fallback_used`
+* Confirmed No Estimate Guard did not falsely trigger.
+* Confirmed Report Gate did not block.
+
+Not changed:
+
+* No Web UI.
+* No AgentLoop research task.
+* No provider-chain changes.
+* No loader changes.
+* Feature flag remains default off.
+
+Next roadmap item:
+
+Back up the Phase G commit to the fork after user confirmation. Then decide whether to run a controlled CLI research-task observation or keep Web UI deferred.

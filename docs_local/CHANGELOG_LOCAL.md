@@ -1377,9 +1377,37 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 ### Validation
 
 * Direct/API output inspection passed for `600519.SH income`.
-* Exactly one live fallback request was made.
+* Two live fallback requests were made: one required observation run with ignored JSON output and one no-output pre-commit verification rerun.
 * Output contains provider/source/upstream, rows, `_data_quality`, latest data date, fallback warnings, and primary error.
 * Report-summary compatibility checks passed.
+* a-stock-data financial tests passed with 56 tests.
+* Data-quality/report regression tests passed with 46 tests.
+* Compile check passed.
+
+### Boundary
+
+* Feature flag remains default off.
+* No Web UI run.
+* No AgentLoop research task.
+* No provider-chain or loader changes.
+* No dependency installation.
+* No `.env` read.
+* No `local_reports` committed.
+
+## 2026-07-10
+
+### Added
+
+* `scripts/observe_a_stock_financial_fallback_report_summary.py`.
+
+### Validation
+
+* Controlled CLI/tool-level report observation passed for `600519.SH income`.
+* Exactly one live fallback request was made.
+* Data Source Summary displayed `get_financial_statements` and `sina_financial_report`.
+* Source Warnings displayed primary unavailable and fallback used.
+* No Estimate Guard did not falsely trigger.
+* Report Gate did not block the financial summary observation.
 * a-stock-data financial tests passed with 56 tests.
 * Data-quality/report regression tests passed with 46 tests.
 * Compile check passed.

@@ -2829,7 +2829,9 @@ Command:
 
 Live requests:
 
-* 1 live fallback request.
+* 2 live fallback requests in total.
+* First run wrote the ignored JSON report under `local_reports`.
+* Second run was a no-output pre-commit verification rerun.
 * Symbol: `600519.SH`.
 * Statement: `income`.
 
@@ -2886,6 +2888,136 @@ Report-summary compatibility:
 | has_latest_data_date | true |
 | has_warnings | true |
 | has_primary_error | true |
+
+Regression tests:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_a_stock_data_normalizer agent.tests.test_a_stock_data_financials_fallback
+```
+
+Result:
+
+* 56 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* 46 tests passed.
+
+Compile check:
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests scripts
+```
+
+Result:
+
+* Passed.
+
+Guard regression:
+
+* Full guard/benchmark regression was not run in this round because no guard, benchmark, AgentLoop, provider-chain, loader, or Web UI code was modified.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not run AgentLoop research tasks.
+* Did not change provider chain or loader.
+* Did not install dependencies.
+* Did not commit `local_reports`.
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
+
+## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
+
+Goal:
+
+Observe whether fallback financial statements are disclosed correctly by the report-summary layer without running Web UI or AgentLoop.
+
+Script added:
+
+```text
+scripts/observe_a_stock_financial_fallback_report_summary.py
+```
+
+Command:
+
+```bash
+.venv/bin/python scripts/observe_a_stock_financial_fallback_report_summary.py --symbols 600519.SH --statement-types income --timeout 15 --output-dir local_reports
+```
+
+Live requests:
+
+* 1 live fallback request.
+* Symbol: `600519.SH`.
+* Statement: `income`.
+
+Local report:
+
+```text
+local_reports/a_stock_financial_fallback_report_summary_observation_20260709_161128.json
+```
+
+This file is ignored by Git and was not committed.
+
+Observed compact result:
+
+| Field | Value |
+| --- | --- |
+| tool_result_ok | true |
+| provider | `a_stock_data` |
+| source | `sina_financial_report` |
+| upstream | `a-stock-data` |
+| statement_type | `income` |
+| row_count | 8 |
+| latest_data_date | `2026-03-31` |
+| freshness_status | `unknown` |
+| primary_error | `forced_primary_failure_for_report_observation` |
+
+Data Source Summary:
+
+* Present.
+* Shows `get_financial_statements`.
+* Shows `sina_financial_report`.
+* Shows `row_count=8`.
+* Shows `latest_data_date=2026-03-31`.
+
+Source Warnings:
+
+* Present.
+* Includes `primary_financials_unavailable`.
+* Includes `a_stock_data_fallback_used`.
+
+Missing Data:
+
+* Present because `freshness_status=unknown`.
+* This is expected under the current generic report-summary rules.
+* Rows exist and `latest_data_date` exists, so this is not a failed fallback.
+
+No Estimate Warning:
+
+* Not present.
+* No false estimated market-fact warning was triggered by the mechanical summary.
+
+Report Gate:
+
+* Did not block.
+* Reason: the prompt was not a market-data time-sensitive prompt, and the gate only evaluates `get_market_data` freshness metadata.
+
+Compatibility:
+
+| Check | Result |
+| --- | --- |
+| source_summary_has_a_stock_data | true |
+| source_summary_has_sina | true |
+| warnings_include_primary_unavailable | true |
+| warnings_include_fallback_used | true |
+| no_false_realtime_claim_detected | true |
+| report_gate_does_not_block_valid_fallback | true |
 
 Regression tests:
 

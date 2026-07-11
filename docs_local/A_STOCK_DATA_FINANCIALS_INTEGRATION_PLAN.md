@@ -88,7 +88,8 @@ Validation approach:
 * Called the official `FinancialStatementsTool().execute(...)` path directly.
 * Temporarily enabled `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1` only inside the script process.
 * Forced the primary Eastmoney result to fail with `forced_primary_failure_for_output_inspection`.
-* Ran exactly one live fallback request:
+* Intended to run one live fallback request, then re-ran the same script once during pre-commit verification without JSON output.
+* Actual live fallback requests in Phase G: 2.
   * `600519.SH income`
 
 Observed output structure:
@@ -121,6 +122,34 @@ The output is compatible with the current `Data Source Summary` formatter becaus
 Minimum future improvement:
 
 Financial statements currently use `freshness_status=unknown` even when `latest_data_date` exists. This is acceptable for MVP disclosure, but a future filing-specific freshness policy could classify financial statements by reporting period age rather than market-data recency.
+
+Phase G controlled CLI/tool-level report observation was completed on 2026-07-10.
+
+Validation approach:
+
+* Added `scripts/observe_a_stock_financial_fallback_report_summary.py`.
+* Called the official `FinancialStatementsTool().execute(...)` path directly.
+* Sent returned `_data_quality` into the existing `format_data_source_summary(...)` and `append_data_source_summary(...)` helpers.
+* Checked No Estimate Guard with a no-estimate prompt.
+* Checked Report Gate with the same financial prompt.
+* Ran exactly one live fallback request:
+  * `600519.SH income`
+
+Observed report-layer behavior:
+
+* `Data Source Summary` displays `get_financial_statements`.
+* The summary row displays `sina_financial_report` as source/provider.
+* `Source Warnings` includes:
+  * `primary_financials_unavailable`
+  * `a_stock_data_fallback_used`
+* `Missing Data` appears because `freshness_status=unknown`.
+* This is mechanical disclosure, not a tool failure: rows exist and `latest_data_date=2026-03-31`.
+* No Estimate Warning did not trigger.
+* Report Gate did not block because the prompt was not a market-data time-sensitive prompt and the gate only blocks `get_market_data` freshness rows.
+
+Conclusion:
+
+The fallback financial output is compatible with the current report-summary layer. A future improvement should define a filing-specific freshness policy so financial statements with a valid report date do not need to rely on the generic `unknown` status.
 
 ## 1. Goal
 

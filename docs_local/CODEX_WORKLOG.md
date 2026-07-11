@@ -1457,3 +1457,33 @@ Boundary:
 * Did not modify provider chain or loader.
 * Did not install dependencies.
 * Did not commit `local_reports`.
+
+## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
+
+Actions performed:
+
+1. Confirmed branch state and ignored sensitive/runtime paths.
+2. Re-read `get_financial_statements`, report-summary helpers, report gate, No Estimate Guard, tests, and prior smoke scripts.
+3. Added `scripts/observe_a_stock_financial_fallback_report_summary.py`.
+4. In the script process only, set `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1`.
+5. Forced primary provider failure with `forced_primary_failure_for_report_observation`.
+6. Ran the report observation script for `600519.SH income`.
+7. Re-ran the same script once during pre-commit verification without JSON output.
+8. Actual live fallback requests in Phase G: 2.
+9. Sent returned `_data_quality` into existing report-summary helpers.
+10. Confirmed Source Summary shows `get_financial_statements` and `sina_financial_report`.
+11. Confirmed Source Warnings include primary unavailable and fallback used.
+12. Confirmed No Estimate Guard did not falsely trigger.
+13. Confirmed Report Gate did not block this financial report observation.
+14. Ran focused tests and compile check.
+15. Updated docs_local.
+
+Boundary:
+
+* Did not read `agent/.env`.
+* Did not need an LLM key.
+* Did not run Web UI.
+* Did not run AgentLoop research tasks.
+* Did not modify provider chain or loader.
+* Did not install dependencies.
+* Did not commit `local_reports`.

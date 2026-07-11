@@ -50,6 +50,18 @@ The official `get_financial_statements` fallback output was inspected directly o
 
 This means the current financial fallback shape is suitable for report-layer consumption without changing provider chains, loaders, or Web UI.
 
+Phase G report-summary observation:
+
+The fallback output was passed through the existing report-summary helpers. The summary layer successfully displayed:
+
+* `get_financial_statements`
+* `sina_financial_report`
+* `row_count=8`
+* `latest_data_date=2026-03-31`
+* fallback warnings
+
+No Estimate Guard did not produce a false warning, and Report Gate did not block the financial report observation. The only product nuance is that `freshness_status=unknown` causes a `Missing Data` section, which is acceptable for MVP auditability but should be revisited with a financial filing freshness policy.
+
 ## 2. Current A-share Data Baseline
 
 Current market-data fallback chain:
