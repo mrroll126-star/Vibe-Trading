@@ -1574,6 +1574,37 @@ Boundary:
 * No live data calls.
 * No `.env` read or printed.
 
+## 2026-07-11 Minimal Schema Producing Proof Design
+
+Actions performed:
+
+1. Confirmed worktree state before writing docs.
+2. Added `docs_local/MINIMAL_SCHEMA_PRODUCING_PROOF_DESIGN.md`.
+3. Defined Schema Producer responsibility boundaries.
+4. Defined which fields must come from tools, which may come from Agent
+   interpretation, and which must not be inferred by the LLM.
+5. Defined minimal proof scope for `600519.SH`.
+6. Defined data flow:
+   * User Query
+   * Agent Plan
+   * Tool Calls
+   * Validated Data
+   * Schema Builder
+   * AI Interpretation
+   * Research Report
+7. Documented failure behavior and acceptance criteria.
+
+Boundary:
+
+* Documentation only.
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No schema builder implementation.
+* No service run.
+* No live data calls.
+* No `.env` read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

@@ -1503,6 +1503,34 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No service run.
 * No live data calls.
 
+## 2026-07-11
+
+### Added
+
+* `docs_local/MINIMAL_SCHEMA_PRODUCING_PROOF_DESIGN.md`.
+
+### Changed
+
+* Updated roadmap and next-task guidance toward a CLI schema proof before UI.
+
+### Notes
+
+* Recommended architecture is a hybrid Schema Producer:
+  * program fills facts, provider/source, dates, quality and warnings
+  * LLM fills thesis, cases, risks and monitor items
+* Minimal proof target is `600519.SH`.
+* Web UI remains deferred until schema production is proven.
+
+### Boundary
+
+* Documentation only.
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No schema builder implementation.
+* No service run.
+* No live data calls.
+
 ## 2026-07-10
 
 ### Added

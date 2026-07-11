@@ -746,27 +746,38 @@ Completed:
 
 ## Current Recommended Order After Report Schema + Agent Workflow Design
 
-1. **Push current product-design commits to the fork**
-   * Business value: back up Financial Capability Contract, Research Workspace
-     Design, and Report Schema Contract before implementation starts.
+Completed:
+
+* Product-design commits were pushed and tagged as
+  `phase4-research-workspace-design-20260711`.
+* Minimal Schema Producing Proof Design was drafted.
+
+## Current Recommended Order After Minimal Schema Producing Proof Design
+
+1. **Push the proof-design commit to the fork**
+   * Business value: back up the final pre-implementation schema proof design.
    * Scope: push only after safety check; no PR unless requested.
 
 2. **Minimal schema-producing proof design**
-   * Business value: decide whether the first structured report proof should be
-     CLI, API, or post-processor before writing code.
-   * Scope: design first; no Web UI yet.
+   * Status: completed.
+   * Result: recommended hybrid Schema Producer.
 
-3. **Decide `indicators` handling**
+3. **Minimal schema-producing proof CLI**
+   * Business value: prove Tool Result -> Schema without Web UI.
+   * Recommended first mode: fixture/mocked tool outputs, then controlled direct
+     tool outputs.
+
+4. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
      key per-period indicators.
    * Options: add a supported mapping later, block `indicators` for
      a-stock-data fallback with a clearer message, or teach prompts to request
      only income/balance/cashflow for this adapter.
 
-4. **Design financial filing freshness policy**
+5. **Design financial filing freshness policy**
    * Business value: distinguish valid periodic filing dates from stale market
      data.
    * Scope: design first; no behavior change without approval.
 
-5. **Web UI prototype only after schema-producing proof**
+6. **Web UI prototype only after schema-producing proof**
    * Reason: the product workflow should lead the UI, not the other way around.

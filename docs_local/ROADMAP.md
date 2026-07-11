@@ -745,3 +745,26 @@ Next roadmap item:
 
 Back up product-design commits to the fork, then design a minimal
 schema-producing proof before building UI.
+
+## 2026-07-11 Minimal Schema Producing Proof Design
+
+Completed:
+
+* Created `docs_local/MINIMAL_SCHEMA_PRODUCING_PROOF_DESIGN.md`.
+* Defined the Schema Producer's responsibilities.
+* Chose a narrow proof scope for `600519.SH`.
+* Defined the flow from User Query to Research Report.
+* Mapped schema fields to their source:
+  * market data tool
+  * financial statements tool
+  * data quality metadata
+  * AI interpretation
+* Defined failure behavior for missing market data, missing financial data,
+  provider failure, and unsupported capabilities.
+* Recommended a hybrid Schema Producer: program fills facts and metadata; LLM
+  fills interpretation.
+
+Next roadmap item:
+
+If approved, implement a CLI schema proof with fixture/mocked tool outputs
+before any Web UI work.
