@@ -1560,6 +1560,38 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No live data calls.
 * No `.env` read or printed.
 
+## 2026-07-11
+
+### Added
+
+* `scripts/observe_direct_tool_schema_pipeline.py`.
+* `agent/tests/test_direct_tool_schema_pipeline.py`.
+
+### Changed
+
+* `agent/src/reports/report_builder.py` now blocks company financial schema for
+  ETF/index symbols.
+* `agent/src/reports/report_builder.py` now adds warnings when data quality
+  metadata is missing.
+* Updated docs_local for the controlled direct tool output schema proof.
+
+### Validation
+
+* `agent.tests.test_direct_tool_schema_pipeline`: 4 tests passed.
+* `agent.tests.test_report_builder agent.tests.test_symbol_normalizer`: 16 tests passed.
+* Direct observation script passed.
+* Compile check passed.
+
+### Boundary
+
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No loader changes.
+* No default feature flag changes.
+* No live data calls.
+* No `.env` read or printed.
+
 ## 2026-07-10
 
 ### Added

@@ -3299,3 +3299,92 @@ Boundary:
 * Did not run AgentLoop.
 * Did not modify provider chain, loader, or feature flags.
 * Did not read or print `agent/.env`.
+
+## 2026-07-11 Controlled Direct Tool Output Schema Proof
+
+Goal:
+
+Verify that official `FinancialStatementsTool().execute(...)` output can enter
+the Research Report Schema Builder.
+
+Files added:
+
+```text
+scripts/observe_direct_tool_schema_pipeline.py
+agent/tests/test_direct_tool_schema_pipeline.py
+```
+
+Files changed:
+
+```text
+agent/src/reports/report_builder.py
+```
+
+Implementation:
+
+* In-process enabled `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1`.
+* Forced primary financial provider failure with a mock.
+* Mocked a-stock-data fallback payloads for `income`, `balance`, and `cashflow`.
+* Called official `FinancialStatementsTool().execute(...)`.
+* Passed tool outputs into `build_research_report(...)`.
+* Confirmed the schema includes `research_meta`, `symbol`, `market_snapshot`,
+  `financial_health`, `data_confidence`, and `limitations`.
+
+Observation command:
+
+```bash
+.venv/bin/python scripts/observe_direct_tool_schema_pipeline.py
+```
+
+Result:
+
+```text
+symbol=600519.SH
+financial_status=available
+statement_count=3
+provider=a_stock_data
+source=sina_financial_report
+period_end_date=2026-03-31
+warnings=['primary_financials_unavailable', 'a_stock_data_fallback_used']
+```
+
+Test commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_direct_tool_schema_pipeline
+```
+
+Result:
+
+* 4 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_report_builder agent.tests.test_symbol_normalizer
+```
+
+Result:
+
+* 16 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src/reports agent/tests/test_direct_tool_schema_pipeline.py scripts/observe_direct_tool_schema_pipeline.py
+```
+
+Result:
+
+* Passed.
+
+Cases covered:
+
+* financial tool output -> schema success.
+* financial fallback missing -> schema warning.
+* index / ETF does not enter company financial schema.
+* data quality missing -> schema warning.
+
+Boundary:
+
+* Did not call Sina, Eastmoney, or a-stock-data live endpoints.
+* Did not run AgentLoop.
+* Did not run Web UI.
+* Did not modify provider chain, loader, or feature flags.
+* Did not read or print `agent/.env`.

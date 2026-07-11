@@ -789,3 +789,24 @@ Next roadmap item:
 
 Back up the schema proof commit, then decide whether to run a controlled direct
 tool-output schema proof before Web UI work.
+
+## 2026-07-11 Controlled Direct Tool Output Schema Proof
+
+Completed:
+
+* Added `scripts/observe_direct_tool_schema_pipeline.py`.
+* Added `agent/tests/test_direct_tool_schema_pipeline.py`.
+* Called official `FinancialStatementsTool().execute(...)` with:
+  * primary financial provider forced to fail
+  * mocked a-stock-data fallback rows
+  * adapter enabled only in-process
+* Passed official tool outputs into `build_research_report(...)`.
+* Confirmed schema output contains required product sections.
+* Added schema builder protection so ETF/index symbols do not enter company
+  financial schema.
+* Added warning behavior when data quality metadata is missing.
+
+Next roadmap item:
+
+Back up the direct tool schema proof commit, then decide whether the next proof
+uses controlled live direct output or moves toward API shape.

@@ -761,15 +761,22 @@ Completed:
 
 ## Current Recommended Order After Minimal Schema-producing Proof CLI
 
-1. **Push the schema proof commit to the fork**
-   * Business value: back up the first working Tool Result -> Schema proof.
+Completed:
+
+* Controlled Direct Tool Output Schema Proof passed using official
+  `FinancialStatementsTool().execute(...)` with mocked primary failure and
+  mocked fallback payloads.
+
+## Current Recommended Order After Controlled Direct Tool Output Schema Proof
+
+1. **Push the direct tool schema proof commit to the fork**
+   * Business value: back up the first official-tool-output-to-schema proof.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Controlled direct tool output schema proof**
-   * Business value: replace fixtures with controlled direct tool outputs while
-     still avoiding Web UI and AgentLoop.
-   * Scope: no live data unless explicitly approved; start with existing mocked
-     direct tool results.
+2. **Controlled live/direct schema proof decision**
+   * Business value: decide whether the next proof should allow one controlled
+     live a-stock-data fallback call, or stay mock-only and move to API shape.
+   * Current recommendation: keep Web UI deferred.
 
 3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
@@ -783,5 +790,5 @@ Completed:
      data.
    * Scope: design first; no behavior change without approval.
 
-5. **Web UI prototype only after controlled schema proof**
+5. **Web UI prototype only after schema proof strategy is accepted**
    * Reason: the product workflow should lead the UI, not the other way around.

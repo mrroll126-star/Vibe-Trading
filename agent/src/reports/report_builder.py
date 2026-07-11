@@ -13,6 +13,15 @@ from typing import Any
 from src.symbols import normalize_symbol
 
 
+_INDEX_SYMBOLS = {
+    "000001.SH",
+    "000300.SH",
+    "000905.SH",
+    "399001.SZ",
+    "399006.SZ",
+}
+
+
 class ReportBuildError(ValueError):
     """Raised when a structured report cannot be built safely."""
 
@@ -53,7 +62,11 @@ def build_research_report(
     interpretation = interpretation or {}
 
     market_snapshot = _build_market_snapshot(normalized_symbol, market_result)
-    financial_health = _build_financial_health(normalized_symbol, financial_results)
+    financial_health = _build_financial_health(
+        normalized_symbol,
+        financial_results,
+        asset_type=str(symbol.get("asset_type") or ""),
+    )
     investment_memo = _build_investment_memo(interpretation)
     data_confidence = _build_data_confidence(
         market_snapshot=market_snapshot,
@@ -86,12 +99,16 @@ def _build_symbol_section(input_symbol: str) -> dict[str, Any]:
         raise ReportBuildError(
             "symbol must resolve to a single confirmed security before report schema generation"
         )
+    asset_type = normalized.asset_type
+    if normalized.normalized_symbol in _INDEX_SYMBOLS:
+        asset_type = "index"
+
     return {
         "input": normalized.raw_input,
         "normalized_symbol": normalized.normalized_symbol,
         "display_name": normalized.name or "",
         "market": normalized.market,
-        "asset_type": normalized.asset_type,
+        "asset_type": asset_type,
         "resolution_status": "resolved",
         "warnings": list(normalized.warnings),
     }
@@ -103,6 +120,8 @@ def _build_market_snapshot(symbol: str, result: dict[str, Any] | None) -> dict[s
     row = _latest_market_row(result, symbol)
     ok = bool(result and result.get("ok", True))
     has_row = bool(row)
+    if result and has_row and not quality:
+        warnings.append("market_data_quality_missing")
 
     if not result or not ok or not has_row:
         status = "missing"
@@ -134,7 +153,30 @@ def _build_market_snapshot(symbol: str, result: dict[str, Any] | None) -> dict[s
     }
 
 
-def _build_financial_health(symbol: str, results: list[dict[str, Any]]) -> dict[str, Any]:
+def _build_financial_health(
+    symbol: str,
+    results: list[dict[str, Any]],
+    *,
+    asset_type: str,
+) -> dict[str, Any]:
+    if asset_type and asset_type != "stock":
+        return {
+            "status": "blocked",
+            "statements": [],
+            "summary": {
+                "revenue_trend": "",
+                "profit_trend": "",
+                "balance_sheet_view": "",
+                "cashflow_view": "",
+                "facts": [],
+                "interpretation": "",
+            },
+            "quality": {
+                "reporting_period_status": "not_applicable",
+                "warnings": [f"company_financials_not_applicable_for_{asset_type}"],
+            },
+        }
+
     statements: list[dict[str, Any]] = []
     warnings: list[str] = []
     missing_types: list[str] = []
@@ -160,6 +202,8 @@ def _build_financial_health(symbol: str, results: list[dict[str, Any]]) -> dict[
             missing_types.append(statement_type)
             warnings.append(f"{statement_type}_statement_missing")
             continue
+        if not quality:
+            warnings.append(f"{statement_type}_data_quality_missing")
 
         statements.append(
             {

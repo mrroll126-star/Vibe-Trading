@@ -1633,6 +1633,32 @@ Boundary:
 * No live data calls.
 * No `.env` read or printed.
 
+## 2026-07-11 Controlled Direct Tool Output Schema Proof
+
+Actions performed:
+
+1. Pushed existing schema proof commits to the fork.
+2. Added `scripts/observe_direct_tool_schema_pipeline.py`.
+3. Added `agent/tests/test_direct_tool_schema_pipeline.py`.
+4. Updated `agent/src/reports/report_builder.py` so company financial schema
+   is blocked for ETF/index assets.
+5. Updated the schema builder to warn when data quality metadata is missing.
+6. Used official `FinancialStatementsTool().execute(...)` with mocked primary
+   failure and mocked fallback payloads.
+7. Passed direct tool outputs into `build_research_report(...)`.
+8. Ran focused unittest and compile checks.
+9. Updated docs_local.
+
+Boundary:
+
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No loader changes.
+* No default feature flag changes.
+* No live data calls.
+* No `.env` read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:
