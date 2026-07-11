@@ -1605,6 +1605,34 @@ Boundary:
 * No live data calls.
 * No `.env` read or printed.
 
+## 2026-07-11 Minimal Schema-producing Proof CLI
+
+Actions performed:
+
+1. Added `agent/src/reports/__init__.py`.
+2. Added `agent/src/reports/report_builder.py`.
+3. Added `agent/tests/test_report_builder.py`.
+4. Implemented a pure offline `build_research_report(...)` function.
+5. Kept factual fields program-filled from tool-like fixtures.
+6. Kept memo fields as interpretation placeholders.
+7. Added tests for:
+   * complete mock data
+   * missing financial data
+   * provider failure
+   * invalid symbol
+8. Ran focused tests and compile check.
+9. Updated docs_local.
+
+Boundary:
+
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No loader changes.
+* No feature flag changes.
+* No live data calls.
+* No `.env` read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

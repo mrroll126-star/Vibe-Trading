@@ -768,3 +768,24 @@ Next roadmap item:
 
 If approved, implement a CLI schema proof with fixture/mocked tool outputs
 before any Web UI work.
+
+## 2026-07-11 Minimal Schema-producing Proof CLI
+
+Completed:
+
+* Added `agent/src/reports/report_builder.py`.
+* Added `agent/src/reports/__init__.py`.
+* Added `agent/tests/test_report_builder.py`.
+* Implemented a pure offline schema builder from mocked tool outputs.
+* Proved the MVP schema can be produced without Web UI, AgentLoop, provider
+  calls, or live data.
+* Covered success and failure states:
+  * complete mock data
+  * missing financial data
+  * provider failure
+  * invalid symbol
+
+Next roadmap item:
+
+Back up the schema proof commit, then decide whether to run a controlled direct
+tool-output schema proof before Web UI work.

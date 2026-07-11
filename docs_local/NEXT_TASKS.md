@@ -754,30 +754,34 @@ Completed:
 
 ## Current Recommended Order After Minimal Schema Producing Proof Design
 
-1. **Push the proof-design commit to the fork**
-   * Business value: back up the final pre-implementation schema proof design.
+Completed:
+
+* Minimal Schema-producing Proof CLI was implemented with fixture/mock tool
+  outputs.
+
+## Current Recommended Order After Minimal Schema-producing Proof CLI
+
+1. **Push the schema proof commit to the fork**
+   * Business value: back up the first working Tool Result -> Schema proof.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Minimal schema-producing proof design**
-   * Status: completed.
-   * Result: recommended hybrid Schema Producer.
+2. **Controlled direct tool output schema proof**
+   * Business value: replace fixtures with controlled direct tool outputs while
+     still avoiding Web UI and AgentLoop.
+   * Scope: no live data unless explicitly approved; start with existing mocked
+     direct tool results.
 
-3. **Minimal schema-producing proof CLI**
-   * Business value: prove Tool Result -> Schema without Web UI.
-   * Recommended first mode: fixture/mocked tool outputs, then controlled direct
-     tool outputs.
-
-4. **Decide `indicators` handling**
+3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
      key per-period indicators.
    * Options: add a supported mapping later, block `indicators` for
      a-stock-data fallback with a clearer message, or teach prompts to request
      only income/balance/cashflow for this adapter.
 
-5. **Design financial filing freshness policy**
+4. **Design financial filing freshness policy**
    * Business value: distinguish valid periodic filing dates from stale market
      data.
    * Scope: design first; no behavior change without approval.
 
-6. **Web UI prototype only after schema-producing proof**
+5. **Web UI prototype only after controlled schema proof**
    * Reason: the product workflow should lead the UI, not the other way around.

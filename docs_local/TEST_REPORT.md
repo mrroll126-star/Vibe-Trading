@@ -3227,3 +3227,75 @@ Boundary:
 * Did not change provider chain or loader.
 * Did not generate or commit `local_reports`.
 * `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
+
+## 2026-07-11 Minimal Schema-producing Proof CLI
+
+Goal:
+
+Verify that mocked tool outputs can be converted into the MVP Research
+Workspace structured report schema without Web UI, AgentLoop, provider calls,
+or live data.
+
+Files added:
+
+```text
+agent/src/reports/__init__.py
+agent/src/reports/report_builder.py
+agent/tests/test_report_builder.py
+```
+
+Implemented:
+
+* `build_research_report(...)`
+* `ReportBuildError`
+* Offline schema builder for:
+  * `research_meta`
+  * `symbol`
+  * `market_snapshot`
+  * `financial_health`
+  * `investment_memo`
+  * `valuation`
+  * `risks`
+  * `data_confidence`
+  * `limitations`
+
+Test commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_report_builder
+```
+
+Result:
+
+* 4 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_symbol_normalizer
+```
+
+Result:
+
+* 12 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src/reports agent/tests/test_report_builder.py
+```
+
+Result:
+
+* Passed.
+
+Cases covered:
+
+* Complete mock data produces a full schema.
+* Missing financial data marks `financial_health` as `missing`.
+* Provider failure lowers confidence and adds warnings.
+* Invalid or unconfirmed symbol rejects schema generation.
+
+Boundary:
+
+* Did not call Sina, Eastmoney, or a-stock-data live endpoints.
+* Did not run Web UI.
+* Did not run AgentLoop.
+* Did not modify provider chain, loader, or feature flags.
+* Did not read or print `agent/.env`.
