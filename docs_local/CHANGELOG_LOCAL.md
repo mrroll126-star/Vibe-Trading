@@ -1476,6 +1476,33 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No provider-chain changes.
 * No service run.
 
+## 2026-07-11
+
+### Added
+
+* `docs_local/REPORT_SCHEMA_AND_AGENT_WORKFLOW_DESIGN.md`.
+
+### Changed
+
+* Updated roadmap and next-task guidance to prioritize a minimal
+  schema-producing proof before Web UI implementation.
+
+### Notes
+
+* Report output should be structured and UI-independent.
+* Markdown may be a presentation format, but should not be the source of truth.
+* Agent Research Workflow v1 now has a documented sequence from symbol
+  resolution to structured report.
+
+### Boundary
+
+* Documentation only.
+* No AgentLoop changes.
+* No provider-chain changes.
+* No Web UI changes.
+* No service run.
+* No live data calls.
+
 ## 2026-07-10
 
 ### Added

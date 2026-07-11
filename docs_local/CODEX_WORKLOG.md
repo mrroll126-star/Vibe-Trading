@@ -1543,6 +1543,37 @@ Boundary:
 * No service run.
 * No `.env` read or printed.
 
+## 2026-07-11 Report Schema + Agent Workflow Design
+
+Actions performed:
+
+1. Confirmed worktree state before writing docs.
+2. Added `docs_local/REPORT_SCHEMA_AND_AGENT_WORKFLOW_DESIGN.md`.
+3. Defined the top-level research report schema.
+4. Defined `research_meta`, `symbol`, `market_snapshot`,
+   `financial_health`, `investment_memo`, `valuation`, `risks`,
+   `data_confidence`, and `limitations`.
+5. Defined Agent Research Workflow v1:
+   * Symbol Resolution
+   * Asset Classification
+   * Research Plan Generation
+   * Tool Execution
+   * Data Validation
+   * Report Assembly
+   * AI Interpretation
+   * Structured Report
+6. Updated roadmap and next-task guidance.
+
+Boundary:
+
+* Documentation only.
+* No AgentLoop changes.
+* No provider-chain changes.
+* No Web UI changes.
+* No service run.
+* No live data calls.
+* No `.env` read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

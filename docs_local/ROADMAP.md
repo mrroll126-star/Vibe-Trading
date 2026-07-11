@@ -721,3 +721,27 @@ Completed:
 Next roadmap item:
 
 Design Report Schema + Agent Workflow before writing UI code.
+
+## 2026-07-11 Report Schema + Agent Workflow Design
+
+Completed:
+
+* Created `docs_local/REPORT_SCHEMA_AND_AGENT_WORKFLOW_DESIGN.md`.
+* Defined top-level Research Report Schema:
+  * research_meta
+  * symbol
+  * market_snapshot
+  * financial_health
+  * investment_memo
+  * valuation
+  * risks
+  * data_confidence
+  * limitations
+* Defined Agent Research Workflow v1 from user input to structured report.
+* Reaffirmed that raw data and AI interpretation must stay separate.
+* Reaffirmed that Web UI should consume schema, not free-form Markdown only.
+
+Next roadmap item:
+
+Back up product-design commits to the fork, then design a minimal
+schema-producing proof before building UI.
