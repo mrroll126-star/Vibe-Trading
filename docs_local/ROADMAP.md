@@ -701,3 +701,23 @@ Phase 6: Portfolio / Trading Workflow   0%
 Next roadmap item:
 
 Design the MVP Research Workspace before writing UI code.
+
+## 2026-07-11 MVP Research Workspace Design
+
+Completed:
+
+* Created `docs_local/MVP_RESEARCH_WORKSPACE_DESIGN.md`.
+* Defined the first product surface as `AI Investment Research Workspace`.
+* Proposed five MVP sections:
+  * Market Snapshot
+  * Financial Health
+  * AI Analyst Memo
+  * Valuation & Metrics
+  * Data Confidence
+* Drafted an initial report schema for UI consumption.
+* Explicitly excluded trading, target prices, AI stock picking, and unsupported
+  forecasts from the MVP.
+
+Next roadmap item:
+
+Design Report Schema + Agent Workflow before writing UI code.

@@ -1449,6 +1449,33 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No Web UI changes.
 * No live data calls.
 
+## 2026-07-11
+
+### Added
+
+* `docs_local/MVP_RESEARCH_WORKSPACE_DESIGN.md`.
+
+### Changed
+
+* Updated roadmap and next-task guidance to make Report Schema + Agent Workflow
+  Design the next step before UI code.
+
+### Notes
+
+* The first product surface is defined as `AI Investment Research Workspace`.
+* MVP sections are Market Snapshot, Financial Health, AI Analyst Memo,
+  Valuation & Metrics, and Data Confidence.
+* MVP explicitly excludes trading, target prices, AI stock picking, and
+  unsupported forecasts.
+
+### Boundary
+
+* Documentation only.
+* No AgentLoop changes.
+* No UI code.
+* No provider-chain changes.
+* No service run.
+
 ## 2026-07-10
 
 ### Added

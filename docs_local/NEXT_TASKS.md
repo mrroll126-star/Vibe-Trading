@@ -734,11 +734,16 @@ Completed:
 
 ## Current Recommended Order After Financial Capability Contract
 
-1. **MVP Research Workspace Design**
-   * Business value: turn the trusted data/Agent foundation into the first
-     usable research product surface.
-   * Scope: design only first; no UI code until the layout, workflow, and report
-     schema are clear.
+Completed:
+
+* MVP Research Workspace Design was drafted.
+
+## Current Recommended Order After MVP Research Workspace Design
+
+1. **Report Schema + Agent Workflow Design**
+   * Business value: define the structured contract between Agent output and
+     UI before building React components.
+   * Scope: design only; no UI code yet.
 
 2. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
@@ -752,9 +757,9 @@ Completed:
      data.
    * Scope: design first; no behavior change without approval.
 
-4. **Report Schema**
-   * Business value: give Research Workspace and Agent output one shared shape:
-     market snapshot, financial health, AI memo, and data confidence.
-
-5. **Web UI prototype only after design approval**
+4. **Web UI prototype only after Report Schema approval**
    * Reason: the product workflow should lead the UI, not the other way around.
+
+5. **Metrics Engine planning**
+   * Business value: turn raw financial statements into ROE, margin, growth,
+     and valuation inputs after the workspace/report contract is stable.

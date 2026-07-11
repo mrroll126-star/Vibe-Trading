@@ -1515,6 +1515,34 @@ Boundary:
 * No live data calls.
 * No `.env` read or printed.
 
+## 2026-07-11 MVP Research Workspace Design
+
+Actions performed:
+
+1. Confirmed worktree state before writing docs.
+2. Added `docs_local/MVP_RESEARCH_WORKSPACE_DESIGN.md`.
+3. Defined product positioning as `AI Investment Research Workspace`.
+4. Designed the five first-version sections:
+   * Market Snapshot
+   * Financial Health
+   * AI Analyst Memo
+   * Valuation & Metrics
+   * Data Confidence
+5. Drafted the first report schema shape.
+6. Documented MVP exclusions: no trading, no target prices, no AI stock picking,
+   no unsupported forecasts.
+7. Updated next-task guidance to prioritize Report Schema + Agent Workflow
+   before UI code.
+
+Boundary:
+
+* Documentation only.
+* No AgentLoop changes.
+* No UI code.
+* No provider-chain changes.
+* No service run.
+* No `.env` read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:
