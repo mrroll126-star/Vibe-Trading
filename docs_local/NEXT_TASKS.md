@@ -719,18 +719,30 @@ Future re-enable conditions:
 
 ## Current Recommended Order After a-stock-data Phase G Report Observation
 
-1. **Push the Phase G commit to the user's fork**
-   * Business value: back up the tool-level report observation script and documentation.
+Completed:
+
+* Phase G was pushed to the user's fork.
+* Controlled Agent-level financial fallback observation passed.
+
+## Current Recommended Order After Agent-level Financial Fallback Observation
+
+1. **Push the Agent-level observation commit to the user's fork**
+   * Business value: back up the first controlled AgentLoop consumption proof.
    * Risk: low after sensitive-file checks.
    * Requires user confirmation before push.
 
-2. **Controlled CLI research-task observation**
-   * Business value: confirm a non-Web report-like workflow can surface the financial fallback summary before involving the full Web UI.
-   * Scope: still no broad AgentLoop/Web UI testing unless explicitly approved.
+2. **Decide `indicators` handling**
+   * Business value: avoid a confusing partial failure when the Agent asks for
+     key per-period indicators.
+   * Options: add a supported mapping later, block `indicators` for
+     a-stock-data fallback with a clearer message, or teach prompts to request
+     only income/balance/cashflow for this adapter.
 
-3. **Web UI test only after CLI observation passes**
-   * Reason: Source Summary is working at helper level; the next risk is integration into a user-facing flow.
-
-4. **Consider financial filing freshness policy**
-   * Business value: avoid labeling valid financial filing data as generic `unknown`.
+3. **Design financial filing freshness policy**
+   * Business value: distinguish valid periodic filing dates from stale market
+     data.
    * Scope: design first; no behavior change without approval.
+
+4. **Web UI observation only after explicit approval**
+   * Reason: CLI Agent-level chain works; Web UI introduces session rendering,
+     token cost, and user-facing report behavior.

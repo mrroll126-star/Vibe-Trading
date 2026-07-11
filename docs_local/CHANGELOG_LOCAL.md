@@ -1394,6 +1394,34 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No `.env` read.
 * No `local_reports` committed.
 
+## 2026-07-11
+
+### Added
+
+* `scripts/observe_agent_financial_fallback_research.py`.
+* `docs_local/A_STOCK_DATA_AGENT_RESEARCH_OBSERVATION.md`.
+
+### Validation
+
+* Controlled AgentLoop observation passed for `600519.SH`.
+* The Agent called `get_financial_statements` for income, balance, cashflow,
+  and indicators.
+* Primary financial provider failure was forced in-process.
+* The a-stock-data Sina fallback was used for supported financial statements.
+* Final answer included Data Source Summary and Source Warnings.
+* Latest fallback financial date was `2026-03-31`.
+* Unsupported `indicators` fallback produced a visible warning rather than a
+  silent success.
+
+### Boundary
+
+* Feature flag remains default off.
+* No Web UI run.
+* No provider-chain or loader changes.
+* No dependency installation.
+* No `.env` content read or printed.
+* No `local_reports`, `agent/runs`, or `agent/sessions` committed.
+
 ## 2026-07-10
 
 ### Added

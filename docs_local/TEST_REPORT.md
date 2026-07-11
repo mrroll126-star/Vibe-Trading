@@ -2809,6 +2809,103 @@ Boundary:
 * Did not generate or commit `local_reports`.
 * `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER` remains default off.
 
+## 2026-07-11 a-stock-data Agent-level Financial Fallback Observation
+
+Goal:
+
+Verify whether the original Agent reasoning loop can discover and consume the
+feature-flagged `a-stock-data` financial fallback in a controlled CLI
+observation.
+
+Script added:
+
+```text
+scripts/observe_agent_financial_fallback_research.py
+```
+
+Command:
+
+```bash
+.venv/bin/python scripts/observe_agent_financial_fallback_research.py --timeout 15 --max-iterations 8 --output-dir local_reports
+```
+
+Result:
+
+```text
+status=success
+run_id=20260711_222201_15_854f55
+iterations=2/8
+financial_tool_calls=4
+live_fallback_calls=4
+provider=a_stock_data
+source=sina_financial_report
+latest_data_date=2026-03-31
+```
+
+Agent tool calls:
+
+* `get_financial_statements 600519.SH income`
+* `get_financial_statements 600519.SH balance`
+* `get_financial_statements 600519.SH cashflow`
+* `get_financial_statements 600519.SH indicators`
+
+Acceptance:
+
+* Agent called the official `get_financial_statements` tool.
+* Primary provider failure was forced in-process.
+* Fallback was used for `income`, `balance`, and `cashflow`.
+* Final answer included Data Source Summary.
+* Final answer included Source Warnings.
+* Final answer mentioned the report date `2026-03-31`.
+* Final answer disclosed that financial statements are not real-time data.
+* No Symbol Clarification block occurred for explicit `600519.SH`.
+* No benchmark policy path was involved.
+* No asset-type routing block occurred.
+
+Observed issue:
+
+* The Agent also requested `indicators`. The current a-stock-data MVP does not
+  support `indicators`, so this produced `a_stock_data_fallback_failed` in
+  Source Warnings. This is expected under the current boundary and should be
+  handled as a future product decision.
+
+Boundary:
+
+* Did not read or print `agent/.env`.
+* Runtime LLM provider configuration was loaded by the project runtime only.
+* Did not run Web UI.
+* Did not modify provider chain or loader.
+* Did not default-enable the adapter.
+* Did not commit `local_reports`.
+
+Regression tests:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_a_stock_data_normalizer agent.tests.test_a_stock_data_financials_fallback
+```
+
+Result:
+
+* 56 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_data_freshness agent.tests.test_report_data_source_summary agent.tests.test_report_gate agent.tests.test_extended_data_quality agent.tests.test_no_estimate_guard
+```
+
+Result:
+
+* 46 tests passed.
+
+Compile check:
+
+```bash
+.venv/bin/python -m compileall -q scripts/observe_agent_financial_fallback_research.py
+```
+
+Result:
+
+* Passed.
+
 ## 2026-07-10 a-stock-data Phase F Direct/API Output Structure Observation
 
 Goal:

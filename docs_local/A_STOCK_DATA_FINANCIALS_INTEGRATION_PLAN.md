@@ -586,3 +586,35 @@ One-off smoke result:
 Implementation implication:
 
 The next code step, if approved, should implement live `income` support behind `fetch_a_stock_financials(...)` using the same request and parser logic proven by the one-off script. Balance and cash-flow can be added after their smoke checks or in the same feature-flagged implementation with tests.
+
+## 18. Agent-level Observation Result
+
+Completed on 2026-07-11.
+
+Script:
+
+```text
+scripts/observe_agent_financial_fallback_research.py
+```
+
+Result:
+
+* One controlled AgentLoop run succeeded.
+* Registry was limited to `get_financial_statements`.
+* Primary financial provider failure was forced.
+* `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1` was set only in-process.
+* The Agent called `income`, `balance`, `cashflow`, and `indicators`.
+* Supported statements reached `provider=a_stock_data` and
+  `source=sina_financial_report`.
+* Final answer included Data Source Summary and Source Warnings.
+
+Important boundary:
+
+* `indicators` is still unsupported by the a-stock-data MVP. If the Agent asks
+  for it, the report must show a warning rather than pretending the data
+  exists.
+
+Next decision:
+
+Before Web UI exposure, decide whether `indicators` should be explicitly
+blocked with a clearer message or mapped to another endpoint in a later phase.

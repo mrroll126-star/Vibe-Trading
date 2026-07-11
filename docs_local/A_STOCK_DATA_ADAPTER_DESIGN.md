@@ -603,3 +603,27 @@ Phase F: decide expansion.
 * Do we want `a-stock-data` as an internal adapter only, or later expose source names in user-facing reports?
 * Should Source Summary show both `provider=a_stock_data` and the upstream source such as `sina` or `eastmoney`?
 * Should `iwencai` be treated as a separate future provider because it requires a key?
+
+## 13. Agent-level Observation Update
+
+Completed on 2026-07-11.
+
+The first controlled AgentLoop observation proved that the Agent can consume
+the fallback financial data without Web UI:
+
+```text
+AgentLoop
+-> get_financial_statements
+-> forced primary failure
+-> a-stock-data Sina fallback
+-> _data_quality
+-> Data Source Summary / Source Warnings
+-> final answer
+```
+
+Observed behavior:
+
+* `income`, `balance`, and `cashflow` are usable through the current adapter.
+* `indicators` is not supported and correctly appears as a warning path.
+* The adapter should remain default-off.
+* Web UI testing should remain a separately approved step.

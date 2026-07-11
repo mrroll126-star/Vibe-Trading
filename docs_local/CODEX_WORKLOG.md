@@ -1458,6 +1458,36 @@ Boundary:
 * Did not install dependencies.
 * Did not commit `local_reports`.
 
+## 2026-07-11 a-stock-data Agent-level Financial Fallback Observation
+
+Actions performed:
+
+1. Confirmed the previous Phase G baseline was pushed and the worktree was clean.
+2. Added `scripts/observe_agent_financial_fallback_research.py`.
+3. Built a controlled AgentLoop registry containing only `get_financial_statements`.
+4. Enabled `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1` only inside the script process.
+5. Kept Symbol Guard and Asset-type Routing Guard enabled.
+6. Kept Symbol Normalizer and Benchmark Policy disabled.
+7. Forced the primary financial provider to fail with
+   `forced_primary_failure_for_agent_financial_fallback_observation`.
+8. Ran one controlled AgentLoop observation for `600519.SH`.
+9. Observed four Agent-selected financial tool calls:
+   * `income`
+   * `balance`
+   * `cashflow`
+   * `indicators`
+10. Confirmed fallback source metadata reached the final answer through Data
+    Source Summary and Source Warnings.
+11. Recorded the unsupported `indicators` fallback warning as a follow-up item.
+
+Boundary:
+
+* Did not read or print `agent/.env`.
+* Did not run Web UI.
+* Did not modify provider chain or loader.
+* Did not default-enable the adapter.
+* Did not commit `agent/runs` or `local_reports`.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

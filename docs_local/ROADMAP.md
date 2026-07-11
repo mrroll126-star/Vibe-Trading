@@ -633,3 +633,36 @@ Not changed:
 Next roadmap item:
 
 Back up the Phase G commit to the fork after user confirmation. Then decide whether to run a controlled CLI research-task observation or keep Web UI deferred.
+
+## 2026-07-11 a-stock-data Controlled Agent-level Financial Fallback Observation
+
+Completed:
+
+* Added a controlled AgentLoop observation script.
+* Limited the Agent registry to `get_financial_statements`.
+* Forced primary financial provider failure in-process.
+* Enabled `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1` only in the script process.
+* Ran one controlled Agent task for `600519.SH`.
+* Confirmed the Agent called:
+  * income statement
+  * balance sheet
+  * cash-flow statement
+  * indicators
+* Confirmed supported financial statements used:
+  * `provider=a_stock_data`
+  * `source=sina_financial_report`
+  * `latest_data_date=2026-03-31`
+* Confirmed the final answer contained Data Source Summary and Source Warnings.
+
+Not changed:
+
+* No Web UI.
+* No provider-chain changes.
+* No loader changes.
+* Feature flag remains default off.
+
+Next roadmap item:
+
+Back up the Agent-level observation commit to the fork after user confirmation.
+Then decide whether to handle `indicators` first, design a financial filing
+freshness policy, or run a user-approved Web UI observation.
