@@ -1639,6 +1639,10 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * Shell tool trace investigation found the likely cause: local legacy
   `vibe-trading run` hardcodes `include_shell_tools=True`, while API/session
   paths use the `VIBE_TRADING_ENABLE_SHELL_TOOLS` gate.
+* Local CLI shell tool opt-in was fixed so `vibe-trading run` uses
+  `VIBE_TRADING_ENABLE_SHELL_TOOLS` instead of hardcoding shell tools on.
+* Added regression coverage for default off, explicit off, explicit on, CLI
+  registry path, and API/session gate behavior.
 
 ### Boundary
 

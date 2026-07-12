@@ -3864,3 +3864,77 @@ Boundary:
 * Did not read or print `agent/.env`.
 * Did not write production `research_schema.json`.
 * Did not commit `local_reports`.
+
+## 2026-07-12 Fix Local CLI Shell Tool Opt-in
+
+Goal:
+
+Fix the local CLI `vibe-trading run` path so shell-capable tools are not
+registered by default.
+
+Root cause:
+
+```text
+vibe-trading run
+  -> cli._legacy._run_agent(...)
+  -> build_registry(..., include_shell_tools=True)
+  -> BashTool registered
+```
+
+Fix:
+
+* Added shared helper:
+  `agent/src/tools/capabilities.py`.
+* `shell_tools_enabled_from_env()` reads:
+  `VIBE_TRADING_ENABLE_SHELL_TOOLS`.
+* Default behavior is false.
+* `VIBE_TRADING_ENABLE_SHELL_TOOLS=0` keeps shell tools disabled.
+* `VIBE_TRADING_ENABLE_SHELL_TOOLS=1` explicitly enables shell tools.
+* Updated local legacy CLI `vibe-trading run` and CLI swarm live paths to use
+  the helper instead of hardcoding shell tools on.
+* Updated API shell gate to reuse the same helper.
+
+Expected behavior:
+
+| Environment | `bash` | `background_run` |
+| --- | --- | --- |
+| unset | not registered | not registered |
+| `VIBE_TRADING_ENABLE_SHELL_TOOLS=0` | not registered | not registered |
+| `VIBE_TRADING_ENABLE_SHELL_TOOLS=1` | registered | registered |
+
+Test commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_shell_tool_capability
+```
+
+Result:
+
+* 6 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_report_builder agent.tests.test_direct_tool_schema_pipeline agent.tests.test_trace_to_schema_pipeline
+```
+
+Result:
+
+* 15 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src agent/tests scripts
+```
+
+Result:
+
+* Passed.
+
+Boundary:
+
+* Did not run a real AgentLoop.
+* Did not call live data.
+* Did not read or print `agent/.env`.
+* Did not modify provider chain.
+* Did not modify loader.
+* Did not modify Web UI.
+* Did not commit `agent/runs`.
+* Did not commit `local_reports`.

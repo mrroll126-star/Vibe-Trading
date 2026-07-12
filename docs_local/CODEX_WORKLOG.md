@@ -1888,6 +1888,38 @@ Boundary:
 * No `.env` read or printed.
 * No `agent/runs` or `local_reports` committed.
 
+## 2026-07-12 Fix Local CLI Shell Tool Opt-in
+
+Actions performed:
+
+1. Confirmed branch and clean worktree.
+2. Added shared shell capability helper in `agent/src/tools/capabilities.py`.
+3. Replaced legacy CLI `include_shell_tools=True` in the local run path with
+   `shell_tools_enabled_from_env()`.
+4. Replaced legacy CLI swarm live shell opt-in with the same helper.
+5. Updated API shell gate to reuse the helper.
+6. Added `agent/tests/test_shell_tool_capability.py`.
+7. Ran focused shell capability tests, report schema tests, and compile checks.
+8. Updated docs_local.
+
+Validation:
+
+* Default/unset env does not register `bash` or `background_run`.
+* `VIBE_TRADING_ENABLE_SHELL_TOOLS=0` does not register shell tools.
+* `VIBE_TRADING_ENABLE_SHELL_TOOLS=1` registers shell tools.
+* CLI registry path now passes the env-resolved value into `build_registry`.
+* API/session shell gate keeps the same env-controlled behavior.
+
+Boundary:
+
+* No real AgentLoop run.
+* No live data call.
+* No provider-chain change.
+* No loader change.
+* No Web UI change.
+* No `.env` read or printed.
+* No `agent/runs` or `local_reports` committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

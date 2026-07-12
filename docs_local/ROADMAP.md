@@ -1009,3 +1009,35 @@ Next roadmap item:
 
 Fix local CLI shell-tool opt-in before using real Agent runs as the default
 Research Workspace production path.
+
+## 2026-07-12 Fix Local CLI Shell Tool Opt-in
+
+Completed:
+
+* Added `agent/src/tools/capabilities.py`.
+* Reused one shell-tool env helper across local CLI and API shell gating.
+* Changed local legacy CLI `vibe-trading run` to register shell tools only when
+  `VIBE_TRADING_ENABLE_SHELL_TOOLS=1`.
+* Changed legacy CLI swarm live entrypoint to use the same helper.
+* Added `agent/tests/test_shell_tool_capability.py`.
+
+Default behavior:
+
+```text
+VIBE_TRADING_ENABLE_SHELL_TOOLS unset or 0
+  -> bash not registered
+  -> background_run not registered
+```
+
+Explicit opt-in:
+
+```text
+VIBE_TRADING_ENABLE_SHELL_TOOLS=1
+  -> bash may be registered
+  -> background_run may be registered
+```
+
+Next roadmap item:
+
+Back up this safety fix, then run one controlled Agent research task to confirm
+the new trace no longer contains `bash` when shell tools are disabled.

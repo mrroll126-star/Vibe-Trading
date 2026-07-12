@@ -31,6 +31,7 @@ from rich.console import Console
 
 from cli._version import __version__ as APP_VERSION
 from src.goal.context import default_goal_criteria
+from src.tools.capabilities import SHELL_TOOLS_ENV, shell_tools_enabled_from_env
 from src.ui_services import build_run_analysis, load_run_context
 
 # UTF-8 on Windows
@@ -603,7 +604,6 @@ async def _stop_scheduled_research_on_shutdown() -> None:
 
 _security = HTTPBearer(auto_error=False)
 _API_KEY = os.getenv("API_AUTH_KEY")
-_SHELL_TOOLS_ENV = "VIBE_TRADING_ENABLE_SHELL_TOOLS"
 _DOCKER_LOOPBACK_ENV = "VIBE_TRADING_TRUST_DOCKER_LOOPBACK"
 
 
@@ -835,7 +835,7 @@ def _trusted_docker_loopback_ip(ip: ipaddress._BaseAddress) -> bool:
 
 def _env_shell_tools_enabled() -> bool:
     """Return whether server-side shell tools are explicitly enabled."""
-    return _env_flag_enabled(_SHELL_TOOLS_ENV)
+    return shell_tools_enabled_from_env()
 
 
 def _shell_tools_enabled_for_request(request: Request) -> bool:

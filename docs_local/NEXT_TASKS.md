@@ -840,28 +840,40 @@ Completed:
 
 ## Current Recommended Order After Shell Tool Trace Investigation
 
-1. **Fix local CLI shell-tool opt-in**
-   * Business value: safety baseline before any production Research Workspace
-     agent runs.
-   * Scope: make local CLI use the same explicit opt-in policy as API/session
-     paths; add regression tests.
+Completed:
 
-2. **Improve data-confidence extraction for financial statements**
+* Local CLI shell-tool opt-in was fixed.
+* `vibe-trading run` no longer hardcodes `include_shell_tools=True`.
+* Shell-capable tools now require `VIBE_TRADING_ENABLE_SHELL_TOOLS=1`.
+* Regression tests were added.
+
+## Current Recommended Order After Local CLI Shell Tool Fix
+
+1. **Push safety fix commit**
+   * Business value: back up the shell-tool safety baseline.
+   * Scope: push only after safety check; no PR unless requested.
+
+2. **Re-run controlled Agent research once with shell tools disabled**
+   * Business value: verify the new trace no longer contains `bash`.
+   * Scope: one run only; same `300750.SZ` prompt; no Web UI; observation output
+     only to ignored `local_reports`.
+
+3. **Improve data-confidence extraction for financial statements**
    * Business value: move schema status from partial toward complete.
    * Scope: design or focused implementation later; provider/source/period and
      statement `_data_quality` should be preserved in schema summary.
 
-3. **Decide `indicators` handling**
+4. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
      key per-period indicators.
    * Options: add a supported mapping later, block `indicators` for
      a-stock-data fallback with a clearer message, or teach prompts to request
      only income/balance/cashflow for this adapter.
 
-4. **Design financial filing freshness policy**
+5. **Design financial filing freshness policy**
    * Business value: distinguish valid periodic filing dates from stale market
      data.
    * Scope: design first; no behavior change without approval.
 
-5. **Web UI prototype only after schema proof strategy is accepted**
+6. **Web UI prototype only after schema proof strategy is accepted**
    * Reason: the product workflow should lead the UI, not the other way around.

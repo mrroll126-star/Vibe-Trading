@@ -947,6 +947,7 @@ def _run_agent(
             call (SPEC.md Consent §2).
     """
     from src.tools import build_registry
+    from src.tools.capabilities import shell_tools_enabled_from_env
     from src.providers.chat import ChatLLM
     from src.agent.loop import AgentLoop
 
@@ -1091,7 +1092,7 @@ def _run_agent(
     agent = AgentLoop(
         registry=build_registry(
             persistent_memory=pm,
-            include_shell_tools=True,
+            include_shell_tools=shell_tools_enabled_from_env(),
             agent_config=agent_config,
             session_id=session_id or None,
             warn_callback=_mcp_warn,
@@ -2073,6 +2074,7 @@ def cmd_swarm_run_live(preset: str, vars_json: Optional[str] = None) -> None:
     """Run a swarm preset with Rich Live dashboard."""
     from rich.live import Live
     from src.config import load_swarm_agent_config
+    from src.tools.capabilities import shell_tools_enabled_from_env
     from src.swarm.runtime import SwarmRuntime
     from src.swarm.store import SwarmStore
     from src.swarm.models import RunStatus
@@ -2101,7 +2103,7 @@ def cmd_swarm_run_live(preset: str, vars_json: Optional[str] = None) -> None:
             preset,
             user_vars,
             live_callback=dashboard.handle_event,
-            include_shell_tools=True,
+            include_shell_tools=shell_tools_enabled_from_env(),
         )
     except FileNotFoundError as exc:
         console.print(f"[red]{exc}[/red]")
