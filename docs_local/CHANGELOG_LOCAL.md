@@ -1621,6 +1621,10 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
   proofs pass.
 * Real trace observation script now exists but remains read-only and does not
   write production artifacts.
+* Historical trace observation passed for
+  `agent/runs/20260705_170559_16_fc55fe/trace.jsonl`.
+* The selected trace generated a schema summary, but it only contained
+  financial `indicators`, not income, balance, and cashflow.
 
 ### Boundary
 
@@ -1632,6 +1636,8 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No live data calls.
 * No Agent task run.
 * No `.env` read or printed.
+* No production `research_schema.json` write.
+* No `local_reports` committed.
 
 ## 2026-07-10
 

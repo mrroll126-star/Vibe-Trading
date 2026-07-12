@@ -798,15 +798,27 @@ Completed:
 
 ## Current Recommended Order After Real Trace Observation Script
 
-1. **Push the real trace observation script commit**
-   * Business value: back up the first reusable real-trace observation tool.
+Completed:
+
+* The real trace observation script was committed locally.
+* A historical run trace was observed successfully:
+  `agent/runs/20260705_170559_16_fc55fe/trace.jsonl`.
+* The trace could be read, parsed, and converted into a schema compatibility
+  summary.
+* The selected trace was incomplete for financial-statement proof because it
+  only included `indicators`, not income/balance/cashflow.
+
+## Current Recommended Order After Historical Trace Observation
+
+1. **Push the real trace observation and historical observation docs**
+   * Business value: back up the first real-trace compatibility proof.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Run observation on one existing real trace**
-   * Business value: verify the script against an actual completed run/session
-     artifact.
-   * Scope: user supplies `run_id`, `session_id`, or `trace-path` plus explicit
-     symbol; output only to ignored `local_reports`.
+2. **Run or select a completed trace with income/balance/cashflow**
+   * Business value: prove full financial-statement schema extraction from a
+     real Agent trace.
+   * Scope: observation only; output to ignored `local_reports`; no production
+     artifact write.
 
 3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for

@@ -1756,6 +1756,40 @@ Boundary:
 * No production `research_schema.json` write.
 * No `local_reports` committed.
 
+## 2026-07-12 Controlled Historical Trace Observation
+
+Actions performed:
+
+1. Confirmed branch, clean worktree, and ignored sensitive/runtime paths.
+2. Scanned existing `agent/runs` and `agent/sessions` trace file names and
+   event metadata only.
+3. Selected `agent/runs/20260705_170559_16_fc55fe/trace.jsonl` because it is a
+   run trace with market data, financial statements, a final answer, and an
+   offloaded field.
+4. Ran `scripts/observe_real_trace_to_schema.py` with explicit symbol
+   `300750.SZ`.
+5. Confirmed a schema compatibility summary was generated.
+6. Ran focused unittest and compile checks.
+7. Updated docs_local with the result and limitation.
+
+Observation:
+
+* Real trace read: success.
+* Tool results found: 19.
+* Schema generated: yes.
+* Required financial statement results: incomplete, because the selected trace
+  included `indicators` only.
+
+Boundary:
+
+* No new AgentLoop run.
+* No live data call.
+* No Web UI run.
+* No AgentLoop/provider-chain/loader changes.
+* No `.env` read or printed.
+* No production `research_schema.json` write.
+* `local_reports` output was not committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

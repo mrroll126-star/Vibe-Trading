@@ -897,3 +897,29 @@ Next roadmap item:
 
 Back up this script commit, then run it against one user-selected existing
 real trace with an explicit symbol.
+
+## 2026-07-12 Controlled Historical Trace Observation
+
+Completed:
+
+* Used existing historical run trace:
+  `agent/runs/20260705_170559_16_fc55fe/trace.jsonl`.
+* Ran `scripts/observe_real_trace_to_schema.py` with explicit symbol
+  `300750.SZ`.
+* Confirmed the script can read a real run trace, resolve offloads, collect tool
+  results, and build a structured schema summary.
+* Confirmed all expected top-level schema sections can be generated.
+* Confirmed the output remains observation-only in ignored `local_reports`.
+
+Observed limitation:
+
+* The selected historical trace contained financial `indicators` only.
+* It did not contain income, balance, or cashflow statement outputs.
+* Therefore the proof validates trace compatibility, but not full financial
+  statement coverage.
+
+Next roadmap item:
+
+Back up this observation result, then run the same observation against a
+completed trace containing income, balance, and cashflow results before writing
+production `research_schema.json` artifacts.

@@ -587,3 +587,59 @@ Boundary for that task:
 * Do not call live data.
 * Write optional output only to ignored `local_reports`.
 * Do not write production `research_schema.json` until one observation passes.
+
+## 15. Historical Trace Observation Result
+
+Date: 2026-07-12
+
+Observation target:
+
+```text
+agent/runs/20260705_170559_16_fc55fe/trace.jsonl
+```
+
+Invocation:
+
+```bash
+.venv/bin/python scripts/observe_real_trace_to_schema.py \
+  --run-id 20260705_170559_16_fc55fe \
+  --symbol 300750.SZ \
+  --output-dir local_reports
+```
+
+Result summary:
+
+* The script successfully read the historical run trace.
+* `TraceWriter.read(..., resolve_offloads=True)` successfully handled the trace.
+* The trace contained 53 events and 19 tool results.
+* Tool results included `get_market_data`, `get_financial_statements`,
+  `get_stock_news`, `get_research_reports`, `get_sector_info`, and related
+  stock tools.
+* The trace contained a final answer.
+* `trace_collector` and `build_research_report(...)` generated a structured
+  schema summary.
+
+Important gap:
+
+* The historical financial statement result only exposed `indicators`.
+* It did not contain income, balance, or cashflow statement outputs.
+* Therefore the proof confirms real trace readability and schema construction,
+  but it does not prove a complete financial-statement schema from this specific
+  historical run.
+
+Compatibility result:
+
+```text
+can_read_trace: true
+has_tool_results: true
+has_required_financial_results: false
+can_build_schema: true
+suitable_for_future_artifact: true
+```
+
+Conclusion:
+
+The current post-processing design is viable for a first read-only real-trace
+schema artifact workflow. Before writing production
+`agent/runs/<run_id>/artifacts/research_schema.json`, run the observation
+against a trace that includes income, balance, and cashflow tool results.

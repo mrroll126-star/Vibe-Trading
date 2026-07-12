@@ -3557,3 +3557,142 @@ Boundary:
 * Did not modify provider chain, loader, or feature flags.
 * Did not write production `agent/runs/<run_id>/artifacts/research_schema.json`.
 * Did not create or commit `local_reports`.
+
+## 2026-07-12 Controlled Historical Trace Observation
+
+Goal:
+
+Use an existing historical Agent run trace to verify:
+
+```text
+real trace -> observe_real_trace_to_schema.py -> trace_collector -> schema compatibility summary
+```
+
+Selected trace:
+
+```text
+agent/runs/20260705_170559_16_fc55fe/trace.jsonl
+```
+
+Selection reason:
+
+* It is a run-scoped trace, which matches the preferred artifact path.
+* It contains `get_market_data` and `get_financial_statements` tool results.
+* It contains a final answer.
+* It includes one offloaded field, which exercises the resolver path.
+
+Command:
+
+```bash
+.venv/bin/python scripts/observe_real_trace_to_schema.py \
+  --run-id 20260705_170559_16_fc55fe \
+  --symbol 300750.SZ \
+  --output-dir local_reports
+```
+
+Output:
+
+```text
+local_reports/real_trace_schema_observation_20260712_123508.json
+```
+
+The output file is ignored by Git and was not submitted.
+
+Observation result:
+
+* `event_count`: 53
+* `tool_result_count`: 19
+* `tool_names`:
+  * `get_financial_statements`
+  * `get_margin_trading`
+  * `get_market_data`
+  * `get_research_reports`
+  * `get_sector_info`
+  * `get_shareholder_count`
+  * `get_stock_news`
+  * `read_url`
+  * `web_search`
+* `has_market_data`: true
+* `financial_statement_types_found`: `indicators`
+* `has_final_answer`: true
+* `schema_generated`: true
+* `schema_sections_present`:
+  * `research_meta`
+  * `symbol`
+  * `market_snapshot`
+  * `financial_health`
+  * `investment_memo`
+  * `valuation`
+  * `risks`
+  * `data_confidence`
+  * `limitations`
+* `missing_sections`: none
+
+Compatibility:
+
+```text
+can_read_trace: true
+has_tool_results: true
+has_required_financial_results: false
+can_build_schema: true
+suitable_for_future_artifact: true
+```
+
+Collector warnings:
+
+* `market_data_quality_missing`
+* `indicators_data_quality_missing`
+* `balance_statement_missing`
+* `cashflow_statement_missing`
+* `income_statement_missing`
+* Several non-schema tools were intentionally ignored by the collector, such as
+  news, reports, sector info, web search, and URL reads.
+
+Conclusion:
+
+The observation proves that an existing historical real trace can be read and
+converted into a structured schema compatibility summary. This specific trace
+does not prove complete financial statement extraction because it only contains
+`indicators`, not income, balance, and cashflow.
+
+Follow-up:
+
+Run the same observation against a future completed trace that includes all
+three financial statement types before enabling production
+`research_schema.json` artifact writing.
+
+Regression commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_real_trace_observation
+```
+
+Result:
+
+* 7 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_trace_to_schema_pipeline agent.tests.test_report_builder agent.tests.test_direct_tool_schema_pipeline
+```
+
+Result:
+
+* 15 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src/reports agent/tests scripts
+```
+
+Result:
+
+* Passed.
+
+Boundary:
+
+* Did not run AgentLoop.
+* Did not run Web UI.
+* Did not call live data.
+* Did not read or print `agent/.env`.
+* Did not modify AgentLoop, provider chain, or loader.
+* Did not write production `research_schema.json`.
+* Did not commit `local_reports`.
