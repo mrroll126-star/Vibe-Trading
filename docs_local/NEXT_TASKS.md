@@ -790,15 +790,23 @@ Completed:
 
 ## Current Recommended Order After Controlled Real Run Schema Artifact Design
 
-1. **Push the controlled real-run schema artifact design commit**
-   * Business value: back up the artifact placement and observation design.
+Completed:
+
+* Controlled real-run schema artifact design commit was pushed to the fork.
+* Controlled Real Run Trace Observation Script was implemented and tested
+  offline with temp fixture traces.
+
+## Current Recommended Order After Real Trace Observation Script
+
+1. **Push the real trace observation script commit**
+   * Business value: back up the first reusable real-trace observation tool.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Controlled Real Run Trace Observation Script**
-   * Business value: prove one completed real run trace can be read into the
-     schema producer without changing AgentLoop.
-   * Scope: script only; read trace artifacts; optional output to ignored
-     `local_reports`; no Web UI, no AgentLoop run, no live data.
+2. **Run observation on one existing real trace**
+   * Business value: verify the script against an actual completed run/session
+     artifact.
+   * Scope: user supplies `run_id`, `session_id`, or `trace-path` plus explicit
+     symbol; output only to ignored `local_reports`.
 
 3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for

@@ -3477,3 +3477,83 @@ Boundary:
 * Did not modify provider chain, loader, or feature flags.
 * Did not read or print `agent/.env`.
 * Did not create or commit `local_reports`.
+
+## 2026-07-12 Controlled Real Run Trace Observation Script
+
+Goal:
+
+Add a read-only observation script that can inspect an existing real
+`trace.jsonl`, resolve offloaded trace fields, pass events into the
+trace-to-schema collector, and emit a compact compatibility summary.
+
+Files added:
+
+```text
+scripts/observe_real_trace_to_schema.py
+agent/tests/test_real_trace_observation.py
+```
+
+Implementation:
+
+* Script accepts:
+  * `--trace-path`
+  * `--run-id`
+  * `--session-id`
+  * `--symbol`
+  * `--output-dir`
+  * `--limit-events`
+* Trace source priority:
+  1. explicit `--trace-path`
+  2. `agent/runs/<run_id>/trace.jsonl`
+  3. `agent/sessions/<session_id>/trace.jsonl`
+* If no trace source is supplied, the script does not guess.
+* Uses `TraceWriter.read(..., resolve_offloads=True, resolve_fields={"result", "content", "prompt"})`.
+* Does not write production `research_schema.json`.
+* Optional output goes to ignored `local_reports`.
+* Console output is compact and does not print full raw rows.
+
+Test commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_real_trace_observation
+```
+
+Result:
+
+* 7 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_trace_to_schema_pipeline agent.tests.test_report_builder agent.tests.test_direct_tool_schema_pipeline
+```
+
+Result:
+
+* 15 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src/reports agent/tests scripts
+```
+
+Result:
+
+* Passed.
+
+Cases covered:
+
+* trace-path fixture -> observation summary success.
+* missing trace path -> structured error.
+* offloaded tool result payload -> resolved and handled.
+* trace with no tool results -> `schema_generated=false` and warning.
+* partial financial results -> partial schema and missing statement warnings.
+* missing final answer -> schema still attempted.
+* no run/session/trace source -> no guessing.
+
+Boundary:
+
+* Did not run AgentLoop.
+* Did not run Web UI.
+* Did not call live data.
+* Did not read or print `agent/.env`.
+* Did not modify provider chain, loader, or feature flags.
+* Did not write production `agent/runs/<run_id>/artifacts/research_schema.json`.
+* Did not create or commit `local_reports`.

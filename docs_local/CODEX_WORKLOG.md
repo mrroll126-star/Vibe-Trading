@@ -1732,6 +1732,30 @@ Boundary:
 * No `.env` read or printed.
 * No `local_reports` created or committed.
 
+## 2026-07-12 Controlled Real Run Trace Observation Script
+
+Actions performed:
+
+1. Confirmed branch, remote, clean worktree, and ignored sensitive/runtime paths.
+2. Re-read `TraceWriter`, `trace_collector`, `report_builder`, tests, and design docs.
+3. Added `scripts/observe_real_trace_to_schema.py`.
+4. Added `agent/tests/test_real_trace_observation.py`.
+5. Ran focused unittest coverage and compile checks.
+6. Updated project docs.
+
+Boundary:
+
+* Observation script only.
+* No AgentLoop run.
+* No Web UI run.
+* No live data calls.
+* No provider-chain changes.
+* No loader changes.
+* No feature flag default changes.
+* No `.env` read or printed.
+* No production `research_schema.json` write.
+* No `local_reports` committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

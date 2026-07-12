@@ -1600,6 +1600,8 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * `agent/src/reports/trace_collector.py`.
 * `agent/tests/test_trace_to_schema_pipeline.py`.
 * `docs_local/CONTROLLED_REAL_RUN_SCHEMA_ARTIFACT_DESIGN.md`.
+* `scripts/observe_real_trace_to_schema.py`.
+* `agent/tests/test_real_trace_observation.py`.
 
 ### Changed
 
@@ -1617,10 +1619,12 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * Future production artifact path should be
   `agent/runs/<run_id>/artifacts/research_schema.json` after observation
   proofs pass.
+* Real trace observation script now exists but remains read-only and does not
+  write production artifacts.
 
 ### Boundary
 
-* Offline collector/test proof and design only.
+* Offline collector/test proof, design, and read-only observation script only.
 * No AgentLoop changes.
 * No Web UI changes.
 * No provider-chain changes.

@@ -878,3 +878,22 @@ Next roadmap item:
 
 Back up this design commit, then implement a controlled real-run trace
 observation script without changing AgentLoop or Web UI.
+
+## 2026-07-12 Controlled Real Run Trace Observation Script
+
+Completed:
+
+* Added `scripts/observe_real_trace_to_schema.py`.
+* Added `agent/tests/test_real_trace_observation.py`.
+* Implemented read-only observation over existing trace directories.
+* Supports explicit `trace-path`, `run-id`, or `session-id`.
+* Resolves offloaded `result`, `content`, and `prompt` fields through
+  `TraceWriter.read`.
+* Emits compact compatibility summary and optional ignored `local_reports`
+  JSON.
+* Does not write production `research_schema.json`.
+
+Next roadmap item:
+
+Back up this script commit, then run it against one user-selected existing
+real trace with an explicit symbol.
