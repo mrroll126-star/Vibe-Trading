@@ -1636,6 +1636,9 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
   improvement.
 * Unexpected `bash` tool events appeared in the trace and require safety
   investigation.
+* Shell tool trace investigation found the likely cause: local legacy
+  `vibe-trading run` hardcodes `include_shell_tools=True`, while API/session
+  paths use the `VIBE_TRADING_ENABLE_SHELL_TOOLS` gate.
 
 ### Boundary
 

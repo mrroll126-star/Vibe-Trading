@@ -985,3 +985,27 @@ Next roadmap item:
 Back up this observation, then investigate shell tool registration and improve
 financial data-confidence extraction before writing production
 `research_schema.json` artifacts.
+
+## 2026-07-12 Read-only Shell Tool Trace Investigation
+
+Completed:
+
+* Added `docs_local/SHELL_TOOL_TRACE_INVESTIGATION.md`.
+* Investigated why `bash` appeared in the controlled real research run trace.
+* Confirmed `bash` is a shell-capable tool registered through the local tool
+  registry.
+* Confirmed API/session paths use `VIBE_TRADING_ENABLE_SHELL_TOOLS` to decide
+  whether shell tools are exposed.
+* Confirmed local non-interactive `vibe-trading run` delegates to legacy CLI
+  code that hardcodes `include_shell_tools=True`.
+
+Root cause hypothesis:
+
+```text
+legacy CLI run hardcodes include_shell_tools=True
+```
+
+Next roadmap item:
+
+Fix local CLI shell-tool opt-in before using real Agent runs as the default
+Research Workspace production path.

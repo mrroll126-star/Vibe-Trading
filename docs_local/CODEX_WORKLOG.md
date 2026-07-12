@@ -1859,6 +1859,35 @@ Boundary:
 * No production `research_schema.json` write.
 * `local_reports` output was not committed.
 
+## 2026-07-12 Read-only Shell Tool Trace Investigation
+
+Actions performed:
+
+1. Confirmed current branch and context.
+2. Searched code paths for `VIBE_TRADING_ENABLE_SHELL_TOOLS`,
+   `include_shell_tools`, shell tools, `bash`, and subprocess execution.
+3. Read the tool registry, BashTool, API shell gate, session service, legacy CLI
+   run path, and AgentLoop tool execution path.
+4. Read the controlled run trace envelope for `bash` events only.
+5. Added `docs_local/SHELL_TOOL_TRACE_INVESTIGATION.md`.
+6. Updated roadmap, next tasks, worklog, and changelog.
+
+Finding:
+
+* API/session paths use the environment flag to decide shell tool exposure.
+* Local non-interactive `vibe-trading run` delegates to legacy CLI code that
+  hardcodes `include_shell_tools=True`.
+* The `bash` events in the trace are real tool calls and results.
+
+Boundary:
+
+* Read-only investigation.
+* No AgentLoop run.
+* No live data call.
+* No AgentLoop/shell-tool/provider-chain/loader/Web UI code changes.
+* No `.env` read or printed.
+* No `agent/runs` or `local_reports` committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

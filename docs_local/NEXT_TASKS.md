@@ -831,32 +831,37 @@ Completed:
 
 ## Current Recommended Order After Controlled Real Agent Research Run
 
-1. **Push controlled research run observation docs**
-   * Business value: back up the first real Agent-to-schema completeness proof.
-   * Scope: push only after safety check; no PR unless requested.
+Completed:
 
-2. **Investigate shell tool registration**
-   * Business value: remote/research safety.
-   * Reason: trace contained `bash` results even though the run used
-     `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
-   * Scope: read-only investigation first; no behavior change without approval.
+* Read-only shell tool trace investigation was completed.
+* Likely root cause: legacy local CLI `vibe-trading run` hardcodes
+  `include_shell_tools=True`, so `VIBE_TRADING_ENABLE_SHELL_TOOLS=0` does not
+  disable `bash` on that path.
 
-3. **Improve data-confidence extraction for financial statements**
+## Current Recommended Order After Shell Tool Trace Investigation
+
+1. **Fix local CLI shell-tool opt-in**
+   * Business value: safety baseline before any production Research Workspace
+     agent runs.
+   * Scope: make local CLI use the same explicit opt-in policy as API/session
+     paths; add regression tests.
+
+2. **Improve data-confidence extraction for financial statements**
    * Business value: move schema status from partial toward complete.
    * Scope: design or focused implementation later; provider/source/period and
      statement `_data_quality` should be preserved in schema summary.
 
-4. **Decide `indicators` handling**
+3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
      key per-period indicators.
    * Options: add a supported mapping later, block `indicators` for
      a-stock-data fallback with a clearer message, or teach prompts to request
      only income/balance/cashflow for this adapter.
 
-5. **Design financial filing freshness policy**
+4. **Design financial filing freshness policy**
    * Business value: distinguish valid periodic filing dates from stale market
      data.
    * Scope: design first; no behavior change without approval.
 
-6. **Web UI prototype only after schema proof strategy is accepted**
+5. **Web UI prototype only after schema proof strategy is accepted**
    * Reason: the product workflow should lead the UI, not the other way around.
