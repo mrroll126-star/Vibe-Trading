@@ -1707,6 +1707,31 @@ Boundary:
 * No `.env` read or printed.
 * No `local_reports` created or committed.
 
+## 2026-07-12 Controlled Real Run Trace to Schema Artifact Design
+
+Actions performed:
+
+1. Confirmed branch, remote, clean worktree, and ignored sensitive/runtime paths.
+2. Read AgentLoop run directory and trace writing logic.
+3. Read `TraceWriter` sidecar/offload behavior.
+4. Read session store/service attempt persistence.
+5. Read `/runs` and `/sessions` API paths and frontend API usage.
+6. Read existing report builder and trace collector proof files.
+7. Added `docs_local/CONTROLLED_REAL_RUN_SCHEMA_ARTIFACT_DESIGN.md`.
+8. Updated roadmap and next-task guidance.
+
+Boundary:
+
+* Documentation only.
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No loader changes.
+* No live data calls.
+* No Agent task run.
+* No `.env` read or printed.
+* No `local_reports` created or committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

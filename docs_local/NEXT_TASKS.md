@@ -783,14 +783,22 @@ Completed:
 
 ## Current Recommended Order After Agent Trace Fixture Schema Proof
 
-1. **Push the trace fixture schema proof commit to the fork**
-   * Business value: back up the first trace-event-to-schema proof.
+Completed:
+
+* Trace fixture schema proof commit was pushed to the fork.
+* Controlled Real Run Trace to Schema Artifact Design was drafted.
+
+## Current Recommended Order After Controlled Real Run Schema Artifact Design
+
+1. **Push the controlled real-run schema artifact design commit**
+   * Business value: back up the artifact placement and observation design.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Design controlled Agent run trace observation**
-   * Business value: decide how to observe one completed real run trace without
-     changing AgentLoop.
-   * Scope: design first; no Web UI and no schema artifact write until approved.
+2. **Controlled Real Run Trace Observation Script**
+   * Business value: prove one completed real run trace can be read into the
+     schema producer without changing AgentLoop.
+   * Scope: script only; read trace artifacts; optional output to ignored
+     `local_reports`; no Web UI, no AgentLoop run, no live data.
 
 3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for

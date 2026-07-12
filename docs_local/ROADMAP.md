@@ -854,3 +854,27 @@ Next roadmap item:
 
 Back up this proof commit, then design a controlled Agent run trace observation
 before any AgentLoop or Web UI integration.
+
+## 2026-07-12 Controlled Real Run Schema Artifact Design
+
+Completed:
+
+* Added `docs_local/CONTROLLED_REAL_RUN_SCHEMA_ARTIFACT_DESIGN.md`.
+* Investigated real AgentLoop run/session artifact behavior.
+* Confirmed current trace fields are sufficient for a first observation proof:
+  * `tool_result.tool`
+  * `tool_result.status`
+  * `tool_result.result`
+  * `answer.content`
+* Confirmed Web session traces are session-scoped while durable run artifacts
+  are run-scoped.
+* Recommended post-processing after run, still outside AgentLoop.
+* Recommended future production artifact path:
+  `agent/runs/<run_id>/artifacts/research_schema.json`.
+* Recommended first real-run proof as an observation script that writes only to
+  ignored `local_reports`.
+
+Next roadmap item:
+
+Back up this design commit, then implement a controlled real-run trace
+observation script without changing AgentLoop or Web UI.

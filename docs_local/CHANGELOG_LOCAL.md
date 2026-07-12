@@ -1599,12 +1599,14 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * `docs_local/AGENT_TO_SCHEMA_PIPELINE_DESIGN.md`.
 * `agent/src/reports/trace_collector.py`.
 * `agent/tests/test_trace_to_schema_pipeline.py`.
+* `docs_local/CONTROLLED_REAL_RUN_SCHEMA_ARTIFACT_DESIGN.md`.
 
 ### Changed
 
 * Updated roadmap, worklog, changelog, and next-task guidance for the
   Agent-to-Schema pipeline.
 * Exported trace collection helpers from `agent/src/reports/__init__.py`.
+* Added real-run schema artifact placement and observation guidance.
 
 ### Notes
 
@@ -1612,10 +1614,13 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * AgentLoop should remain unchanged for the first Agent-to-Schema proof.
 * Next proof should use fixture traces, not live Agent runs.
 * Fixture trace proof now passes offline.
+* Future production artifact path should be
+  `agent/runs/<run_id>/artifacts/research_schema.json` after observation
+  proofs pass.
 
 ### Boundary
 
-* Offline collector/test proof only.
+* Offline collector/test proof and design only.
 * No AgentLoop changes.
 * No Web UI changes.
 * No provider-chain changes.
