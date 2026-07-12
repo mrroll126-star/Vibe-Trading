@@ -1628,6 +1628,14 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
   financial `indicators`, not income, balance, and cashflow.
 * Controlled research run plan now defines how to create a future trace with
   explicit income, balance, and cashflow coverage for `300750.SZ`.
+* Controlled real Agent research run for `300750.SZ` produced a trace with
+  income, balance, and cashflow results.
+* The real trace generated a structured schema summary and is suitable for a
+  future artifact proof.
+* Schema status remains partial because data-confidence extraction needs
+  improvement.
+* Unexpected `bash` tool events appeared in the trace and require safety
+  investigation.
 
 ### Boundary
 

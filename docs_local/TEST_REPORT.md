@@ -3696,3 +3696,171 @@ Boundary:
 * Did not modify AgentLoop, provider chain, or loader.
 * Did not write production `research_schema.json`.
 * Did not commit `local_reports`.
+
+## 2026-07-12 Controlled Real Agent Research Run - 300750.SZ
+
+Goal:
+
+Execute exactly one controlled real Agent research run and verify:
+
+```text
+Research Intent
+  -> AgentLoop
+  -> Tool Execution
+  -> Trace
+  -> observe_real_trace_to_schema
+  -> Schema Completeness
+```
+
+Run command:
+
+```bash
+VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1 \
+VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1 \
+VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=1 \
+VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0 \
+VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=0 \
+VIBE_TRADING_ENABLE_SHELL_TOOLS=0 \
+.venv/bin/vibe-trading run --json --max-iter 20 -p "Analyze 300750.SZ as an investment research subject. Cover market snapshot, income statement, balance sheet, cash flow, financial health, risks, recent news and sector context. Use available tools and clearly state missing data."
+```
+
+Run result:
+
+```text
+status: success
+run_id: 20260712_204249_68_4f64a5
+run_dir: agent/runs/20260712_204249_68_4f64a5
+```
+
+Trace observation command:
+
+```bash
+.venv/bin/python scripts/observe_real_trace_to_schema.py \
+  --run-id 20260712_204249_68_4f64a5 \
+  --symbol 300750.SZ \
+  --output-dir local_reports
+```
+
+Observation output:
+
+```text
+local_reports/real_trace_schema_observation_20260712_124625.json
+```
+
+The observation output was ignored by Git and not committed.
+
+Trace:
+
+* `trace_path`: `agent/runs/20260712_204249_68_4f64a5/trace.jsonl`
+* `event_count`: 124
+* `tool_result_count`: 42
+* `has_final_answer`: true
+
+Tool coverage:
+
+| Capability | Tool evidence | Result |
+| --- | --- | --- |
+| market snapshot | `get_market_data` | PASS |
+| income statement | `get_financial_statements` found `income` | PASS |
+| balance sheet | `get_financial_statements` found `balance` | PASS |
+| cash flow | `get_financial_statements` found `cashflow` | PASS |
+| news | `get_stock_news` | PASS |
+| research reports | `get_research_reports` | PASS |
+| sector context | `get_sector_info` | PASS |
+
+Schema:
+
+* `schema_generated`: true
+* `schema_sections_present`:
+  * `research_meta`
+  * `symbol`
+  * `market_snapshot`
+  * `financial_health`
+  * `investment_memo`
+  * `valuation`
+  * `risks`
+  * `data_confidence`
+  * `limitations`
+* `missing_sections`: none
+
+Compatibility:
+
+```text
+can_read_trace: true
+has_tool_results: true
+has_required_financial_results: true
+can_build_schema: true
+suitable_for_future_artifact: true
+```
+
+Schema status:
+
+```text
+partial
+```
+
+Reason:
+
+* Core trace-to-schema path passed.
+* Required financial statement types were present.
+* Data-confidence metadata still needs improvement:
+  * market data was partial
+  * latest market date was older than the run date
+  * income/balance/cashflow data quality was missing
+  * financial provider was not fully populated in the summary
+
+Important safety finding:
+
+The trace included `bash` tool results:
+
+```text
+bash status=ok: 1
+bash status=error: 1
+```
+
+This is unexpected because the run was started with
+`VIBE_TRADING_ENABLE_SHELL_TOOLS=0`. No code was changed during this task. This
+must be investigated before productionizing Research Workspace or enabling any
+remote workflow.
+
+Runtime notes:
+
+* `get_fund_flow` reported a connection-aborted fetch failure for `300750.SZ`.
+* Duplicate tool calls were blocked by the existing duplicate-call guard.
+
+Regression commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_real_trace_observation
+```
+
+Result:
+
+* 7 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_trace_to_schema_pipeline agent.tests.test_report_builder agent.tests.test_direct_tool_schema_pipeline
+```
+
+Result:
+
+* 15 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src/reports agent/tests scripts
+```
+
+Result:
+
+* Passed.
+
+Boundary:
+
+* Ran exactly one Agent research run.
+* Did not modify AgentLoop.
+* Did not modify provider chain.
+* Did not modify loader.
+* Did not modify Web UI.
+* Did not read or print `agent/.env`.
+* Did not write production `research_schema.json`.
+* Did not commit `local_reports`.

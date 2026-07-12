@@ -643,3 +643,106 @@ The current post-processing design is viable for a first read-only real-trace
 schema artifact workflow. Before writing production
 `agent/runs/<run_id>/artifacts/research_schema.json`, run the observation
 against a trace that includes income, balance, and cashflow tool results.
+
+## 16. Controlled Real Research Run Observation Result
+
+Date: 2026-07-12
+
+Controlled run target:
+
+```text
+300750.SZ
+```
+
+Run:
+
+```text
+run_id: 20260712_204249_68_4f64a5
+trace_path: agent/runs/20260712_204249_68_4f64a5/trace.jsonl
+```
+
+Research prompt:
+
+```text
+Analyze 300750.SZ as an investment research subject. Cover market snapshot,
+income statement, balance sheet, cash flow, financial health, risks, recent
+news and sector context. Use available tools and clearly state missing data.
+```
+
+Observation command:
+
+```bash
+.venv/bin/python scripts/observe_real_trace_to_schema.py \
+  --run-id 20260712_204249_68_4f64a5 \
+  --symbol 300750.SZ \
+  --output-dir local_reports
+```
+
+Observation output:
+
+```text
+local_reports/real_trace_schema_observation_20260712_124625.json
+```
+
+The output is ignored by Git and was not committed.
+
+Result summary:
+
+* The real Agent run completed successfully.
+* The trace contained 124 events and 42 tool results.
+* Required financial statement types were present:
+  * income
+  * balance
+  * cashflow
+* `trace_collector` and `build_research_report(...)` generated a schema.
+* All expected top-level schema sections were present.
+
+Compatibility result:
+
+```text
+can_read_trace: true
+has_tool_results: true
+has_required_financial_results: true
+can_build_schema: true
+suitable_for_future_artifact: true
+```
+
+Schema status:
+
+```text
+partial
+```
+
+Reason:
+
+* Core schema construction passed.
+* Income, balance, and cashflow were present.
+* Market data was present.
+* However, data-confidence metadata was incomplete:
+  * market data was marked partial
+  * market latest date was older than the run date
+  * income/balance/cashflow data quality was missing
+  * financial provider was not fully populated in the schema summary
+* The trace included `bash` tool events even though this controlled run was
+  intended to keep shell tools disabled.
+
+Important safety finding:
+
+The trace contained:
+
+```text
+bash status=ok: 1
+bash status=error: 1
+```
+
+This does not block the schema proof, but it is a safety backlog item before
+productionizing Research Workspace. Future controlled runs should explicitly
+verify that shell-capable tools are not registered or callable.
+
+Conclusion:
+
+This run proves that a real Agent research trace can include market data,
+complete financial statements, final answer, and enough tool results to build a
+structured schema summary. It should still not write production
+`research_schema.json` automatically until the data-confidence gaps and shell
+tool registration issue are addressed.

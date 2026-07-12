@@ -948,3 +948,40 @@ Next roadmap item:
 
 Back up this design commit, then execute exactly one controlled Agent research
 run only after user confirmation.
+
+## 2026-07-12 Controlled Real Agent Research Run - 300750.SZ
+
+Completed:
+
+* Executed exactly one controlled real Agent research run.
+* Target: `300750.SZ`.
+* Run id: `20260712_204249_68_4f64a5`.
+* Observed trace with `scripts/observe_real_trace_to_schema.py`.
+* Confirmed trace readability and schema construction.
+* Confirmed complete financial statement types:
+  * income
+  * balance
+  * cashflow
+* Confirmed top-level schema sections were generated.
+
+Schema result:
+
+```text
+schema_generated: true
+schema_status: partial
+```
+
+Why partial:
+
+* Core data was present.
+* Data-confidence metadata needs improvement.
+* Market latest date was older than the run date.
+* Financial statement `_data_quality` was missing in the schema summary.
+* Trace contained unexpected `bash` tool events despite shell tools being
+  intended to stay disabled.
+
+Next roadmap item:
+
+Back up this observation, then investigate shell tool registration and improve
+financial data-confidence extraction before writing production
+`research_schema.json` artifacts.

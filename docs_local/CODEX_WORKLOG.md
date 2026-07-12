@@ -1813,6 +1813,52 @@ Boundary:
 * No production artifact write.
 * No `local_reports` change.
 
+## 2026-07-12 Controlled Real Agent Research Run - 300750.SZ
+
+Actions performed:
+
+1. Confirmed branch and clean worktree.
+2. Ran exactly one controlled Agent research task for `300750.SZ`.
+3. Used explicit feature flags:
+   * `VIBE_TRADING_ENABLE_A_STOCK_DATA_ADAPTER=1`
+   * `VIBE_TRADING_ENABLE_PRE_TOOL_SYMBOL_GUARD=1`
+   * `VIBE_TRADING_ENABLE_ASSET_TYPE_ROUTING_GUARD=1`
+   * `VIBE_TRADING_ENABLE_SYMBOL_NORMALIZER=0`
+   * `VIBE_TRADING_ENABLE_MARKET_WIDE_BENCHMARK_POLICY=0`
+   * `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`
+4. Captured run id `20260712_204249_68_4f64a5`.
+5. Ran `scripts/observe_real_trace_to_schema.py` against the generated run
+   trace.
+6. Confirmed schema compatibility summary was generated.
+7. Ran focused unittest and compile checks.
+8. Updated docs_local.
+
+Observation:
+
+* Real trace read: success.
+* Tool results found: 42.
+* Required financial statement types found: income, balance, cashflow.
+* Schema generated: yes.
+* Schema status: partial.
+
+Important finding:
+
+* The trace included `bash` tool results even though
+  `VIBE_TRADING_ENABLE_SHELL_TOOLS=0` was set for the run.
+* This is now a safety investigation item before productionizing Research
+  Workspace.
+
+Boundary:
+
+* Exactly one Agent run.
+* No AgentLoop code change.
+* No provider-chain change.
+* No loader change.
+* No Web UI run.
+* No `.env` read or printed.
+* No production `research_schema.json` write.
+* `local_reports` output was not committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

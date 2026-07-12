@@ -818,27 +818,45 @@ Completed:
 
 ## Current Recommended Order After Controlled Research Run Plan Design
 
-1. **Push the research run plan design commit**
-   * Business value: back up the controlled real-run acceptance contract.
+Completed:
+
+* Controlled Real Agent Research Run was executed once for `300750.SZ`.
+* The trace contained market data and complete financial statement types:
+  income, balance, and cashflow.
+* `observe_real_trace_to_schema.py` generated a schema compatibility summary.
+* Schema was generated, but classified as partial because data-confidence
+  metadata needs improvement.
+* The trace unexpectedly included `bash` tool events, which must be
+  investigated before production use.
+
+## Current Recommended Order After Controlled Real Agent Research Run
+
+1. **Push controlled research run observation docs**
+   * Business value: back up the first real Agent-to-schema completeness proof.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Controlled Real Agent Research Run**
-   * Business value: produce one real trace with explicit income, balance, and
-     cashflow coverage.
-   * Scope: one symbol only, `300750.SZ`; no Web UI; output observation only to
-     ignored `local_reports`; no production artifact write.
+2. **Investigate shell tool registration**
+   * Business value: remote/research safety.
+   * Reason: trace contained `bash` results even though the run used
+     `VIBE_TRADING_ENABLE_SHELL_TOOLS=0`.
+   * Scope: read-only investigation first; no behavior change without approval.
 
-3. **Decide `indicators` handling**
+3. **Improve data-confidence extraction for financial statements**
+   * Business value: move schema status from partial toward complete.
+   * Scope: design or focused implementation later; provider/source/period and
+     statement `_data_quality` should be preserved in schema summary.
+
+4. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
      key per-period indicators.
    * Options: add a supported mapping later, block `indicators` for
      a-stock-data fallback with a clearer message, or teach prompts to request
      only income/balance/cashflow for this adapter.
 
-4. **Design financial filing freshness policy**
+5. **Design financial filing freshness policy**
    * Business value: distinguish valid periodic filing dates from stale market
      data.
    * Scope: design first; no behavior change without approval.
 
-5. **Web UI prototype only after schema proof strategy is accepted**
+6. **Web UI prototype only after schema proof strategy is accepted**
    * Reason: the product workflow should lead the UI, not the other way around.
