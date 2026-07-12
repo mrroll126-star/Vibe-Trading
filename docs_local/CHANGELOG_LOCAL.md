@@ -1592,6 +1592,33 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No live data calls.
 * No `.env` read or printed.
 
+## 2026-07-12
+
+### Added
+
+* `docs_local/AGENT_TO_SCHEMA_PIPELINE_DESIGN.md`.
+
+### Changed
+
+* Updated roadmap, worklog, changelog, and next-task guidance for the
+  Agent-to-Schema pipeline.
+
+### Notes
+
+* Recommended MVP placement is post-processing after Agent run.
+* AgentLoop should remain unchanged for the first Agent-to-Schema proof.
+* Next proof should use fixture traces, not live Agent runs.
+
+### Boundary
+
+* Documentation only.
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No loader changes.
+* No live data calls.
+* No Agent task run.
+
 ## 2026-07-10
 
 ### Added

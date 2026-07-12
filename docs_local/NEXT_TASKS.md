@@ -769,14 +769,22 @@ Completed:
 
 ## Current Recommended Order After Controlled Direct Tool Output Schema Proof
 
-1. **Push the direct tool schema proof commit to the fork**
-   * Business value: back up the first official-tool-output-to-schema proof.
+Completed:
+
+* Direct tool schema proof commit was pushed to the fork.
+* Agent-to-Schema Pipeline Integration Design was drafted.
+
+## Current Recommended Order After Agent-to-Schema Pipeline Design
+
+1. **Push the Agent-to-Schema design commit to the fork**
+   * Business value: back up the pipeline placement and artifact policy before
+     implementation.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Controlled live/direct schema proof decision**
-   * Business value: decide whether the next proof should allow one controlled
-     live a-stock-data fallback call, or stay mock-only and move to API shape.
-   * Current recommendation: keep Web UI deferred.
+2. **Agent Trace Fixture -> Schema Proof**
+   * Business value: prove trace artifacts can be collected into the schema
+     producer without changing AgentLoop.
+   * Scope: fixture trace only; no live Agent run, no Web UI, no live data.
 
 3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for

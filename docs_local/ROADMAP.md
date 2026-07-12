@@ -810,3 +810,24 @@ Next roadmap item:
 
 Back up the direct tool schema proof commit, then decide whether the next proof
 uses controlled live direct output or moves toward API shape.
+
+## 2026-07-12 Agent-to-Schema Pipeline Integration Design
+
+Completed:
+
+* Created `docs_local/AGENT_TO_SCHEMA_PIPELINE_DESIGN.md`.
+* Compared three placement options:
+  * inside AgentLoop
+  * post-processor after run
+  * hybrid standardized tool events plus post-processor
+* Recommended Option B for MVP: post-processor after run.
+* Defined the Tool Result Collection Contract.
+* Defined partial schema policy.
+* Defined artifact policy for `agent/runs/<run_id>/artifacts/research_schema.json`
+  and `local_reports`.
+* Defined next testing strategy using fixture traces.
+
+Next roadmap item:
+
+Implement an Agent Trace Fixture -> Schema Proof before any AgentLoop or Web UI
+integration.

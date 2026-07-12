@@ -1659,6 +1659,30 @@ Boundary:
 * No live data calls.
 * No `.env` read or printed.
 
+## 2026-07-12 Agent-to-Schema Pipeline Integration Design
+
+Actions performed:
+
+1. Confirmed worktree state before writing docs.
+2. Read current AgentLoop trace/tool-result behavior.
+3. Read `TraceWriter` trace and sidecar behavior.
+4. Re-read `report_builder.py`, direct schema proof script and test.
+5. Added `docs_local/AGENT_TO_SCHEMA_PIPELINE_DESIGN.md`.
+6. Recommended MVP post-processing after run rather than modifying AgentLoop.
+7. Defined tool result collection contract and artifact policy.
+8. Updated roadmap and next-task guidance.
+
+Boundary:
+
+* Documentation only.
+* No AgentLoop changes.
+* No Web UI changes.
+* No provider-chain changes.
+* No loader changes.
+* No live data calls.
+* No Agent task run.
+* No `.env` read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:
