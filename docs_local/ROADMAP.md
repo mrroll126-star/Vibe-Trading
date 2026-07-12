@@ -831,3 +831,26 @@ Next roadmap item:
 
 Implement an Agent Trace Fixture -> Schema Proof before any AgentLoop or Web UI
 integration.
+
+## 2026-07-12 Agent Trace Fixture to Research Schema Proof
+
+Completed:
+
+* Added `agent/src/reports/trace_collector.py`.
+* Added `agent/tests/test_trace_to_schema_pipeline.py`.
+* Exported trace collection helpers from `agent/src/reports/__init__.py`.
+* Implemented a pure/offline trace event collector.
+* Proved controlled trace-like events can feed `build_research_report(...)`.
+* Covered success and partial/failure cases:
+  * complete market + financial + final answer trace
+  * missing market data
+  * missing financial data
+  * a-stock-data fallback financial data
+  * failed tool event
+  * invalid or ambiguous symbol
+  * missing final answer
+
+Next roadmap item:
+
+Back up this proof commit, then design a controlled Agent run trace observation
+before any AgentLoop or Web UI integration.

@@ -3388,3 +3388,92 @@ Boundary:
 * Did not run Web UI.
 * Did not modify provider chain, loader, or feature flags.
 * Did not read or print `agent/.env`.
+
+## 2026-07-12 Agent Trace Fixture to Research Schema Proof
+
+Goal:
+
+Prove that controlled Agent trace-like events can be collected offline and
+converted into the Structured Research Report Schema.
+
+Files added:
+
+```text
+agent/src/reports/trace_collector.py
+agent/tests/test_trace_to_schema_pipeline.py
+```
+
+Files changed:
+
+```text
+agent/src/reports/__init__.py
+```
+
+Implementation:
+
+* Added a pure/offline trace collector.
+* Supports current `TraceWriter`-style events:
+  * `type=tool_result`
+  * `tool`
+  * `status`
+  * `result`
+  * `type=answer`
+* Supports design fixture-style events:
+  * `event_type=tool_result`
+  * `tool_name`
+  * `result`
+  * `event_type=final_answer`
+* Collects market tool results into `market_result`.
+* Collects `get_financial_statements` outputs into `financial_results`.
+* Converts final answer text into interpretation placeholders.
+* Preserves failed tool events and unknown events as warnings.
+* Sends collected data into `build_research_report(...)`.
+
+No observation script was added in this round. The unittest fixture is enough
+for the offline proof and keeps the surface smaller.
+
+Test commands:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_trace_to_schema_pipeline
+```
+
+Result:
+
+* 7 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_report_builder agent.tests.test_direct_tool_schema_pipeline
+```
+
+Result:
+
+* 8 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src/reports agent/tests scripts
+```
+
+Result:
+
+* Passed.
+
+Cases covered:
+
+* complete trace fixture -> schema success.
+* missing market data -> market snapshot missing and warning.
+* missing financial data -> financial health missing and warning.
+* fallback financial data -> provider/source/fallback warnings preserved.
+* failed tool event -> warning preserved.
+* invalid / ambiguous symbol -> schema rejected.
+* final answer missing -> facts still generate while investment memo remains
+  placeholder/empty.
+
+Boundary:
+
+* Did not call live data.
+* Did not run AgentLoop.
+* Did not run Web UI.
+* Did not modify provider chain, loader, or feature flags.
+* Did not read or print `agent/.env`.
+* Did not create or commit `local_reports`.

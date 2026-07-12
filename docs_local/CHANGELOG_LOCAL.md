@@ -1597,27 +1597,32 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 ### Added
 
 * `docs_local/AGENT_TO_SCHEMA_PIPELINE_DESIGN.md`.
+* `agent/src/reports/trace_collector.py`.
+* `agent/tests/test_trace_to_schema_pipeline.py`.
 
 ### Changed
 
 * Updated roadmap, worklog, changelog, and next-task guidance for the
   Agent-to-Schema pipeline.
+* Exported trace collection helpers from `agent/src/reports/__init__.py`.
 
 ### Notes
 
 * Recommended MVP placement is post-processing after Agent run.
 * AgentLoop should remain unchanged for the first Agent-to-Schema proof.
 * Next proof should use fixture traces, not live Agent runs.
+* Fixture trace proof now passes offline.
 
 ### Boundary
 
-* Documentation only.
+* Offline collector/test proof only.
 * No AgentLoop changes.
 * No Web UI changes.
 * No provider-chain changes.
 * No loader changes.
 * No live data calls.
 * No Agent task run.
+* No `.env` read or printed.
 
 ## 2026-07-10
 

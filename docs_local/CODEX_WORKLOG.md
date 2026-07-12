@@ -1683,6 +1683,30 @@ Boundary:
 * No Agent task run.
 * No `.env` read or printed.
 
+## 2026-07-12 Agent Trace Fixture to Research Schema Proof
+
+Actions performed:
+
+1. Confirmed branch, remote, clean worktree, and ignored sensitive/runtime paths.
+2. Re-read report builder and direct schema proof tests.
+3. Re-read `TraceWriter` and AgentLoop trace-writing behavior.
+4. Added a pure trace collector in `agent/src/reports/trace_collector.py`.
+5. Added offline fixture tests in `agent/tests/test_trace_to_schema_pipeline.py`.
+6. Ran focused unittest coverage and compile checks.
+7. Updated project docs.
+
+Boundary:
+
+* Offline proof only.
+* No AgentLoop run.
+* No Web UI run.
+* No live data calls.
+* No provider-chain changes.
+* No loader changes.
+* No feature flag default changes.
+* No `.env` read or printed.
+* No `local_reports` created or committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

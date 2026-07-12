@@ -776,15 +776,21 @@ Completed:
 
 ## Current Recommended Order After Agent-to-Schema Pipeline Design
 
-1. **Push the Agent-to-Schema design commit to the fork**
-   * Business value: back up the pipeline placement and artifact policy before
-     implementation.
+Completed:
+
+* Agent-to-Schema design commit was pushed to the fork.
+* Agent Trace Fixture -> Schema Proof was implemented offline.
+
+## Current Recommended Order After Agent Trace Fixture Schema Proof
+
+1. **Push the trace fixture schema proof commit to the fork**
+   * Business value: back up the first trace-event-to-schema proof.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Agent Trace Fixture -> Schema Proof**
-   * Business value: prove trace artifacts can be collected into the schema
-     producer without changing AgentLoop.
-   * Scope: fixture trace only; no live Agent run, no Web UI, no live data.
+2. **Design controlled Agent run trace observation**
+   * Business value: decide how to observe one completed real run trace without
+     changing AgentLoop.
+   * Scope: design first; no Web UI and no schema artifact write until approved.
 
 3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for
