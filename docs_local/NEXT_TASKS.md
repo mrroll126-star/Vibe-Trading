@@ -810,15 +810,23 @@ Completed:
 
 ## Current Recommended Order After Historical Trace Observation
 
-1. **Push the real trace observation and historical observation docs**
-   * Business value: back up the first real-trace compatibility proof.
+Completed:
+
+* Controlled Research Run Plan Design was drafted for `300750.SZ`.
+* The plan defines research intent, required tool calls, completion criteria,
+  trace validation, and schema completeness reporting.
+
+## Current Recommended Order After Controlled Research Run Plan Design
+
+1. **Push the research run plan design commit**
+   * Business value: back up the controlled real-run acceptance contract.
    * Scope: push only after safety check; no PR unless requested.
 
-2. **Run or select a completed trace with income/balance/cashflow**
-   * Business value: prove full financial-statement schema extraction from a
-     real Agent trace.
-   * Scope: observation only; output to ignored `local_reports`; no production
-     artifact write.
+2. **Controlled Real Agent Research Run**
+   * Business value: produce one real trace with explicit income, balance, and
+     cashflow coverage.
+   * Scope: one symbol only, `300750.SZ`; no Web UI; output observation only to
+     ignored `local_reports`; no production artifact write.
 
 3. **Decide `indicators` handling**
    * Business value: avoid a confusing partial failure when the Agent asks for

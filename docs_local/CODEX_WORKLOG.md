@@ -1790,6 +1790,29 @@ Boundary:
 * No production `research_schema.json` write.
 * `local_reports` output was not committed.
 
+## 2026-07-12 Controlled Research Run Plan Design
+
+Actions performed:
+
+1. Confirmed branch and clean worktree.
+2. Added `docs_local/CONTROLLED_RESEARCH_RUN_PLAN_DESIGN.md`.
+3. Defined a controlled single-stock research intent for `300750.SZ`.
+4. Defined required capabilities and tool requirement matrix.
+5. Defined complete/partial/failed schema criteria.
+6. Defined the minimum trace validation contract.
+7. Updated roadmap and next-task guidance.
+
+Boundary:
+
+* Design only.
+* No AgentLoop run.
+* No live data call.
+* No Web UI run.
+* No AgentLoop/provider-chain/loader changes.
+* No `.env` read or printed.
+* No production artifact write.
+* No `local_reports` change.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

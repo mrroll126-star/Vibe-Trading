@@ -1600,6 +1600,7 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * `agent/src/reports/trace_collector.py`.
 * `agent/tests/test_trace_to_schema_pipeline.py`.
 * `docs_local/CONTROLLED_REAL_RUN_SCHEMA_ARTIFACT_DESIGN.md`.
+* `docs_local/CONTROLLED_RESEARCH_RUN_PLAN_DESIGN.md`.
 * `scripts/observe_real_trace_to_schema.py`.
 * `agent/tests/test_real_trace_observation.py`.
 
@@ -1625,6 +1626,8 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
   `agent/runs/20260705_170559_16_fc55fe/trace.jsonl`.
 * The selected trace generated a schema summary, but it only contained
   financial `indicators`, not income, balance, and cashflow.
+* Controlled research run plan now defines how to create a future trace with
+  explicit income, balance, and cashflow coverage for `300750.SZ`.
 
 ### Boundary
 

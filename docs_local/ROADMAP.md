@@ -923,3 +923,28 @@ Next roadmap item:
 Back up this observation result, then run the same observation against a
 completed trace containing income, balance, and cashflow results before writing
 production `research_schema.json` artifacts.
+
+## 2026-07-12 Controlled Research Run Plan Design
+
+Completed:
+
+* Added `docs_local/CONTROLLED_RESEARCH_RUN_PLAN_DESIGN.md`.
+* Defined the controlled research intent for `300750.SZ`.
+* Defined required capabilities:
+  * market snapshot
+  * income statement
+  * balance sheet
+  * cash flow
+  * news
+  * research reports
+  * sector context
+  * data confidence
+* Defined tool requirement matrix and expected tool calls.
+* Defined schema completion states: complete, partial, failed.
+* Defined trace validation contract for future post-processing.
+* Defined schema completeness report fields.
+
+Next roadmap item:
+
+Back up this design commit, then execute exactly one controlled Agent research
+run only after user confirmation.
