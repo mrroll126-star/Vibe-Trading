@@ -1328,6 +1328,23 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * Fixture-only; no AgentLoop, trace writer, live data, Web UI, provider-chain,
   loader, `.env`, or runtime artifact change.
 
+## 2026-07-13
+
+### Added
+
+* `docs_local/STRUCTURED_TOOL_DUAL_WRITE_INTEGRATION_PLAN.md`.
+
+### Design
+
+* Defined a default-off, best-effort dual-write path that preserves the current
+  Agent-facing result and legacy trace result while adding optional structured
+  trace payloads.
+
+### Boundary
+
+* Documentation only; no tool, AgentLoop, trace writer, provider-chain,
+  loader, Web UI, live-data, or `.env` change.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 ### Added

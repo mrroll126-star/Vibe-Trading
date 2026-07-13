@@ -1455,6 +1455,22 @@ Boundary:
 * No AgentLoop or trace writer modification, live data, Web UI, provider-chain,
   loader, `.env` access, or runtime artifact write.
 
+## 2026-07-13 Structured Tool Result Dual-write Integration Design
+
+Actions performed:
+
+1. Read the tool registry, serial and parallel execution paths, finalization
+   method, context formatter, and trace writer.
+2. Identified the trace-only best-effort side branch after result redaction and
+   before `TraceWriter.write_tool_result(...)`.
+3. Defined default-off feature-flag behavior, failure isolation, and a
+   financial-first incremental rollout.
+
+Boundary:
+
+* Documentation only. No tool, AgentLoop, trace writer, provider-chain,
+  loader, Web UI, live-data, or `.env` change.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 1. Confirmed the working tree was clean and remote configuration unchanged.

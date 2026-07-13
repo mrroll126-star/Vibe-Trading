@@ -1195,3 +1195,19 @@ Next roadmap item:
 
 Design controlled AgentLoop dual-write integration before any runtime trace
 writer change.
+
+## 2026-07-13 Structured Tool Result Dual-write Integration Design
+
+Completed:
+
+* Identified `_finalize_tool_result(...)` immediately before trace writing as
+  the minimal best-effort instrumentation boundary.
+* Defined default-off trace-only enrichment that keeps legacy LLM context and
+  result text unchanged.
+* Defined financial-first rollout, failure isolation, and controlled real-trace
+  acceptance criteria.
+
+Next roadmap item:
+
+Implement fixture-tested default-off TraceWriter v1 support before integrating
+any real tool execution path.

@@ -1064,3 +1064,20 @@ Completed:
 4. **Run one controlled trace observation and compare schema completeness**
    * Business value: prove the text-only financial-result gap is closed before
      any production artifact writer is enabled.
+
+## Current Recommended Order After Dual-write Integration Design
+
+1. **Push the local dual-write design commit to the fork**
+   * Business value: preserve the runtime boundary before implementation.
+
+2. **Implement a fixture-tested feature-flag helper and TraceWriter v1 fields**
+   * Business value: establish default-off, safe JSON-sidecar behavior without
+     enabling runtime enrichment.
+
+3. **Implement financial-tool-only dual-write integration**
+   * Business value: restore three-statement facts, fallback provenance, and
+     reporting periods to future trace artifacts.
+
+4. **Add market-tool dual-write and run one controlled real trace observation**
+   * Business value: validate full schema completeness before production
+     artifact writes are considered.
