@@ -289,3 +289,18 @@ row canonicalization, and the confidence extractor still decides completeness.
 The projector is the sole producer of newly calculated row count and
 reporting-period projection; it does not infer source/provider/upstream or
 change the runtime dual-write path.
+
+## 16. Default-off Runtime Producer Integration (2026-07-13)
+
+The projector is now used by the financial-only runtime dual-write helper after
+serializer success. The call site passes existing tool-call arguments and an
+optional execution-metadata mapping. The consumer pipeline remains unchanged:
+
+```text
+TraceWriter event -> collector -> normalizer -> extractor -> builder -> artifact
+```
+
+Runtime tests prove complete artifacts only with explicit primary execution
+metadata. In the actual current primary path, missing provider/upstream remains
+an honest partial result. No runtime code infers these fields from tool name,
+source text, current configuration, or legacy result prose.

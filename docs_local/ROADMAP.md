@@ -1337,3 +1337,20 @@ Next roadmap item:
 
 Implement the projector in the existing default-off financial runtime
 dual-write hook, then run a single controlled trace observation.
+
+## 2026-07-13 Default-off Runtime Primary Financial Provenance Integration
+
+Completed:
+
+* Integrated the fixture-proven provenance projector after financial serializer
+  success in the default-off runtime trace branch.
+* Preserved flag-off legacy trace shape, legacy LLM context, Agent response,
+  and non-financial tool behavior.
+* Added failure isolation for serializer and projector paths plus safe sidecar
+  resolution coverage.
+
+Next roadmap item:
+
+Design a truthful primary execution-metadata producer before any new real run.
+The current primary envelope lacks provider/upstream facts and must remain
+partial until that producer exists.

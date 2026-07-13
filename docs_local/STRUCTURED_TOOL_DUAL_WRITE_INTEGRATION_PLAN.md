@@ -93,7 +93,6 @@ Default is disabled. When unset, invalid, or `0`, no serializer runs and
 Initial allowlist:
 
 * `get_financial_statements`
-* `get_market_data`
 
 The flag affects trace enrichment and future post-processing only. It must not
 alter tool invocation, guard decisions, provider fallback, returned text,
@@ -195,5 +194,28 @@ Controlled real-run acceptance:
 
 This plan does not add a production artifact writer, migrate old traces, parse
 financial prose, add providers, change loaders, expose raw payloads in Web UI,
-or widen structured tracing beyond the first two tools. Retention, encryption,
+or widen structured tracing beyond the first tool. Retention, encryption,
 payload pruning, and Web/API ownership remain separate decisions.
+
+## 9. Default-off Financial Provenance Runtime Integration (2026-07-13)
+
+Implemented the financial-only runtime path behind
+`VIBE_TRADING_ENABLE_STRUCTURED_TOOL_TRACE=1`:
+
+```text
+redacted financial result + existing tool arguments + optional execution metadata
+  -> serializer
+  -> provenance projector
+  -> structured payload + existing metadata field
+  -> TraceWriter
+```
+
+The LLM still receives the original legacy text. Flag-off does not call the
+projector or add v1 trace fields. A serializer failure leaves a null structured
+payload with `structured_payload_unavailable`; a projector failure preserves
+the serializer payload and adds `financial_provenance_projection_failed`.
+
+Complete provenance is only possible when the result or explicit execution
+metadata contains it. The current primary Eastmoney envelope does not expose
+all provider/upstream facts, so runtime behavior deliberately remains partial
+rather than guessing.

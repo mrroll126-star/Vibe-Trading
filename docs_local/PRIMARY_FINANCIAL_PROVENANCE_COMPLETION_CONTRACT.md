@@ -238,9 +238,9 @@ An implementation may be accepted only when fixture tests prove:
 
 ## 13. Non-goals
 
-This design does not:
+This contract and its runtime integration do not:
 
-* modify AgentLoop, tools, TraceWriter, provider routing, loaders, or Web UI;
+* modify FinancialStatementsTool, TraceWriter, provider routing, loaders, or Web UI;
 * run a new Agent task or call a live provider;
 * create a production `research_schema.json` artifact;
 * expand financial support to indicators, valuation metrics, or other assets;
@@ -263,5 +263,25 @@ Only existing structured rows contribute report periods and row count. The
 normalizer now preserves explicit fallback status, primary error, and payload
 warnings while canonicalizing rows.
 
-This proof remains fixture-only. `runtime_dual_write.py`, AgentLoop,
-FinancialStatementsTool, TraceWriter, and legacy LLM text have not changed.
+At the fixture-proof stage, `runtime_dual_write.py`, AgentLoop,
+FinancialStatementsTool, TraceWriter, and legacy LLM text had not changed.
+
+## 15. Default-off Runtime Integration Status (2026-07-13)
+
+The existing financial-only runtime dual-write hook now calls the projector
+after serializer success and before trace enrichment is written. AgentLoop
+passes only already-available tool-call `arguments` and an optional
+`execution_metadata` mapping when one exists; neither layer derives a provider
+from the tool name, payload shape, or configured default.
+
+Flag-off events retain their legacy shape exactly. With the flag enabled,
+projected facts occupy the existing trace `metadata` and enriched structured
+payload; no second, competing provenance representation was added. Serializer
+or projector failure stays trace-only and cannot block the legacy tool result,
+LLM context, or Agent response.
+
+The current real primary tool envelope has source, statement, and period rows,
+but does not expose provider/upstream execution facts. It therefore remains
+partial unless a future execution layer supplies verified metadata. The new
+runtime integration proves complete behavior only with explicit fixture
+execution metadata; it does not manufacture that metadata in production.

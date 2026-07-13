@@ -1336,6 +1336,26 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Added
 
+* `agent/tests/test_financial_runtime_provenance.py` with default-off runtime
+  provenance, fallback, failure-isolation, sidecar, and artifact tests.
+
+### Changed
+
+* The default-off financial runtime dual-write helper now projects explicit
+  provenance after serializer success.
+* AgentLoop passes only existing tool-call arguments and optional explicit
+  execution metadata to the trace-only helper.
+
+### Boundary
+
+* No real Agent run, live provider, Web UI, `.env`, production artifact,
+  provider-chain, loader, FinancialStatementsTool, or TraceWriter change.
+* No runtime files committed and no push performed.
+
+## 2026-07-13
+
+### Added
+
 * `agent/src/reports/tool_dual_write.py`.
 * `agent/tests/test_tool_dual_write.py`.
 

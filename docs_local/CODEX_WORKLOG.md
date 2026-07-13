@@ -2236,6 +2236,42 @@ Boundary:
   UI, live-data, `.env`, or production artifact change.
 * No runtime or local report files were committed.
 
+## 2026-07-13 Default-off Runtime Primary Financial Provenance Integration
+
+Actions performed:
+
+1. Confirmed AgentLoop finalization has the raw result, tool name, tool-call
+   arguments, and can safely accept optional execution metadata.
+2. Integrated the provenance projector into the existing financial-only runtime
+   dual-write helper after serializer success.
+3. Passed only `tc.arguments` and an optional `tc.execution_metadata` mapping;
+   no provider or upstream value is inferred in AgentLoop.
+4. Preserved the serializer payload if projection fails, with a trace-only
+   `financial_provenance_projection_failed` warning.
+5. Added twelve runtime fixture tests covering flag behavior, metadata gaps,
+   fallback, failure isolation, sidecar resolution, and artifact outcomes.
+6. Ran the requested regression suite and compile check.
+
+Findings:
+
+* The current primary envelope supplies source, statement, and period rows but
+  not provider/upstream execution facts.
+* The current fallback result does explicitly supply a-stock-data provenance
+  and a primary failure record.
+* Therefore real primary results remain partial unless a later execution layer
+  supplies verified provider/upstream metadata.
+
+Validation:
+
+* Runtime provenance tests: 12 passed.
+* Related regression suite: 73 passed.
+
+Boundary:
+
+* No real Agent run, live data, Web UI, `.env` read, production artifact write,
+  provider-chain, loader, FinancialStatementsTool, or TraceWriter change.
+* No runtime/local report files were committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

@@ -1218,3 +1218,20 @@ Completed:
 4. **Keep market-data dual-write deferred**
    * Business value: establish the first runtime producer contract before
      widening structured tracing.
+
+## Current Recommended Order After Runtime Primary Provenance Integration
+
+1. **Push the runtime provenance integration to the fork**
+   * Business value: preserve the default-off runtime safety baseline.
+
+2. **Design explicit primary execution-metadata production**
+   * Business value: identify the tool/execution boundary that can truthfully
+     supply primary provider and upstream provenance without guessing.
+
+3. **Run one controlled real trace only after that producer is implemented**
+   * Business value: validate whether a real primary artifact can become
+     complete with verified provenance.
+
+4. **Keep market-data dual-write deferred**
+   * Business value: avoid expanding tracing before primary financial metadata
+     has a truthful producer.

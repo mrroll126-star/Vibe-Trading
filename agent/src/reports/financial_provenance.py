@@ -63,8 +63,11 @@ def project_financial_provenance(
     fallback_used, fallback_known = _fallback_status(source_payload, execution, serializer)
     primary_error = _first_text(
         source_payload.get("primary_error"),
+        _fallback_primary_error(source_payload),
         execution.get("primary_error"),
+        _fallback_primary_error(execution),
         serializer.get("primary_error"),
+        _fallback_primary_error(serializer),
     )
 
     warnings = _input_warnings(source_payload, execution, serializer)
@@ -210,11 +213,21 @@ def _fallback_status(
     for source in (payload, execution, serializer):
         for field in ("fallback_used", "fallback"):
             if field in source and source[field] is not None:
+                if isinstance(source[field], Mapping):
+                    return True, True
                 return bool(source[field]), True
     status = execution.get("fallback_status")
     if isinstance(status, Mapping) and status.get("used") is not None:
         return bool(status["used"]), True
     return False, False
+
+
+def _fallback_primary_error(source: Mapping[str, Any]) -> Any:
+    fallback = source.get("fallback")
+    if not isinstance(fallback, Mapping):
+        return None
+    primary = fallback.get("primary")
+    return primary.get("error") if isinstance(primary, Mapping) else None
 
 
 def _input_warnings(*sources: Mapping[str, Any]) -> list[str]:

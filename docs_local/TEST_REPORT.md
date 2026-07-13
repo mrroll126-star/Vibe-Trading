@@ -4345,3 +4345,31 @@ Boundary:
 * Fixture-only. No runtime dual-write integration, AgentLoop, tool,
   TraceWriter, provider-chain, loader, Web UI, live data, `.env`, or production
   artifact change.
+
+## 2026-07-13 Default-off Runtime Primary Financial Provenance Integration
+
+Implemented:
+
+* Integrated the provenance projector into the existing financial-only,
+  default-off runtime dual-write helper.
+* Passed current tool arguments and optional explicit execution metadata from
+  the AgentLoop finalization boundary without changing tool execution, legacy
+  text, LLM context, or Agent response.
+* Preserved serializer failure isolation; projector failure now preserves the
+  serialized structured payload and adds a trace-only warning.
+
+Validation:
+
+* Runtime provenance tests: 12 passed.
+* Specified dual-write, provenance, normalizer, confidence, report, artifact,
+  trace-schema, and observation regressions: 73 passed.
+* Compile check for reports, tests, and scripts: passed.
+* Fixture complete primary metadata produces complete confidence and artifact;
+  missing provider/source remains partial with explicit warnings.
+
+Boundary:
+
+* No real AgentLoop run, live data request, Web UI run, `.env` read, production
+  artifact write, runtime-file commit, provider-chain, loader, or tool change.
+* The real primary path is not claimed complete: it still lacks explicit
+  provider/upstream execution facts today.

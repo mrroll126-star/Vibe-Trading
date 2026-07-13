@@ -529,6 +529,13 @@ def _normalize_tool_run_dir(args: dict[str, Any], memory_run_dir: str | None) ->
     return normalized
 
 
+def _tool_call_mapping(tool_call: Any, field: str) -> dict[str, Any]:
+    """Return an optional tool-call mapping without inventing execution facts."""
+
+    value = getattr(tool_call, field, None)
+    return dict(value) if isinstance(value, dict) else {}
+
+
 class AgentLoop:
     """ReAct Agent core loop.
 
@@ -1705,6 +1712,8 @@ class AgentLoop:
         enrichment = build_financial_trace_enrichment(
             tool_name=tc.name,
             redacted_result=trace_result,
+            tool_args=_tool_call_mapping(tc, "arguments"),
+            execution_metadata=_tool_call_mapping(tc, "execution_metadata"),
         )
         trace.write_tool_result(
             call_id=tc.id,
