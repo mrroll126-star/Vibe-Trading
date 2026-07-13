@@ -1047,3 +1047,20 @@ Completed:
 4. **Re-observe one controlled real run before production artifact writes**
    * Business value: confirm structured trace data closes the current financial
      confidence gap.
+
+## Current Recommended Order After Structured Tool Result Serializer Proof
+
+1. **Push the serializer proof commit to the fork**
+   * Business value: preserve the tested contract proof before runtime work.
+
+2. **Design controlled AgentLoop dual-write integration**
+   * Business value: specify where redacted structured payloads and legacy
+     LLM-facing text are produced without changing tool/provider behavior.
+
+3. **Implement feature-flagged dual-write for financial and market results**
+   * Business value: make future traces recover provenance, quality, and
+     three-statement facts for artifacts.
+
+4. **Run one controlled trace observation and compare schema completeness**
+   * Business value: prove the text-only financial-result gap is closed before
+     any production artifact writer is enabled.

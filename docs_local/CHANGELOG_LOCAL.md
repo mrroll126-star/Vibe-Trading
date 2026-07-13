@@ -1310,6 +1310,24 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * Documentation only; no runtime, provider-chain, loader, Web UI, live-data,
   or `.env` change.
 
+## 2026-07-13
+
+### Added
+
+* `agent/src/reports/tool_result_serializer.py`.
+* `agent/tests/test_tool_result_serializer.py`.
+
+### Validation
+
+* Verified fixture JSON envelopes retain machine-readable market/financial
+  facts and provenance through the artifact pipeline.
+* Verified legacy rendered text remains unavailable for structured recovery.
+
+### Boundary
+
+* Fixture-only; no AgentLoop, trace writer, live data, Web UI, provider-chain,
+  loader, `.env`, or runtime artifact change.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 ### Added

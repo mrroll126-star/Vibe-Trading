@@ -1180,3 +1180,18 @@ Completed:
 Next roadmap item:
 
 Design a fixture-first serializer proof before any AgentLoop dual-write change.
+
+## 2026-07-13 Fixture-first Structured Tool Result Serializer Proof
+
+Completed:
+
+* Added a pure serializer for verified market and financial JSON envelopes.
+* Verified legacy rendered text remains explicitly unavailable rather than
+  becoming inferred facts.
+* Verified serialized fixture results remain compatible with the existing
+  research artifact pipeline.
+
+Next roadmap item:
+
+Design controlled AgentLoop dual-write integration before any runtime trace
+writer change.

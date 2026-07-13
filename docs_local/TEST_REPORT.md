@@ -4091,3 +4091,28 @@ Boundary:
   write occurred.
 * No `.env` access, provider-chain/loader change, or runtime/local report
   commit occurred.
+
+## 2026-07-13 Fixture-first Structured Tool Result Serializer Proof
+
+Implemented:
+
+* Added a pure serializer for `get_market_data` and
+  `get_financial_statements` JSON envelopes.
+* The serializer separates verified `structured_payload`, bounded
+  `human_summary`, provenance/data-quality metadata, and warnings.
+* Rendered legacy text is not parsed for facts; it returns
+  `structured_payload: null` with `legacy_unstructured_result`.
+
+Validation:
+
+* Serializer tests: 5 passed.
+* Financial-confidence, artifact, trace, and report-builder regressions:
+  23 passed.
+* Compile check: passed.
+* Serialized fixture payloads produced a complete research artifact with
+  complete three-statement confidence and preserved a-stock-data provenance.
+
+Boundary:
+
+* Fixture-only proof. No AgentLoop, live data, Web UI, trace write, provider
+  chain, loader, or `.env` access.

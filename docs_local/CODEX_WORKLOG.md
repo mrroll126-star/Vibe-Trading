@@ -1440,6 +1440,21 @@ Boundary:
 * Documentation only. No AgentLoop, tool, provider-chain, loader, Web UI,
   live-data, or `.env` change.
 
+## 2026-07-13 Fixture-first Structured Tool Result Serializer Proof
+
+Actions performed:
+
+1. Read market, financial, and report-builder envelope contracts.
+2. Added a pure serializer for the first two JSON-envelope tools.
+3. Added fixture-only coverage for structured market/financial output,
+   legacy-text refusal, missing metadata, and artifact compatibility.
+4. Ran serializer and report-pipeline regression tests plus compile checks.
+
+Boundary:
+
+* No AgentLoop or trace writer modification, live data, Web UI, provider-chain,
+  loader, `.env` access, or runtime artifact write.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 1. Confirmed the working tree was clean and remote configuration unchanged.
