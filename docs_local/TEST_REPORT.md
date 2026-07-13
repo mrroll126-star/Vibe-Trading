@@ -4229,3 +4229,26 @@ Boundary:
 
 * Fixture-only. No AgentLoop, tool, provider-chain, live data, Web UI, `.env`,
   runtime trace, or production artifact change.
+
+## 2026-07-13 Financial Normalizer Report Consumer Integration Proof
+
+Implemented:
+
+* Added an offline financial pipeline between trace collection and report
+  building.
+* Structured Eastmoney `periods` envelopes normalize before confidence
+  extraction; report_builder remains provider-envelope agnostic.
+* Legacy canonical rows remain unchanged, provider records are not merged, and
+  normalization failures become non-blocking collection warnings.
+
+Validation:
+
+* Financial normalizer pipeline tests: 5 passed.
+* Financial normalizer, confidence integration, dual-write, and report-builder
+  regressions: 21 passed.
+* Compile check: passed.
+
+Boundary:
+
+* Offline only. No AgentLoop, real tool, provider-chain, live data, Web UI,
+  `.env`, runtime trace, or production artifact change.

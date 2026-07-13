@@ -1355,6 +1355,28 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Added
 
+* `agent/src/reports/financial_pipeline.py`.
+* `agent/tests/test_financial_normalizer_pipeline.py`.
+
+### Changed
+
+* Offline trace collection now normalizes provider period envelopes before
+  provider-agnostic report assembly, while retaining legacy result fallback.
+
+### Validation
+
+* Eastmoney structured fixtures produce complete financial confidence and a
+  complete artifact; malformed and mixed-provider cases remain auditable.
+
+### Boundary
+
+* Offline only. No AgentLoop, real tool, provider-chain, live data, Web UI,
+  `.env`, runtime trace, or production artifact change.
+
+## 2026-07-13
+
+### Added
+
 * `scripts/observe_real_trace_to_artifact.py`.
 * `agent/tests/test_real_trace_artifact_observation.py`.
 

@@ -1148,3 +1148,19 @@ Completed:
 4. **Repeat one controlled financial run only after offline integration proof**
    * Business value: verify the real schema can become complete without
      sacrificing legacy trace behavior.
+
+## Current Recommended Order After Financial Normalizer Consumer Integration
+
+1. **Push the consumer-integration proof to the fork**
+   * Business value: preserve the completed offline provider compatibility path.
+
+2. **Update observation scripts to resolve `structured_payload` sidecars**
+   * Business value: make controlled observations consume the same v1 payload
+     path proven by the report consumer.
+
+3. **Run one controlled real financial trace with structured tracing enabled**
+   * Business value: validate primary Eastmoney payloads now produce complete
+     financial confidence without changing legacy Agent behavior.
+
+4. **Only then assess market-data runtime dual-write rollout**
+   * Business value: keep scope narrow until the financial path is validated.

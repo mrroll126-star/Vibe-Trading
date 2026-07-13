@@ -258,3 +258,16 @@ Implemented as the recommended Option A:
 
 Validation remains fixture-only. No real run, live data, production artifact,
 AgentLoop, provider, loader, or Web UI path was changed.
+
+## 14. Primary Envelope Consumer Integration Proof (2026-07-13)
+
+The trace collector now passes collected financial records through the isolated
+financial pipeline before calling the provider-agnostic report builder. The
+pipeline recognizes the Eastmoney `data[symbol].periods` envelope, invokes the
+pure normalizer, and preserves normalizer warnings as collection warnings.
+
+Legacy row-list results bypass this path unchanged. Each provider result stays
+independent; the pipeline does not merge primary and fallback rows. Fixture
+tests confirm complete Eastmoney core statements yield complete confidence and
+artifact output, while malformed envelopes remain non-blocking partial/missing
+results with explicit warnings.

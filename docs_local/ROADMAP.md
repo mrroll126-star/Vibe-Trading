@@ -1271,3 +1271,17 @@ Next roadmap item:
 
 Design report-consumer normalization integration and update structured-payload
 sidecar resolution before another controlled real run.
+
+## 2026-07-13 Financial Normalizer Report Consumer Integration Proof
+
+Completed:
+
+* Inserted an offline financial normalizer pipeline between collection and
+  provider-agnostic report assembly.
+* Confirmed structured Eastmoney fixtures now generate complete financial
+  confidence and artifact output; legacy rows remain compatible.
+
+Next roadmap item:
+
+Update observation readers for structured-payload sidecars, then run one
+controlled real financial trace before any market-data dual-write expansion.

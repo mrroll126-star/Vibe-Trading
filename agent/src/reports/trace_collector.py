@@ -12,6 +12,7 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from src.reports.report_builder import build_research_report
+from src.reports.financial_pipeline import normalize_financial_results_for_report
 
 
 @dataclass
@@ -102,6 +103,11 @@ def build_research_report_from_trace_events(
         provider=provider,
         model=model,
     )
+    canonical_financial_results, normalization_warnings = normalize_financial_results_for_report(
+        collection.financial_results
+    )
+    collection.financial_results = canonical_financial_results
+    collection.collection_warnings.extend(normalization_warnings)
     report = build_research_report(
         input_symbol=collection.input_symbol,
         market_result=collection.market_result,
@@ -128,6 +134,8 @@ def _collect_tool_result(collection: TraceCollection, event: dict[str, Any], ind
             "error": f"{tool_name or 'unknown_tool'}_result_missing_or_invalid",
             "data": [],
         }
+
+    _attach_trace_metadata(result, event)
 
     if status and status not in {"ok", "success"}:
         _add_result_warning(result, f"{tool_name or 'unknown_tool'}_status_{status}")
@@ -174,6 +182,20 @@ def _decode_event_result(event: dict[str, Any]) -> dict[str, Any] | None:
         if structured is not None:
             return structured
     return _decode_result(event.get("result"))
+
+
+def _attach_trace_metadata(result: dict[str, Any], event: dict[str, Any]) -> None:
+    """Retain trace-only provenance for report-consumer normalization."""
+
+    metadata = event.get("metadata")
+    if not isinstance(metadata, dict):
+        return
+    result["_trace_metadata"] = dict(metadata)
+    for field in ("provider", "source", "upstream"):
+        if not result.get(field) and metadata.get(field):
+            result[field] = metadata[field]
+    if not result.get("_data_quality") and isinstance(metadata.get("data_quality"), dict):
+        result["_data_quality"] = metadata["data_quality"]
 
 
 def _add_result_warning(result: dict[str, Any], warning: str) -> None:

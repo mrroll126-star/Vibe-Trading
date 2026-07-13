@@ -1976,6 +1976,24 @@ Boundary:
 * No AgentLoop, tool, provider-chain, live data, Web UI, `.env`, runtime trace,
   or production artifact change.
 
+## 2026-07-13 Financial Normalizer Report Consumer Integration Proof
+
+Actions performed:
+
+1. Read the collector, report builder, normalizer, confidence extractor, and
+   artifact generator boundaries.
+2. Added an isolated financial pipeline invoked after collection and before
+   report assembly.
+3. Preserved trace metadata for verified provider provenance and ensured legacy
+   canonical rows bypass normalization.
+4. Added fixture tests for Eastmoney, malformed, legacy, mixed-provider, and
+   artifact paths; ran focused regressions and compile checks.
+
+Boundary:
+
+* Offline only. No AgentLoop, tool, provider-chain, live data, Web UI, `.env`,
+  runtime trace, or production artifact change.
+
 ## 2026-07-12 Controlled Historical Trace Observation
 
 Actions performed:

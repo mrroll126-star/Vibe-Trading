@@ -244,3 +244,17 @@ provider, source, symbol data, periods, statement type, and reporting period.
 Complete income/balance/cashflow fixtures produce complete financial confidence
 and a complete artifact. This remains a standalone proof and is not connected
 to AgentLoop, tools, provider routing, or live trace consumption.
+
+## 14. Report Consumer Integration Proof (2026-07-13)
+
+The normalizer is now consumed in the offline trace-to-report path after trace
+collection and before report assembly. This keeps `report_builder` provider
+agnostic: it receives only canonical statement results. Trace metadata is
+retained as an internal consumer input so normalizer provenance uses verified
+trace fields rather than inferred values.
+
+Legacy canonical rows bypass normalization. Provider records remain separate;
+the pipeline never combines primary and fallback rows. Normalizer failures are
+non-blocking and become collection warnings. Fixture Eastmoney structured
+payloads now produce complete three-statement confidence and a complete
+artifact without AgentLoop or live data.
