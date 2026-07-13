@@ -131,9 +131,17 @@ valid legacy event with trace-only warnings.
 
 ### Phase 2: financial tool only
 
-Implement flag-gated dual-write for `get_financial_statements`. Add unit tests
-for inline JSON, text sidecar, redaction, serializer failure, fallback
-provenance, and flag-off byte-compatible legacy events.
+Completed as an MVP. `get_financial_statements` now has a default-off,
+trace-only enrichment branch after result redaction. The legacy return string
+and LLM context remain unchanged. Flag-off events keep the legacy shape;
+flag-on events add v1 fields only for the financial tool. Small structured JSON
+payloads remain JSON objects in trace JSONL; large payloads use the existing
+safe sidecar resolution pattern.
+
+Covered fixture tests verify inline financial provenance, legacy behavior when
+the flag is off, serializer-failure isolation, collector/report-builder
+financial confidence, and non-financial-tool non-enrichment. No real Agent run
+was used.
 
 ### Phase 3: market tool
 

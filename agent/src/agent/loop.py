@@ -30,6 +30,7 @@ from src.agent.memory import WorkspaceMemory
 from src.agent.progress import HeartbeatTimer, ProgressEvent, _set_emitter
 from src.agent.tools import ToolRegistry
 from src.agent.trace import TraceWriter
+from src.reports.runtime_dual_write import build_financial_trace_enrichment
 from src.core.state import RunStateStore
 from src.data_quality import (
     append_no_estimate_warning,
@@ -1701,6 +1702,10 @@ class AgentLoop:
         messages.append(context.format_tool_result(tc.id, tc.name, truncated))
 
         trace_result = _redact_trace_result(result)
+        enrichment = build_financial_trace_enrichment(
+            tool_name=tc.name,
+            redacted_result=trace_result,
+        )
         trace.write_tool_result(
             call_id=tc.id,
             result=trace_result,
@@ -1708,6 +1713,7 @@ class AgentLoop:
             status=status,
             elapsed_ms=elapsed_ms,
             iteration=iteration,
+            enrichment=enrichment,
         )
         preview = trace_result[:200]
         react_trace.append({"type": "tool_call", "tool": tc.name, "result_preview": preview})

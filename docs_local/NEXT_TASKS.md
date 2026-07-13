@@ -1098,3 +1098,18 @@ Completed:
 4. **Run one controlled trace observation before market-tool rollout**
    * Business value: verify real financial confidence and artifact completeness
      using the actual trace writer path.
+
+## Current Recommended Order After Financial Runtime Dual-write MVP
+
+1. **Push the financial runtime dual-write MVP to the fork**
+   * Business value: preserve the default-off trace compatibility baseline.
+
+2. **Run one controlled real financial research trace with the flag enabled**
+   * Business value: confirm real fallback provenance, reporting periods, and
+     three-statement confidence survive actual trace persistence.
+
+3. **Observe the trace-to-artifact result without production artifact writes**
+   * Business value: compare completeness against the prior text-only trace.
+
+4. **Only then design market-data runtime dual-write activation**
+   * Business value: keep the first runtime rollout narrow and auditable.

@@ -112,6 +112,7 @@ class TraceWriter:
         status: str,
         elapsed_ms: int,
         iteration: int,
+        enrichment: Dict[str, Any] | None = None,
     ) -> None:
         """Write a tool_result entry, offloading large results to disk.
 
@@ -122,6 +123,8 @@ class TraceWriter:
             status: ``"ok"`` or ``"error"``.
             elapsed_ms: Execution time in milliseconds.
             iteration: Current iteration number.
+            enrichment: Optional trace-only structured fields. When omitted,
+                the legacy event shape is unchanged.
         """
         entry: Dict[str, Any] = {
             "type": "tool_result",
@@ -141,7 +144,46 @@ class TraceWriter:
             offload_dir_name="tool-results",
             preview_field="result_preview",
         )
+        if enrichment is not None:
+            self._attach_structured_enrichment(entry, enrichment, tool_name, call_id)
         self.write(entry)
+
+    def _attach_structured_enrichment(
+        self,
+        entry: Dict[str, Any],
+        enrichment: Dict[str, Any],
+        tool_name: str,
+        call_id: str,
+    ) -> None:
+        """Attach optional v1 fields without altering legacy result storage."""
+
+        for field in (
+            "trace_schema_version",
+            "tool_name",
+            "human_summary",
+            "metadata",
+            "structured_trace_warnings",
+        ):
+            if field in enrichment:
+                entry[field] = enrichment[field]
+
+        payload = enrichment.get("structured_payload")
+        if payload is None:
+            entry["structured_payload"] = None
+            return
+        serialized = json.dumps(payload, ensure_ascii=False, separators=(",", ":"))
+        if len(serialized) <= TOOL_RESULT_OFFLOAD_THRESHOLD:
+            entry["structured_payload"] = payload
+            return
+        self._attach_text_field(
+            entry,
+            field="structured_payload",
+            value=serialized,
+            offload_kind=f"structured-tool-result-{tool_name}-{call_id}",
+            threshold=TOOL_RESULT_OFFLOAD_THRESHOLD,
+            offload_dir_name="structured-tool-results",
+            preview_field="structured_payload_preview",
+        )
 
     def close(self) -> None:
         """Close the file handle."""

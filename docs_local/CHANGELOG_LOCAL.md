@@ -1299,6 +1299,30 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Added
 
+* `agent/src/reports/runtime_dual_write.py`.
+* `agent/tests/test_financial_runtime_dual_write.py`.
+
+### Changed
+
+* AgentLoop now performs default-off, financial-tool-only trace enrichment
+  after redaction; legacy LLM context and result text are unchanged.
+* TraceWriter supports optional v1 structured enrichment with safe JSON sidecar
+  offload for large payloads.
+
+### Validation
+
+* Flag-off legacy trace shape, flag-on financial payloads, serializer failure
+  isolation, confidence extraction, and non-financial isolation passed offline.
+
+### Boundary
+
+* No real AgentLoop run, live data, Web UI, production artifact, provider-chain,
+  loader, `.env`, or runtime/local report commit.
+
+## 2026-07-13
+
+### Added
+
 * `scripts/observe_real_trace_to_artifact.py`.
 * `agent/tests/test_real_trace_artifact_observation.py`.
 

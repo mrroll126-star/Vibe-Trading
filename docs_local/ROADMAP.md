@@ -1226,3 +1226,18 @@ Next roadmap item:
 
 Design default-off runtime flag and TraceWriter v1 extension before any
 AgentLoop integration.
+
+## 2026-07-13 Default-off Financial Tool Runtime Dual-write MVP
+
+Completed:
+
+* Added default-off runtime trace enrichment for financial tool results only.
+* Kept legacy tool return text, LLM context, and flag-off trace shape intact.
+* Verified structured financial payloads can flow through the collector and
+  produce complete financial confidence in fixture-level runtime tests.
+
+Next roadmap item:
+
+Run one controlled real financial trace with the flag enabled, then observe it
+through the existing schema-artifact pipeline without writing a production
+artifact.

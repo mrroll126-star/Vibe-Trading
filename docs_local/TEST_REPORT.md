@@ -4139,3 +4139,28 @@ Boundary:
 
 * No AgentLoop, real tool, TraceWriter, provider-chain, loader, Web UI, live
   data, `.env`, runtime trace, or local report change.
+
+## 2026-07-13 Default-off Financial Tool Runtime Dual-write MVP
+
+Implemented:
+
+* Added `VIBE_TRADING_ENABLE_STRUCTURED_TOOL_TRACE`, defaulting to disabled.
+* Added a best-effort runtime enrichment helper for
+  `get_financial_statements` only.
+* AgentLoop keeps its existing legacy tool-context message and legacy trace
+  result; it passes optional enrichment only after trace redaction.
+* TraceWriter adds v1 fields only when enrichment is present. Small payloads
+  stay structured in JSONL; large payloads use a safe sidecar.
+
+Validation:
+
+* Runtime dual-write tests: 5 passed.
+* Dual-write, report-builder, and trace-pipeline tests: 16 passed.
+* Direct-tool schema, serializer, artifact-generator, and confidence tests: 21
+  passed.
+* Compile check: passed.
+
+Boundary:
+
+* No real AgentLoop run, live data, Web UI, production artifact, provider-chain,
+  loader, `.env` access, or runtime/local report commit.

@@ -1924,6 +1924,23 @@ Boundary:
 * No AgentLoop, real tool, TraceWriter, provider-chain, loader, Web UI, live
   data, `.env`, runtime trace, or local-report change.
 
+## 2026-07-13 Default-off Financial Tool Runtime Dual-write MVP
+
+Actions performed:
+
+1. Confirmed the finalization method is the trace-only runtime insertion point.
+2. Added a default-off financial enrichment helper and optional TraceWriter v1
+   fields with safe large-payload offload behavior.
+3. Wired the helper after trace redaction without changing legacy tool-context
+   text or tool return values.
+4. Added offline runtime-finalization tests for flag behavior, failure
+   isolation, collector/report confidence, and non-financial non-enrichment.
+
+Boundary:
+
+* No real AgentLoop run, live data, Web UI, production artifact, provider-chain,
+  loader, `.env` access, or runtime/local report commit.
+
 ## 2026-07-12 Controlled Historical Trace Observation
 
 Actions performed:
