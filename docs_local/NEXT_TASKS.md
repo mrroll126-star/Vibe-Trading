@@ -1130,3 +1130,21 @@ Completed:
 4. **Repeat one controlled financial trace only after normalization proof**
    * Business value: verify complete financial confidence before expanding to
      market-data runtime dual-write.
+
+## Current Recommended Order After Financial Envelope Normalizer Proof
+
+1. **Push the normalizer proof to the fork**
+   * Business value: preserve the fixture-validated provider compatibility
+     contract before runtime consumption changes.
+
+2. **Design controlled report-consumer normalization integration**
+   * Business value: decide where verified financial trace payloads are
+     normalized before confidence extraction, without changing tools or
+     provider behavior.
+
+3. **Update observation scripts to resolve structured-payload sidecars**
+   * Business value: make artifact observations test the v1 data path directly.
+
+4. **Repeat one controlled financial run only after offline integration proof**
+   * Business value: verify the real schema can become complete without
+     sacrificing legacy trace behavior.

@@ -230,3 +230,17 @@ Boundary:
 * The proof is not wired into `build_research_report`, trace collection, or
   AgentLoop yet.
 * It does not call live providers or read runtime/configuration files.
+
+## 13. Primary Envelope Normalization Proof (2026-07-13)
+
+Implemented a fixture-only normalizer for the confirmed Eastmoney primary
+financial envelope. It maps only existing `data[symbol].periods` rows into the
+canonical `data[symbol]` row-list shape used by the report builder and
+confidence extractor. `REPORT_DATE` becomes `report_date` only when present in
+the source row; no values, dates, provider, or source facts are inferred.
+
+The normalizer preserves supplied provenance and emits warnings for missing
+provider, source, symbol data, periods, statement type, and reporting period.
+Complete income/balance/cashflow fixtures produce complete financial confidence
+and a complete artifact. This remains a standalone proof and is not connected
+to AgentLoop, tools, provider routing, or live trace consumption.

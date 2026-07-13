@@ -1338,6 +1338,23 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Added
 
+* `agent/src/reports/financial_normalizer.py`.
+* `agent/tests/test_financial_normalizer.py`.
+
+### Validation
+
+* Fixture Eastmoney period envelopes normalize into canonical statement rows
+  and produce complete financial confidence/artifact output.
+
+### Boundary
+
+* No AgentLoop, real tool, provider-chain, live data, Web UI, `.env`, runtime
+  trace, or production artifact change.
+
+## 2026-07-13
+
+### Added
+
 * `scripts/observe_real_trace_to_artifact.py`.
 * `agent/tests/test_real_trace_artifact_observation.py`.
 

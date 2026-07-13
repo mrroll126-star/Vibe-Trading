@@ -1258,3 +1258,16 @@ Next roadmap item:
 
 Design a fixture-first primary financial-envelope normalizer and update
 observation readers for structured-payload sidecars before another real run.
+
+## 2026-07-13 Financial Statement Envelope Normalizer Fixture Proof
+
+Completed:
+
+* Added a pure normalizer for the verified Eastmoney `periods` envelope.
+* Confirmed three canonical statements produce complete confidence and artifact
+  fixtures without inferred values or dates.
+
+Next roadmap item:
+
+Design report-consumer normalization integration and update structured-payload
+sidecar resolution before another controlled real run.

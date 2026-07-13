@@ -4204,3 +4204,28 @@ Boundary:
 
 * No code change, production artifact write, Web UI run, `.env` read, or
   runtime/local report commit occurred during this observation.
+
+## 2026-07-13 Financial Statement Envelope Normalizer Fixture Proof
+
+Implemented:
+
+* Added a pure Eastmoney primary-envelope normalizer for
+  `data[symbol].periods`.
+* It mechanically converts existing period rows to the canonical row-list
+  result shape used by report-builder and financial-confidence consumers.
+* It maps only an existing `REPORT_DATE` field to `report_date` and emits
+  warnings for absent periods or provenance.
+
+Validation:
+
+* Financial normalizer tests: 6 passed.
+* Financial confidence integration, dual-write, and report-builder regressions:
+  15 passed.
+* Compile check: passed.
+* Complete income/balance/cashflow fixtures produced complete confidence and a
+  complete artifact.
+
+Boundary:
+
+* Fixture-only. No AgentLoop, tool, provider-chain, live data, Web UI, `.env`,
+  runtime trace, or production artifact change.

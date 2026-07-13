@@ -1960,6 +1960,22 @@ Boundary:
 * No code change, Web UI, production artifact, `.env` read, or runtime/local
   report commit during the observation.
 
+## 2026-07-13 Financial Statement Envelope Normalizer Fixture Proof
+
+Actions performed:
+
+1. Read the report builder, confidence extractor, serializer, and primary
+   financial envelope contract.
+2. Added a pure normalizer for the provider's existing `periods` container.
+3. Added fixture coverage for three statements, missing period/provenance,
+   malformed data, confidence extraction, and artifact compatibility.
+4. Ran focused regressions and compile checks.
+
+Boundary:
+
+* No AgentLoop, tool, provider-chain, live data, Web UI, `.env`, runtime trace,
+  or production artifact change.
+
 ## 2026-07-12 Controlled Historical Trace Observation
 
 Actions performed:
