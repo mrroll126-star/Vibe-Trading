@@ -258,3 +258,26 @@ the pipeline never combines primary and fallback rows. Normalizer failures are
 non-blocking and become collection warnings. Fixture Eastmoney structured
 payloads now produce complete three-statement confidence and a complete
 artifact without AgentLoop or live data.
+
+## 15. Real Trace Observation Consumer Support (2026-07-13)
+
+The read-only schema and artifact observation scripts now resolve the optional
+`structured_payload` trace sidecar alongside legacy `result`, `content`, and
+`prompt` fields. After loading, the existing collector continues to prefer a
+verified structured payload, then sends collected financial results through
+the report-consumer normalizer before report assembly.
+
+Compatibility rules remain explicit:
+
+* Legacy canonical financial rows continue through the legacy path unchanged.
+* A malformed structured envelope cannot block schema observation; it becomes
+  a normalizer warning and results in partial or missing financial confidence.
+* Missing income, balance, or cashflow remains a partial financial result.
+* Observation never fills missing provider, source, upstream, or reporting
+  period facts from inference.
+
+The existing historical `300750.SZ` trace now exposes the Eastmoney periods
+envelopes to the normalizer. It still correctly produces partial confidence:
+the recorded payload has no provider value and the trace has no final-answer
+event. This is a provenance gap in the existing trace, not a reason to invent
+metadata or declare the financial data complete.

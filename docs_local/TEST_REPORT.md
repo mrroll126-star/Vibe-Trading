@@ -4252,3 +4252,44 @@ Boundary:
 
 * Offline only. No AgentLoop, real tool, provider-chain, live data, Web UI,
   `.env`, runtime trace, or production artifact change.
+
+## 2026-07-13 Real Trace Observation Financial Pipeline Update
+
+Implemented:
+
+* Updated both read-only observation scripts to resolve offloaded
+  `structured_payload` fields, in addition to legacy result/content/prompt
+  fields.
+* The already-integrated collector and financial pipeline now receive resolved
+  structured financial payloads during schema and artifact observation.
+* Added offline coverage for offloaded structured Eastmoney payloads, legacy
+  rows, malformed envelopes, missing statements, and artifact compatibility.
+
+Historical observation:
+
+* Re-read the existing `300750.SZ` run trace only; no new Agent run, provider
+  call, or Web UI session was started.
+* The trace contains 81 events and 27 tool results. It exposes income, balance,
+  cashflow, and indicators through structured financial payloads.
+* Schema generation succeeds with every required section present. The artifact
+  is correctly `partial`, not failed: the observed primary envelope has source
+  `eastmoney` but no provider or upstream metadata, and the trace has no final
+  answer event.
+* Those gaps remain warnings (`provider_missing` and
+  `final_answer_missing_from_trace`); no provenance, date, or financial fact
+  was inferred by the observation path.
+
+Validation:
+
+* Real trace schema/artifact observation tests: 14 passed.
+* Financial normalizer pipeline, financial confidence integration, and
+  report-builder regressions: 15 passed.
+* Compile check for reports, tests, and scripts: passed.
+
+Boundary:
+
+* No AgentLoop, real tool, provider-chain, loader, Web UI, or production
+  artifact changes.
+* No live data call or `.env` read.
+* Observation files were written only to ignored `local_reports` and were not
+  committed.

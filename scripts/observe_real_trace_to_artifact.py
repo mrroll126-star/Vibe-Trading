@@ -66,7 +66,7 @@ def observe_trace_to_artifact(
     events = TraceWriter.read(
         trace_dir,
         resolve_offloads=True,
-        resolve_fields={"result", "content", "prompt"},
+        resolve_fields={"result", "content", "prompt", "structured_payload"},
     )
     summary["event_count"] = len(events)
     tool_results = [event for event in events if _event_type(event) == "tool_result"]

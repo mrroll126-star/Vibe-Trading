@@ -1275,6 +1275,25 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ## 2026-07-13
 
+### Changed
+
+* Updated real trace schema and artifact observation readers to resolve
+  offloaded runtime `structured_payload` sidecars.
+* Added offline observation coverage for structured Eastmoney payloads, legacy
+  results, malformed envelopes, missing financial statements, and artifact
+  generation compatibility.
+* Re-observed the existing `300750.SZ` trace through the financial normalizer
+  consumer pipeline. Core financial statements are now recoverable; missing
+  provider provenance and final-answer trace data remain explicit warnings.
+
+### Boundary
+
+* No new Agent run, live data call, Web UI run, or production artifact write.
+* No AgentLoop, tool, provider-chain, loader, or `.env` change.
+* Observation JSON files remain only in ignored `local_reports`.
+
+## 2026-07-13
+
 ### Added
 
 * `agent/src/reports/tool_dual_write.py`.

@@ -1164,3 +1164,21 @@ Completed:
 
 4. **Only then assess market-data runtime dual-write rollout**
    * Business value: keep scope narrow until the financial path is validated.
+
+## Current Recommended Order After Real Trace Financial Pipeline Update
+
+1. **Push the observation-pipeline update to the fork**
+   * Business value: preserve the verified structured-sidecar reader baseline.
+
+2. **Design the primary financial provenance completion contract**
+   * Business value: decide which verified provider/upstream/data-quality
+     fields runtime dual-write must preserve before a trace can be rated
+     complete.
+
+3. **Run one further controlled financial trace only after that contract is
+   implemented**
+   * Business value: validate complete confidence without inferring metadata
+     from an incomplete legacy envelope.
+
+4. **Only then evaluate market-data runtime dual-write**
+   * Business value: retain a narrow, auditable rollout sequence.

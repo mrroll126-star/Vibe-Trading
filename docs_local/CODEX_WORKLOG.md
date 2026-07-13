@@ -2158,6 +2158,38 @@ Boundary:
 * No `.env` read or printed.
 * No `agent/runs` or `local_reports` committed.
 
+## 2026-07-13 Real Trace Observation Financial Pipeline Update
+
+Actions performed:
+
+1. Confirmed the observation scripts resolved legacy sidecars but omitted the
+   runtime dual-write `structured_payload` sidecar.
+2. Updated schema and artifact observers to resolve that field before handing
+   events to the existing collector.
+3. Kept collection, normalizer, and report assembly responsibilities unchanged:
+   the collector prefers structured payloads and the financial pipeline
+   normalizes only provider envelopes it recognizes.
+4. Added offline tests for offloaded structured financial payloads, legacy
+   canonical rows, malformed envelopes, missing statements, and artifact
+   compatibility.
+5. Re-observed the historical `300750.SZ` trace only. Its core income,
+   balance, and cashflow payloads now reach the normalizer.
+
+Result:
+
+* Schema generation succeeds and all required report sections are present.
+* The historical artifact remains partial because the recorded primary
+  envelope omits provider provenance and the trace does not contain a final
+  answer. Those are retained as warnings rather than filled by inference.
+
+Boundary:
+
+* No new Agent run, live data request, Web UI run, or production artifact
+  write.
+* No AgentLoop, tool, provider-chain, or loader modification.
+* No `.env` read or printed value.
+* `local_reports` observation output remains ignored and uncommitted.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

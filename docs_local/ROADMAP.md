@@ -1285,3 +1285,22 @@ Next roadmap item:
 
 Update observation readers for structured-payload sidecars, then run one
 controlled real financial trace before any market-data dual-write expansion.
+
+## 2026-07-13 Real Trace Observation Financial Pipeline Update
+
+Completed:
+
+* Updated read-only schema and artifact observers to resolve structured-payload
+  sidecars before collector processing.
+* Confirmed the existing collector routes those verified payloads through the
+  financial normalizer and confidence pipeline while legacy rows remain
+  compatible.
+* Re-observed the historical `300750.SZ` trace without a new Agent run. Income,
+  balance, cashflow, and indicators are now visible to the consumer pipeline.
+* The artifact remains correctly partial because the historical primary payload
+  lacks provider provenance and the trace lacks a final answer.
+
+Next roadmap item:
+
+Design a primary-financial provenance completion contract before another real
+financial run; do not infer missing provenance in the observer.

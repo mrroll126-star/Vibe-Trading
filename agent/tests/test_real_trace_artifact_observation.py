@@ -5,6 +5,8 @@ import tempfile
 import unittest
 from pathlib import Path
 
+import src.agent.trace as trace_mod
+from src.agent.trace import TraceWriter
 from scripts.observe_real_trace_to_artifact import observe_trace_to_artifact, write_observation_artifact
 
 
@@ -65,6 +67,15 @@ def financial_event(statement_type: str) -> dict:
     }
 
 
+def eastmoney_structured_payload(statement_type: str) -> dict:
+    return {
+        "ok": True,
+        "source": "eastmoney",
+        "statement": statement_type,
+        "data": {SYMBOL: {"periods": [{"REPORT_DATE": "2026-03-31", "VALUE": 1}]}},
+    }
+
+
 def complete_events() -> list[dict]:
     return [
         {"type": "start"},
@@ -122,6 +133,59 @@ class RealTraceArtifactObservationTests(unittest.TestCase):
         self.assertEqual(financial["source"], "sina_financial_report")
         self.assertEqual(financial["upstream"], "sina")
 
+    def test_offloaded_structured_financial_payload_generates_complete_artifact(self) -> None:
+        old_threshold = trace_mod.TOOL_RESULT_OFFLOAD_THRESHOLD
+        trace_mod.TOOL_RESULT_OFFLOAD_THRESHOLD = 8
+        try:
+            with tempfile.TemporaryDirectory() as directory:
+                trace_dir = Path(directory) / "trace"
+                trace = TraceWriter(trace_dir)
+                trace.write_tool_result(
+                    call_id="market1",
+                    result=json.dumps(market_event()["result"], ensure_ascii=False),
+                    tool_name="get_market_data",
+                    status="ok",
+                    elapsed_ms=1,
+                    iteration=1,
+                )
+                for statement in ("income", "balance", "cashflow"):
+                    trace.write_tool_result(
+                        call_id=f"{statement}1",
+                        result="legacy financial text",
+                        tool_name="get_financial_statements",
+                        status="ok",
+                        elapsed_ms=1,
+                        iteration=1,
+                        enrichment={
+                            "structured_payload": eastmoney_structured_payload(statement),
+                            "metadata": {
+                                "provider": "eastmoney",
+                                "source": "eastmoney_financial_report",
+                                "upstream": "eastmoney",
+                            },
+                        },
+                    )
+                trace.write_text_entry(
+                    {"type": "answer", "iter": 1},
+                    field="content",
+                    value="Fixture answer.",
+                    offload_kind="answer",
+                )
+                trace.close()
+                summary, artifact = observe_trace_to_artifact(
+                    trace_dir=trace_dir,
+                    run_id="structured-fixture",
+                    symbol=SYMBOL,
+                )
+        finally:
+            trace_mod.TOOL_RESULT_OFFLOAD_THRESHOLD = old_threshold
+
+        self.assertTrue(summary["artifact_generated"])
+        self.assertEqual(artifact["artifact_meta"]["status"], "complete")
+        financial = artifact["research_report"]["data_confidence"]["financial_data"]
+        self.assertEqual(financial["provider"], "eastmoney")
+        self.assertEqual(financial["source"], "eastmoney_financial_report")
+
     def test_observation_artifact_writes_only_to_temp_directory(self) -> None:
         with tempfile.TemporaryDirectory() as directory:
             trace_dir = Path(directory) / "trace"
@@ -142,4 +206,3 @@ class RealTraceArtifactObservationTests(unittest.TestCase):
 
 if __name__ == "__main__":
     unittest.main()
-

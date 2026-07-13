@@ -125,7 +125,13 @@ def observe_trace_to_schema(
         summary["error"] = f"trace.jsonl not found: {trace_file}"
         return summary
 
-    events = TraceWriter.read(trace_dir, resolve_offloads=True, resolve_fields={"result", "content", "prompt"})
+    # Runtime dual-write can offload the JSON payload independently from the
+    # legacy result. Resolve both so the collector can prefer verified facts.
+    events = TraceWriter.read(
+        trace_dir,
+        resolve_offloads=True,
+        resolve_fields={"result", "content", "prompt", "structured_payload"},
+    )
     if limit_events > 0:
         events = events[:limit_events]
     summary["event_count"] = len(events)
@@ -210,8 +216,7 @@ def _tool_name(event: dict[str, Any]) -> str:
     return str(event.get("tool_name") or event.get("tool") or "")
 
 
-def _decode_result(event: dict[str, Any]) -> dict[str, Any]:
-    value = event.get("result")
+def _decode_result(value: Any) -> dict[str, Any]:
     if isinstance(value, dict):
         return value
     if isinstance(value, str):
@@ -228,7 +233,9 @@ def _financial_statement_types(tool_results: list[dict[str, Any]]) -> list[str]:
     for event in tool_results:
         if _tool_name(event) != "get_financial_statements":
             continue
-        result = _decode_result(event)
+        result = _decode_result(event.get("structured_payload"))
+        if not result:
+            result = _decode_result(event.get("result"))
         statement = str(
             result.get("statement_type")
             or result.get("statement")
