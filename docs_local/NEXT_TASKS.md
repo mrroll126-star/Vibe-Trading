@@ -1011,3 +1011,21 @@ Completed:
 4. **Design production artifact writer activation**
    * Business value: decide trigger, atomic write, sidecar metadata, and API
      ownership only after real-trace compatibility is confirmed.
+
+## Current Recommended Order After Real Trace Artifact Observation
+
+1. **Push the local artifact-observation commit to the fork**
+   * Business value: preserve the verified read-only compatibility result.
+
+2. **Design a structured tool-result trace contract / resolver**
+   * Business value: allow future artifact generation to recover income,
+     balance, cashflow, provenance, and reporting periods when a real trace
+     currently stores a rendered text result.
+
+3. **Define the indicators capability policy**
+   * Business value: keep derived metrics explicitly separate from raw
+     three-statement confidence.
+
+4. **Design production artifact writer activation**
+   * Business value: only enable post-run writes after the structured-result
+     compatibility gap is addressed and tested.

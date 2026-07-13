@@ -1403,6 +1403,27 @@ Boundary:
 * Did not install dependencies.
 * Did not commit `local_reports`.
 
+## 2026-07-13 Controlled Real Trace to Research Schema Artifact Observation
+
+Actions performed:
+
+1. Confirmed a clean `feature/bootstrap-local-setup` worktree before changes.
+2. Added a read-only observation script that resolves an existing run trace,
+   invokes `TraceWriter.read(resolve_offloads=True)`, and passes events to
+   `generate_research_artifact(...)`.
+3. Added offline tests using temporary trace fixtures and temporary output
+   directories.
+4. Read historical run `20260713_112141_18_fafffc`; no new Agent run was
+   created.
+5. Wrote one observation artifact only to ignored `local_reports/`.
+6. Confirmed schema envelope generation works, then documented that text-only
+   financial tool results cannot yet supply three-statement confidence.
+
+Boundary:
+
+* No `.env` read, live data call, Web UI run, AgentLoop change, provider-chain
+  change, loader change, or production artifact write.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 1. Confirmed the working tree was clean and remote configuration unchanged.

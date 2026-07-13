@@ -1273,6 +1273,26 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No dependency installation.
 * No `local_reports` committed.
 
+## 2026-07-13
+
+### Added
+
+* `scripts/observe_real_trace_to_artifact.py`.
+* `agent/tests/test_real_trace_artifact_observation.py`.
+
+### Validation
+
+* Historical trace `20260713_112141_18_fafffc` generated a versioned partial
+  artifact in ignored `local_reports/`.
+* The observation established that artifact generation is compatible with real
+  traces, while exposing a text-only financial-result persistence gap.
+* Offline observation and report-pipeline tests passed.
+
+### Boundary
+
+* No production artifact, AgentLoop, Web UI, live data, `.env` access, or
+  provider-chain/loader change.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 ### Added

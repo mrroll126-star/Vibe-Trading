@@ -1148,3 +1148,20 @@ Next roadmap item:
 
 Design controlled real-trace artifact observation using ignored local reports
 only.
+
+## 2026-07-13 Controlled Real Trace Artifact Observation
+
+Completed:
+
+* Added a read-only real-trace-to-artifact observation script and offline
+  coverage.
+* Verified a historical trace can produce a versioned `partial` artifact in
+  ignored local storage without changing the run directory.
+* Identified the remaining compatibility gap: this trace persists financial
+  tool results as text, which prevents recovery of three-statement facts and
+  provenance by the collector.
+
+Next roadmap item:
+
+Design the structured tool-result trace contract or resolver required before a
+production research-schema artifact writer is activated.

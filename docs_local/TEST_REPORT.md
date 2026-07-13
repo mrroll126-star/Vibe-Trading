@@ -4055,3 +4055,39 @@ Boundary:
 
 * No live data, AgentLoop, Web UI, production artifact path, provider-chain,
   loader, or .env access.
+
+## 2026-07-13 Controlled Real Trace to Research Schema Artifact Observation
+
+Implemented and observed:
+
+* Added `scripts/observe_real_trace_to_artifact.py`, a read-only adapter from
+  an existing trace directory to the in-memory artifact generator.
+* Added four offline tests for invalid, empty, valid, and temporary-output
+  trace observation cases.
+* Read historical run `20260713_112141_18_fafffc` (82 events, 24 tool results)
+  and wrote one observation-only artifact under ignored `local_reports/`.
+
+Result:
+
+* The artifact envelope was generated with schema version `1.0`, the original
+  run id, a `partial` status, all report schema sections, and no generator
+  errors.
+* The trace contains market data, financial-tool calls, and a final answer.
+* Its financial tool results are stored as text rather than structured
+  statement payloads, so the collector cannot recover income, balance, or
+  cashflow facts. Financial confidence correctly remains `missing` and records
+  explicit statement-missing warnings.
+
+Validation:
+
+* Real-trace artifact observation tests: 4 passed.
+* Artifact, financial-confidence, trace, and report-builder regression tests:
+  23 passed.
+* Compile check: passed.
+
+Boundary:
+
+* No new AgentLoop run, live data request, Web UI run, or production artifact
+  write occurred.
+* No `.env` access, provider-chain/loader change, or runtime/local report
+  commit occurred.
