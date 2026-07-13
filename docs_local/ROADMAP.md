@@ -1165,3 +1165,18 @@ Next roadmap item:
 
 Design the structured tool-result trace contract or resolver required before a
 production research-schema artifact writer is activated.
+
+## 2026-07-13 Structured Tool Result Trace Contract Design
+
+Completed:
+
+* Defined v1 trace events that separate verified `structured_payload` from
+  bounded LLM-facing `human_summary`.
+* Defined provenance, data-quality, redaction, JSON sidecar, and legacy-reader
+  requirements.
+* Defined an incremental dual-write migration that does not rewrite historical
+  traces or infer facts from rendered financial prose.
+
+Next roadmap item:
+
+Design a fixture-first serializer proof before any AgentLoop dual-write change.

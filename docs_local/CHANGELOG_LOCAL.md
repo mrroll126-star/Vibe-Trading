@@ -1293,6 +1293,23 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No production artifact, AgentLoop, Web UI, live data, `.env` access, or
   provider-chain/loader change.
 
+## 2026-07-13
+
+### Added
+
+* `docs_local/STRUCTURED_TOOL_RESULT_TRACE_CONTRACT.md`.
+
+### Design
+
+* Defined a versioned structured payload contract that separates system facts
+  from LLM-facing summaries and keeps legacy trace reading safe.
+* Defined a dual-write migration path for market and financial tool results.
+
+### Boundary
+
+* Documentation only; no runtime, provider-chain, loader, Web UI, live-data,
+  or `.env` change.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 ### Added

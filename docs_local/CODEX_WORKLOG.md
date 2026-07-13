@@ -1424,6 +1424,22 @@ Boundary:
 * No `.env` read, live data call, Web UI run, AgentLoop change, provider-chain
   change, loader change, or production artifact write.
 
+## 2026-07-13 Structured Tool Result Trace Contract Design
+
+Actions performed:
+
+1. Read the trace writer, AgentLoop tool-call/result path, financial tool
+   output, and trace collector.
+2. Confirmed the current tool interface and trace writer preserve result text,
+   not a separate machine-readable tool payload contract.
+3. Defined Tool Result Contract v1, legacy behavior, safety requirements, and
+   an incremental dual-write migration plan.
+
+Boundary:
+
+* Documentation only. No AgentLoop, tool, provider-chain, loader, Web UI,
+  live-data, or `.env` change.
+
 ## 2026-07-13 Fixture-only Research Schema Artifact Generator Proof
 
 1. Confirmed the working tree was clean and remote configuration unchanged.

@@ -1029,3 +1029,21 @@ Completed:
 4. **Design production artifact writer activation**
    * Business value: only enable post-run writes after the structured-result
      compatibility gap is addressed and tested.
+
+## Current Recommended Order After Structured Tool Result Trace Contract Design
+
+1. **Push the local trace-contract design commit to the fork**
+   * Business value: preserve the agreed migration boundary before any trace
+     producer change.
+
+2. **Design a fixture-first structured payload serializer proof**
+   * Business value: validate JSON envelopes, redaction, error cases, and
+     safe sidecar resolution without changing AgentLoop.
+
+3. **Implement controlled dual-write for financial and market tools**
+   * Business value: allow real traces to supply verified provenance and
+     three-statement confidence to schema artifacts while retaining legacy text.
+
+4. **Re-observe one controlled real run before production artifact writes**
+   * Business value: confirm structured trace data closes the current financial
+     confidence gap.
