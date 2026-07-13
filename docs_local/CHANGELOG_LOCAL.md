@@ -2,6 +2,19 @@
 
 This changelog tracks local-only changes that are not part of upstream Vibe-Trading.
 
+## 2026-07-13
+
+### Added
+
+* `docs_local/PRIMARY_FINANCIAL_EXECUTION_METADATA_PRODUCER_DESIGN.md`.
+
+### Changed
+
+* Recorded that runtime provenance projection is complete but requires a
+  financial execution metadata producer for real primary results.
+* Defined the next fixture-first per-call result transport step without
+  changing legacy tool text or runtime behavior.
+
 ## 2026-07-05
 
 ### Added

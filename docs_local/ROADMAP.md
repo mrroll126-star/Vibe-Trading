@@ -2,6 +2,20 @@
 
 This file tracks the local long-term plan for maintaining a private research version of Vibe-Trading.
 
+## 2026-07-13 Financial Execution Metadata Producer Design
+
+Completed design-only milestone:
+
+* Identified `FinancialStatementsTool` as the only trustworthy MVP owner of
+  primary/fallback execution facts.
+* Identified the current string-only `BaseTool`/`ToolRegistry` result contract
+  as the metadata loss point.
+* Defined a per-call immutable `ToolExecutionResult` transport strategy for
+  serial and parallel paths.
+* Kept structured tracing default off and legacy LLM/tool-result text intact.
+
+Next implementation gate: fixture-first producer/registry transport proof.
+
 ## Phase 0: Bootstrap Local Setup
 
 Status: completed on 2026-07-05.

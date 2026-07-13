@@ -304,3 +304,12 @@ Runtime tests prove complete artifacts only with explicit primary execution
 metadata. In the actual current primary path, missing provider/upstream remains
 an honest partial result. No runtime code infers these fields from tool name,
 source text, current configuration, or legacy result prose.
+
+## 17. Execution Metadata Producer Dependency (2026-07-13)
+
+The extractor and report consumer are ready to consume explicit primary
+provenance, but they cannot create it. The remaining upstream dependency is a
+per-call producer in the financial execution branch, transported through the
+registry without changing legacy tool text. This is intentionally separate from
+financial confidence rules; see
+`docs_local/PRIMARY_FINANCIAL_EXECUTION_METADATA_PRODUCER_DESIGN.md`.

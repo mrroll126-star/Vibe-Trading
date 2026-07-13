@@ -2,6 +2,25 @@
 
 Status: Phase 0 completed. Phase 1 foundation work is in progress.
 
+## Current Research Schema Priority
+
+1. **Fixture-first financial execution metadata producer contract**
+   * Implement a per-call `ToolExecutionResult` transport proof for existing
+     string-returning tools and financial execution metadata.
+   * Preserve legacy text; cover serial and parallel registry paths without
+     mutable shared state.
+2. **Financial primary/fallback producer integration**
+   * Make `FinancialStatementsTool` explicitly emit verified execution facts
+     for its current Eastmoney/SEC and A-share fallback branches.
+   * Keep `VIBE_TRADING_ENABLE_STRUCTURED_TOOL_TRACE=0` as the default.
+3. **Controlled real financial trace re-validation**
+   * Only after fixture tests pass, run one shell-safe local research task and
+     observe trace-to-artifact completeness without writing production
+     artifacts.
+
+The runtime projector is complete. The current blocker is the missing
+production execution-metadata producer, not schema consumption.
+
 Basic local deployment works:
 
 * Backend: `127.0.0.1:8899`

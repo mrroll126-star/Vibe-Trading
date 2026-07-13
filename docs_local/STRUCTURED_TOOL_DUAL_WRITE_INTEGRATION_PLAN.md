@@ -219,3 +219,12 @@ Complete provenance is only possible when the result or explicit execution
 metadata contains it. The current primary Eastmoney envelope does not expose
 all provider/upstream facts, so runtime behavior deliberately remains partial
 rather than guessing.
+
+## 10. Financial Execution Metadata Producer Follow-up (2026-07-13)
+
+Runtime dual-write and the provenance projector are consumers, not producers,
+of execution facts. The next narrow implementation must carry a per-call
+`ToolExecutionResult` from the financial tool through serial and parallel
+registry paths. It keeps legacy text unchanged and avoids mutating a
+`ToolCallRequest` or relying on shared tool-instance state. See
+`docs_local/PRIMARY_FINANCIAL_EXECUTION_METADATA_PRODUCER_DESIGN.md`.

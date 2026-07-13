@@ -2272,6 +2272,27 @@ Boundary:
   provider-chain, loader, FinancialStatementsTool, or TraceWriter change.
 * No runtime/local report files were committed.
 
+## 2026-07-13 Primary Financial Execution Metadata Producer Design
+
+Actions performed:
+
+1. Read the financial tool, provider branches, fallback audit, string-only
+   tool registry contract, serial/parallel AgentLoop execution, runtime
+   dual-write helper, projector, and focused tests.
+2. Confirmed primary provider selection and fallback orchestration are owned
+   by `FinancialStatementsTool`, while runtime dual-write is only a consumer.
+3. Confirmed `tc.execution_metadata` is test-injected capability only; the
+   production `ToolCallRequest` has no such field or producer.
+4. Added a design for immutable, per-call execution metadata transport using a
+   future `ToolExecutionResult`, including serial, parallel, timeout, and
+   registry-error boundaries.
+
+Boundary:
+
+* Documentation only; no tool, AgentLoop, TraceWriter, provider-chain, loader,
+  Web UI, or runtime artifact change.
+* No Agent run, live data, `.env` read, or push.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

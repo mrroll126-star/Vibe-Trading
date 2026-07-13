@@ -285,3 +285,16 @@ but does not expose provider/upstream execution facts. It therefore remains
 partial unless a future execution layer supplies verified metadata. The new
 runtime integration proves complete behavior only with explicit fixture
 execution metadata; it does not manufacture that metadata in production.
+
+## 16. Execution Metadata Producer Design (2026-07-13)
+
+The remaining primary-provenance blocker is now explicitly assigned to a
+per-call financial execution metadata producer. `FinancialStatementsTool` is
+the recommended producer because it owns actual primary/fallback branch
+selection; ToolRegistry and AgentLoop must only transport an immutable result
+wrapper. The detailed contract is in
+`docs_local/PRIMARY_FINANCIAL_EXECUTION_METADATA_PRODUCER_DESIGN.md`.
+
+Current `tc.execution_metadata` is a defensive optional read, not a
+production-populated field. The next implementation must not mutate the
+LLM-originated tool-call object or infer facts in a registry/consumer.
