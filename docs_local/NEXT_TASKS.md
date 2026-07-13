@@ -936,3 +936,23 @@ Completed:
 4. **Design the post-run research-schema artifact MVP**
    * Business value: persist a structured report only after confidence metadata
      survives the trace-to-report path.
+
+## Current Recommended Order After Financial Confidence Integration Design
+
+1. **Push local baseline commits to the fork**
+   * Business value: preserve the tested shell-safe, extractor, and integration
+     design baseline before implementation begins.
+
+2. **Implement fixture-first report-builder integration**
+   * Business value: make all direct and trace schema proofs expose the same
+     statement-level confidence rather than a first-statement shortcut.
+   * Scope: one result-index helper and one extractor call in the builder; no
+     AgentLoop, provider, loader, Web UI, or live-data change.
+
+3. **Define `indicators` capability policy**
+   * Business value: avoid mixing unsupported derived metrics with raw
+     three-statement confidence.
+
+4. **Design the post-run research-schema artifact MVP**
+   * Business value: write a durable artifact only after confidence metadata is
+     demonstrated end to end in fixture and controlled trace paths.

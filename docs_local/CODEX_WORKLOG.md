@@ -1403,6 +1403,18 @@ Boundary:
 * Did not install dependencies.
 * Did not commit `local_reports`.
 
+## 2026-07-13 Financial Confidence Integration Design
+
+1. Confirmed the working tree was clean and reviewed the actual report builder,
+   trace collector, and pure extractor contracts.
+2. Added the Financial Confidence Integration Plan.
+3. Compared three placements and selected a controlled builder-side call as the
+   smallest-risk MVP.
+4. Defined input conversion, partial-schema handling, duplicate-result policy,
+   fixture acceptance tests, and rollback.
+5. Made documentation changes only; no runtime, provider, AgentLoop, or Web UI
+   behavior changed.
+
 ## 2026-07-13 Financial Data Confidence Extraction Design
 
 1. Confirmed the working tree was clean and reviewed the existing financial

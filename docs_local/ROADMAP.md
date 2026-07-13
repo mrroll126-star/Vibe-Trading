@@ -1088,3 +1088,18 @@ Next roadmap item:
 
 Design controlled report-builder integration before any real-run artifact is
 written.
+
+## 2026-07-13 Financial Confidence Integration Designed
+
+Completed:
+
+* Compared direct builder, normalization-layer, and post-run-only integration
+  options.
+* Selected a narrow report-builder integration as the MVP: mechanical result
+  indexing plus a call to the existing pure extractor.
+* Defined partial-schema, duplicate-result, fixture-test, and rollback rules.
+
+Next roadmap item:
+
+Implement the fixture-first report-builder integration only after the selected
+result policy is accepted.

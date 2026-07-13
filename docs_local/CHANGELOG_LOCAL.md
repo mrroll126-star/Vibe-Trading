@@ -1273,6 +1273,22 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No dependency installation.
 * No `local_reports` committed.
 
+## 2026-07-13 Financial Confidence Integration Design
+
+### Added
+
+* `docs_local/FINANCIAL_CONFIDENCE_INTEGRATION_PLAN.md`.
+
+### Changed
+
+* Documented the recommended report-builder integration, module boundaries,
+  partial-schema policy, duplicate-result policy, fixture tests, and rollback.
+
+### Boundary
+
+* Design documentation only; no business code, live data, AgentLoop, Web UI,
+  provider-chain, loader, or `.env` interaction.
+
 ## 2026-07-13 Financial Data Confidence Extraction Design
 
 ### Added
