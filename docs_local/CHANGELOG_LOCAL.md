@@ -1296,6 +1296,24 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Added
 
+* `docs_local/PRIMARY_FINANCIAL_PROVENANCE_COMPLETION_CONTRACT.md`, defining
+  verified primary-financial provenance fields and mechanical consumption from
+  structured trace through research artifact generation.
+
+### Changed
+
+* Updated roadmap and next-task ordering to require fixture-first provenance
+  projection before another controlled real trace.
+
+### Boundary
+
+* Documentation only; no AgentLoop, tool, TraceWriter, provider-chain, loader,
+  Web UI, live-data, `.env`, or production artifact change.
+
+## 2026-07-13
+
+### Added
+
 * `agent/src/reports/tool_dual_write.py`.
 * `agent/tests/test_tool_dual_write.py`.
 

@@ -1304,3 +1304,20 @@ Next roadmap item:
 
 Design a primary-financial provenance completion contract before another real
 financial run; do not infer missing provenance in the observer.
+
+## 2026-07-13 Primary Financial Provenance Completion Contract
+
+Completed:
+
+* Defined the required primary-financial trace metadata: provider, source,
+  upstream, statement type, reporting period, row count, data quality,
+  fallback status, and warnings.
+* Defined mechanical producer precedence, consumer ownership, partial-status
+  semantics, and non-inference rules.
+* Kept structured tracing default off and preserved the legacy result contract
+  as a rollout requirement.
+
+Next roadmap item:
+
+Implement fixture-first primary provenance projection, then conduct one
+controlled read-only trace observation only after contract coverage passes.

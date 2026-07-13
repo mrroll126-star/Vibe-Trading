@@ -1182,3 +1182,22 @@ Completed:
 
 4. **Only then evaluate market-data runtime dual-write**
    * Business value: retain a narrow, auditable rollout sequence.
+
+## Current Recommended Order After Primary Financial Provenance Contract
+
+1. **Push the observation update and provenance contract to the fork**
+   * Business value: establish a remotely backed design baseline before any
+     runtime provenance change.
+
+2. **Implement fixture-first primary financial provenance projection**
+   * Business value: allow a financial structured payload to carry verified
+     provider, source, upstream, period, row-count, quality, fallback, and
+     warning facts without changing legacy LLM text.
+
+3. **Run one controlled real trace only after offline contract coverage passes**
+   * Business value: verify the artifact can become complete using mechanical
+     provenance rather than inferred metadata.
+
+4. **Defer market-data dual-write until financial provenance is stable**
+   * Business value: avoid widening runtime scope before the first producer
+     contract is proven end to end.

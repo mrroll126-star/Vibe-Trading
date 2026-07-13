@@ -2190,6 +2190,24 @@ Boundary:
 * No `.env` read or printed value.
 * `local_reports` observation output remains ignored and uncommitted.
 
+## 2026-07-13 Primary Financial Provenance Completion Contract Design
+
+Actions performed:
+
+1. Confirmed the real trace can recover Eastmoney period rows but does not
+   consistently supply provider, upstream, and data-quality provenance.
+2. Defined a versioned primary-financial provenance contract for structured
+   dual-write traces.
+3. Defined required fields, source precedence, fallback disclosure, consumer
+   responsibilities, status semantics, rollout, and acceptance criteria.
+4. Recorded a strict non-inference rule: no source/provider/date/quality field
+   may be reconstructed from legacy text, an LLM answer, or a guessed mapping.
+
+Boundary:
+
+* Documentation only. No code change, Agent run, live data request, Web UI,
+  `.env` read, runtime artifact write, or sensitive/runtime file commit.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

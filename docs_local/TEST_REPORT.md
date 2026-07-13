@@ -4293,3 +4293,27 @@ Boundary:
 * No live data call or `.env` read.
 * Observation files were written only to ignored `local_reports` and were not
   committed.
+
+## 2026-07-13 Primary Financial Provenance Completion Contract Design
+
+Designed:
+
+* A verified metadata contract for primary financial structured trace results:
+  provider, source, upstream, statement type, reporting period, row count,
+  data quality, fallback status, and warnings.
+* Producer precedence that accepts only explicit tool fields, adapter-owned
+  execution context, or actual normalized rows for period/count facts.
+* Consumer rules for trace collection, envelope normalization, confidence
+  extraction, report building, and artifact generation.
+* Explicit `complete`, `partial`, `missing`, and `failed` semantics so missing
+  provenance remains visible rather than inferred.
+
+Validation:
+
+* Documentation-only review. No test, AgentLoop, provider, or live-data run
+  was required or performed.
+
+Boundary:
+
+* No runtime, AgentLoop, tool, TraceWriter, provider-chain, loader, Web UI,
+  `.env`, or production artifact change.
