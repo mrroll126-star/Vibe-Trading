@@ -1403,6 +1403,16 @@ Boundary:
 * Did not install dependencies.
 * Did not commit `local_reports`.
 
+## 2026-07-13 Research Schema Artifact Design
+
+1. Confirmed a clean working tree and reviewed the existing controlled real-run
+   artifact design together with the implemented confidence pipeline.
+2. Added the product-level Research Schema Artifact Design.
+3. Defined lifecycle, storage, schema versioning, generation outcomes, failure
+   handling, security, UI consumption, test strategy, and rollback.
+4. Made documentation changes only; no artifact, service, AgentLoop, provider,
+   loader, Web UI, live-data, or credential interaction occurred.
+
 ## 2026-07-13 Fixture-first Financial Confidence Integration Proof
 
 1. Confirmed a clean working tree and followed the approved builder-side

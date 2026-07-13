@@ -1273,6 +1273,24 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No dependency installation.
 * No `local_reports` committed.
 
+## 2026-07-13 Research Schema Artifact Design
+
+### Added
+
+* docs_local/RESEARCH_SCHEMA_ARTIFACT_DESIGN.md.
+
+### Changed
+
+* Defined the versioned research schema artifact as a post-run product read
+  model, separate from trace evidence.
+* Defined storage, lifecycle, failure handling, security, and UI consumption
+  boundaries.
+
+### Boundary
+
+* Design documentation only; no production artifact, live data, AgentLoop,
+  Web UI, provider-chain, loader, or .env interaction.
+
 ## 2026-07-13 Fixture-first Financial Confidence Integration Proof
 
 ### Added

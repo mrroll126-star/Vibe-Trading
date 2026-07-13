@@ -974,3 +974,21 @@ Completed:
 
 4. **Design the post-run research-schema artifact MVP**
    * Business value: only after real-trace metadata compatibility is confirmed.
+
+## Current Recommended Order After Research Schema Artifact Design
+
+1. **Push local baseline commits to the fork**
+   * Business value: preserve the completed offline confidence pipeline and
+     artifact design before artifact implementation.
+
+2. **Design a fixture-only artifact generator interface**
+   * Business value: validate versioned envelope, complete/partial outcomes, and
+     atomic-write behavior without real runs or production artifact paths.
+
+3. **Define the indicators capability policy**
+   * Business value: keep unsupported derived metrics distinct from raw
+     three-statement completeness.
+
+4. **Implement controlled artifact generation only after fixture proof**
+   * Business value: create a durable run-level research schema without making
+     the Web UI parse trace.jsonl.

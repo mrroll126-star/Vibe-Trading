@@ -1119,3 +1119,18 @@ Next roadmap item:
 
 Observe confidence metadata from a controlled historical or real trace before
 any persisted research-schema artifact is implemented.
+
+## 2026-07-13 Research Schema Artifact Design
+
+Completed:
+
+* Defined research_schema.json as a versioned, derived product read model while
+  trace.jsonl remains the execution/audit source.
+* Defined post-run lifecycle, storage under the run artifact directory,
+  complete/partial/failed behavior, failure handling, security boundaries, and
+  future Web UI consumption.
+
+Next roadmap item:
+
+Design a fixture-only artifact generator and validate it before any real run
+writes a production artifact.
