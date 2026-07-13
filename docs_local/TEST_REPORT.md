@@ -3973,3 +3973,38 @@ Boundary:
 * One real run only; no Web UI.
 * No AgentLoop, provider-chain, loader, or Web UI code change.
 * No `.env` read or printed; no runtime trace or local report committed.
+
+## 2026-07-13 Financial Confidence Extractor Fixture-first Proof
+
+Implemented:
+
+* Added the pure `extract_financial_confidence(...)` function.
+* Input: offline tool-like fixtures for income, balance, and cashflow.
+* Output: `financial_health`, `data_confidence.financial_data`, and warnings.
+* Unsupported `index` and `etf` asset types are rejected before confidence is
+  generated.
+
+Validation:
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_financial_confidence_extractor
+```
+
+Result: 7 tests passed.
+
+```bash
+.venv/bin/python -m unittest agent.tests.test_report_builder agent.tests.test_trace_to_schema_pipeline agent.tests.test_direct_tool_schema_pipeline
+```
+
+Result: 15 tests passed.
+
+```bash
+.venv/bin/python -m compileall -q agent/src/reports agent/tests scripts
+```
+
+Result: passed.
+
+Boundary:
+
+* No live data, AgentLoop, Web UI, provider-chain, loader, or `.env` access.
+* Extractor is not yet wired into `build_research_report`.

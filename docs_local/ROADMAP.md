@@ -1072,3 +1072,19 @@ Next roadmap item:
 
 Design the minimal fixture-first Financial Confidence Extractor before adding a
 post-run research-schema artifact.
+
+## 2026-07-13 Financial Confidence Extractor Proof
+
+Completed:
+
+* Added a pure, offline Financial Confidence Extractor for the three raw
+  financial statements.
+* Added fixture-first coverage for complete, fallback, failed, missing,
+  metadata-missing, reporting-period-missing, and ineligible asset cases.
+* Confirmed the extractor does not require AgentLoop, Web UI, live data, or
+  credentials.
+
+Next roadmap item:
+
+Design controlled report-builder integration before any real-run artifact is
+written.

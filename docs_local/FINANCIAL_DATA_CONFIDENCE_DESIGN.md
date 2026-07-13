@@ -209,3 +209,24 @@ fallback, the provider chain, or raw tool output.
 Design the minimal fixture-first `FinancialConfidenceExtractor` implementation
 and acceptance tests before producing a persisted `research_schema.json`
 artifact or expanding a-stock-data to new data domains.
+
+## 12. Fixture-first Proof Status (2026-07-13)
+
+Implemented offline proof:
+
+* `agent/src/reports/financial_confidence.py` provides the pure
+  `extract_financial_confidence(...)` function.
+* It accepts fixture/tool-like results for the three core statements and
+  produces `financial_health`, `data_confidence.financial_data`, and
+  de-duplicated warnings.
+* It preserves primary/fallback provenance, reports missing provider/source or
+  reporting period, and rejects non-stock asset types.
+* `agent/tests/test_financial_confidence_extractor.py` covers complete,
+  fallback, failed, missing, metadata-missing, reporting-period-missing, and
+  index/ETF cases.
+
+Boundary:
+
+* The proof is not wired into `build_research_report`, trace collection, or
+  AgentLoop yet.
+* It does not call live providers or read runtime/configuration files.

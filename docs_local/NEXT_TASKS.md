@@ -916,3 +916,23 @@ Completed:
 4. **Design the research-schema artifact post-processor MVP**
    * Business value: persist an audited structured report after a real run only
      when the confidence contract is available.
+
+## Current Recommended Order After Financial Confidence Extractor Proof
+
+1. **Push the local extractor proof and safety baseline commits to the fork**
+   * Business value: preserve the tested offline contract before connecting it
+     to report production.
+
+2. **Design controlled integration of FinancialConfidenceExtractor into the report builder**
+   * Business value: replace the report builder's current first-statement
+     confidence shortcut with statement-level confidence, without changing
+     AgentLoop or provider behavior.
+   * Scope: design and fixture acceptance criteria first.
+
+3. **Define the `indicators` capability policy**
+   * Business value: keep missing derived metrics distinct from missing raw
+     income, balance, and cashflow statements.
+
+4. **Design the post-run research-schema artifact MVP**
+   * Business value: persist a structured report only after confidence metadata
+     survives the trace-to-report path.

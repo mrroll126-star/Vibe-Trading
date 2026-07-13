@@ -1292,6 +1292,29 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No AgentLoop, provider-chain, loader, Web UI, service, live-data, or `.env`
   interaction.
 
+## 2026-07-13 Fixture-first Financial Confidence Extractor
+
+### Added
+
+* `agent/src/reports/financial_confidence.py`.
+* `agent/tests/test_financial_confidence_extractor.py`.
+
+### Changed
+
+* Exported the pure extractor through `agent/src/reports/__init__.py`.
+* Updated the confidence design, roadmap, test report, and next-task ordering.
+
+### Validation
+
+* Extractor tests: 7 passed.
+* Existing schema regressions: 15 passed.
+* Compile check: passed.
+
+### Boundary
+
+* Fixture-first proof only; no live data or AgentLoop execution.
+* No `.env`, `agent/runs`, or `local_reports` committed.
+
 ## 2026-07-13 Controlled Real Research Run Security Re-validation
 
 ### Changed

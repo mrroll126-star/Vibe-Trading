@@ -1416,6 +1416,18 @@ Boundary:
 7. Updated roadmap and next-task ordering. No code, services, live data, or
    credentials were used.
 
+## 2026-07-13 Fixture-first Financial Confidence Extractor
+
+1. Confirmed a clean working tree and reviewed the existing report-schema
+   builder contracts.
+2. Added a pure extractor under `agent/src/reports/` and exported it from the
+   reports package.
+3. Added offline unittest coverage for the six requested behavior classes plus
+   an explicit missing-statement case.
+4. Ran focused extractor tests, existing schema regressions, and compile checks.
+5. Did not call live data or connect this proof to AgentLoop, Web UI, provider
+   chains, or loaders.
+
 ## 2026-07-13 Controlled Real Research Run Security Re-validation
 
 1. Confirmed a clean working tree on `feature/bootstrap-local-setup`.
