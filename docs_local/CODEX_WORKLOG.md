@@ -2208,6 +2208,34 @@ Boundary:
 * Documentation only. No code change, Agent run, live data request, Web UI,
   `.env` read, runtime artifact write, or sensitive/runtime file commit.
 
+## 2026-07-13 Fixture-first Primary Financial Provenance Projection Proof
+
+Actions performed:
+
+1. Added a pure projector for structured financial provenance and a future
+   runtime-compatible enrichment adapter.
+2. Kept all source/provider/upstream values limited to explicit payload,
+   execution-context, or serializer metadata inputs.
+3. Made reporting period and row count mechanical functions of structured
+   period rows only.
+4. Preserved fallback status, primary error, and payload warnings during
+   financial envelope normalization.
+5. Added ten fixture tests, including complete primary statements, missing
+   metadata, fallback, malformed input, stable warnings, and the complete
+   consumer chain through artifacts.
+6. Ran the requested regression suite and compile check.
+
+Validation:
+
+* Projection tests: 10 passed.
+* Regression suite: 37 passed.
+
+Boundary:
+
+* No runtime hook, AgentLoop, tool, TraceWriter, provider-chain, loader, Web
+  UI, live-data, `.env`, or production artifact change.
+* No runtime or local report files were committed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

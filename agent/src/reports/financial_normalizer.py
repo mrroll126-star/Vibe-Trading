@@ -28,7 +28,9 @@ def normalize_financial_statement_payload(
     provider = _text(supplied_metadata.get("provider") or source_payload.get("provider"))
     upstream = _text(supplied_metadata.get("upstream") or source_payload.get("upstream"))
     period = _text(source_payload.get("period"))
-    warnings: list[str] = []
+    warnings = _string_list(source_payload.get("warnings"))
+    fallback_used = bool(source_payload.get("fallback") or source_payload.get("fallback_used"))
+    primary_error = _text(source_payload.get("primary_error"))
 
     if not statement_type:
         warnings.append("missing_statement_type")
@@ -63,6 +65,8 @@ def normalize_financial_statement_payload(
         "provider": provider,
         "source": source,
         "upstream": upstream,
+        "fallback_used": fallback_used,
+        "primary_error": primary_error,
         "data": {symbol: rows} if symbol else {},
         "_data_quality": {symbol: quality} if symbol else quality,
         "metadata": {
@@ -111,6 +115,10 @@ def _latest_period(rows: list[dict[str, Any]]) -> str:
 
 def _text(value: Any) -> str:
     return str(value) if value is not None and str(value) else ""
+
+
+def _string_list(value: Any) -> list[str]:
+    return [str(item) for item in value if str(item)] if isinstance(value, list) else []
 
 
 def _dedupe(values: list[str]) -> list[str]:

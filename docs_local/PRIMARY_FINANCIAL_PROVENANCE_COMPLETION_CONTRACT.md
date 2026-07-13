@@ -245,3 +245,23 @@ This design does not:
 * create a production `research_schema.json` artifact;
 * expand financial support to indicators, valuation metrics, or other assets;
 * normalize unrelated market, news, or research-report results.
+
+## 14. Fixture-first Projection Proof Status (2026-07-13)
+
+Implemented an offline `financial_provenance` helper with two pure functions:
+
+* `project_financial_provenance(...)` projects explicit structured payload,
+  execution-context, and serializer metadata facts into the contract envelope.
+* `build_financial_provenance_enrichment(...)` demonstrates the future runtime
+  producer boundary by returning an enriched structured payload plus compact
+  trace metadata, without changing the current runtime hook.
+
+The proof covers complete primary Eastmoney income, balance, and cashflow
+fixtures; missing provider/source/period cases; fallback provenance; malformed
+payloads; stable warning de-duplication; and the full canonical consumer path.
+Only existing structured rows contribute report periods and row count. The
+normalizer now preserves explicit fallback status, primary error, and payload
+warnings while canonicalizing rows.
+
+This proof remains fixture-only. `runtime_dual_write.py`, AgentLoop,
+FinancialStatementsTool, TraceWriter, and legacy LLM text have not changed.

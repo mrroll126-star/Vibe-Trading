@@ -1201,3 +1201,20 @@ Completed:
 4. **Defer market-data dual-write until financial provenance is stable**
    * Business value: avoid widening runtime scope before the first producer
      contract is proven end to end.
+
+## Current Recommended Order After Primary Provenance Projection Proof
+
+1. **Push the provenance projection proof to the fork**
+   * Business value: retain the tested producer/consumer contract baseline.
+
+2. **Implement default-off runtime primary-financial provenance integration**
+   * Business value: make the existing financial dual-write hook attach only
+     verified execution-context provenance while preserving legacy behavior.
+
+3. **Run one controlled real trace and observe it read-only**
+   * Business value: verify the primary trace reaches complete financial
+     confidence without source or provider inference.
+
+4. **Keep market-data dual-write deferred**
+   * Business value: establish the first runtime producer contract before
+     widening structured tracing.

@@ -1314,6 +1314,28 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Added
 
+* `agent/src/reports/financial_provenance.py` with a fixture-first financial
+  provenance projector and trace-compatible enrichment adapter.
+* `agent/tests/test_financial_provenance_projection.py` covering complete,
+  missing, fallback, malformed, de-duplicated-warning, and full consumer-path
+  scenarios.
+
+### Changed
+
+* Financial envelope normalization now preserves explicit fallback status,
+  primary error, and payload warnings while converting period rows.
+* Updated confidence, integration, roadmap, test, worklog, and next-task
+  records for the completed offline producer contract proof.
+
+### Boundary
+
+* Fixture-only: no runtime dual-write hook, AgentLoop, live provider, Web UI,
+  `.env`, production artifact, or runtime-file change.
+
+## 2026-07-13
+
+### Added
+
 * `agent/src/reports/tool_dual_write.py`.
 * `agent/tests/test_tool_dual_write.py`.
 

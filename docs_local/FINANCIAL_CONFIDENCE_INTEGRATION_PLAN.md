@@ -271,3 +271,21 @@ independent; the pipeline does not merge primary and fallback rows. Fixture
 tests confirm complete Eastmoney core statements yield complete confidence and
 artifact output, while malformed envelopes remain non-blocking partial/missing
 results with explicit warnings.
+
+## 15. Primary Provenance Projection Fixture Proof (2026-07-13)
+
+The new pure provenance projection helper sits before the existing consumer
+path in fixture tests:
+
+```text
+structured payload + explicit execution metadata
+  -> financial provenance projection
+  -> trace-compatible structured payload and metadata
+  -> collector -> financial pipeline -> report builder -> artifact
+```
+
+The report builder remains provider agnostic, the normalizer still owns only
+row canonicalization, and the confidence extractor still decides completeness.
+The projector is the sole producer of newly calculated row count and
+reporting-period projection; it does not infer source/provider/upstream or
+change the runtime dual-write path.

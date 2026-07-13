@@ -4317,3 +4317,31 @@ Boundary:
 
 * No runtime, AgentLoop, tool, TraceWriter, provider-chain, loader, Web UI,
   `.env`, or production artifact change.
+
+## 2026-07-13 Fixture-first Primary Financial Provenance Projection Proof
+
+Implemented:
+
+* Added a pure provenance projector and trace-enrichment adapter for primary
+  and fallback financial structured payload fixtures.
+* Added mechanical projection of provider, source, upstream, statement type,
+  reporting period, row count, data quality, fallback status, primary error,
+  and stable warnings.
+* Preserved explicit payload fallback status, primary error, and warnings when
+  the existing financial normalizer converts provider rows to canonical form.
+
+Validation:
+
+* Financial provenance projection tests: 10 passed.
+* Financial normalizer, normalizer pipeline, confidence integration,
+  serializer, dual-write, report-builder, and artifact-generator regressions:
+  37 passed.
+* Compile check for reports, tests, and scripts: passed.
+* Complete primary fixtures produce complete financial confidence and complete
+  artifacts; missing provenance fixtures remain partial with explicit warnings.
+
+Boundary:
+
+* Fixture-only. No runtime dual-write integration, AgentLoop, tool,
+  TraceWriter, provider-chain, loader, Web UI, live data, `.env`, or production
+  artifact change.

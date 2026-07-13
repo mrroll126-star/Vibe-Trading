@@ -1321,3 +1321,19 @@ Next roadmap item:
 
 Implement fixture-first primary provenance projection, then conduct one
 controlled read-only trace observation only after contract coverage passes.
+
+## 2026-07-13 Fixture-first Primary Financial Provenance Projection Proof
+
+Completed:
+
+* Added a pure primary/fallback financial provenance projector and a
+  trace-compatible enrichment adapter.
+* Verified complete income, balance, and cashflow fixtures mechanically flow
+  through normalizer, confidence, report, and artifact consumers.
+* Verified missing provenance remains partial and visible; no producer/source,
+  date, or fallback fact is inferred.
+
+Next roadmap item:
+
+Implement the projector in the existing default-off financial runtime
+dual-write hook, then run a single controlled trace observation.

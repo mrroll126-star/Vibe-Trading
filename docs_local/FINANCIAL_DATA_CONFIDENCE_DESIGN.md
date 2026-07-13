@@ -281,3 +281,17 @@ envelopes to the normalizer. It still correctly produces partial confidence:
 the recorded payload has no provider value and the trace has no final-answer
 event. This is a provenance gap in the existing trace, not a reason to invent
 metadata or declare the financial data complete.
+
+## 16. Primary Provenance Projection Fixture Proof (2026-07-13)
+
+The fixture-first provenance projector now supplies the metadata the financial
+confidence path needs without relying on legacy text: verified provider,
+source, upstream, statement type, actual reporting periods, row count,
+adapter-produced quality metadata, fallback status, primary error, and stable
+warnings. It uses only structured payload rows and explicit execution context.
+
+Three complete primary-statement fixtures produce complete confidence and a
+complete artifact. Missing provider, source, or reporting period remains a
+warning and produces partial confidence. Fallback fixtures retain the actual
+fallback provenance and primary error. The projector is not yet called by the
+runtime dual-write hook.
