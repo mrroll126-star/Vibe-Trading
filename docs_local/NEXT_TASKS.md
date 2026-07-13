@@ -1250,3 +1250,20 @@ Completed:
 4. **Keep market-data dual-write deferred**
    * Business value: avoid expanding tracing before primary financial metadata
      has a truthful producer.
+
+## Current Recommended Order After Real Financial Provenance Re-validation
+
+1. **Resolve the primary financial upstream provenance gap at its source**
+   * Business value: allow a primary financial artifact to become complete
+     without guessing an upstream value in any consumer.
+
+2. **Investigate why the controlled CLI run ended without a final-answer trace
+   event**
+   * Business value: distinguish Agent completion/iteration behavior from the
+     successful structured financial trace path before declaring a production
+     artifact baseline.
+
+3. **Repeat one controlled run only after the two evidence-backed gaps are
+   addressed**
+   * Business value: validate a complete artifact, then consider the first
+     production artifact-generation integration.

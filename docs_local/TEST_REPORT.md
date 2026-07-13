@@ -4467,3 +4467,44 @@ Boundary:
   artifact write, runtime-file commit, provider-chain, loader, or tool change.
 * The real primary path is not claimed complete: it still lacks explicit
   provider/upstream execution facts today.
+
+## 2026-07-13 Controlled Real Financial Provenance Trace Re-validation
+
+Executed exactly one controlled CLI research run for `300750.SZ` with
+`VIBE_TRADING_ENABLE_STRUCTURED_TOOL_TRACE=1`,
+`VIBE_TRADING_ENABLE_SHELL_TOOLS=0`, and the A-share financial fallback flag
+enabled. No second run or retry was performed.
+
+Observed trace: `agent/runs/20260713_161056_69_f0686d/trace.jsonl`.
+
+Results:
+
+* The trace contained 78 events, 25 tool results, and no `bash` or
+  `background_run` tool call.
+* `get_financial_statements` emitted structured sidecars and explicit metadata
+  for `income`, `balance`, and `cashflow` (plus unsupported `indicators`).
+* Each supported statement used the primary `eastmoney` path with
+  `source=eastmoney`, `fallback_status.used=false`, 12 rows, and latest
+  reporting period `2025-12-31`.
+* The primary path did not expose an independent upstream fact. The metadata
+  therefore retained `upstream` as empty and emitted
+  `financial_upstream_missing`; this was not inferred by consumers.
+* The schema observer resolved structured sidecars, found the three required
+  statements, and successfully built a schema.
+* The artifact observer produced every report section and rated financial
+  health `complete`, but rated the artifact `partial` because the trace has no
+  final answer and financial provenance still warns about missing upstream.
+
+Validation:
+
+* Financial provenance/transport/normalizer/observation suite: 71 passed.
+* Shell capability suite: 6 passed.
+* Compile check for `agent/src`, `agent/tests`, and `scripts`: passed.
+
+Boundary:
+
+* One real CLI run only; no Web UI, production artifact, provider-chain,
+  loader, or code change.
+* No `agent/.env` content was read or printed.
+* Run/session files and `local_reports` observation outputs remain ignored and
+  uncommitted.

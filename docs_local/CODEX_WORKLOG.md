@@ -2344,6 +2344,34 @@ Boundary:
 * No live provider request, Agent run, Web UI, `.env` read, provider-chain,
   loader, TraceWriter, runtime artifact, or push.
 
+## 2026-07-13 Controlled Real Financial Provenance Trace Re-validation
+
+Actions performed:
+
+1. Confirmed a clean branch and ignored runtime paths.
+2. Ran one `300750.SZ` CLI research task with structured tracing on and shell
+   tools explicitly off.
+3. Read the resulting trace and its structured sidecars without printing raw
+   financial rows.
+4. Ran the schema and artifact observation scripts against that existing run.
+5. Confirmed primary Eastmoney metadata for income, balance, and cashflow;
+   all three statements were recovered by the financial consumer pipeline.
+6. Confirmed no `bash` or `background_run` event appears in the trace.
+7. Ran offline provenance, normalizer, observer, and shell-capability
+   regressions plus compile validation.
+
+Result:
+
+* Schema generation succeeded and financial health is complete.
+* Artifact remains partial because `upstream` is truthfully unavailable for
+  the primary result and no final-answer event was written by this run.
+
+Boundary:
+
+* Exactly one real Agent run. No retry, Web UI, production artifact write,
+  provider-chain/loader change, or runtime-file commit.
+* No `.env` content was read or printed.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:

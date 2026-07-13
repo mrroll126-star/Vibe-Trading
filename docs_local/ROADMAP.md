@@ -1393,3 +1393,27 @@ Next roadmap item:
 Design a truthful primary execution-metadata producer before any new real run.
 The current primary envelope lacks provider/upstream facts and must remain
 partial until that producer exists.
+
+## 2026-07-13 Controlled Real Financial Provenance Re-validation
+
+Completed:
+
+* Ran exactly one shell-safe `300750.SZ` CLI research task with structured
+  financial tracing enabled.
+* Verified primary Eastmoney income, balance, and cashflow results produce
+  structured sidecars and explicit metadata for provider, source, statement
+  type, periods, row counts, quality, fallback state, and warnings.
+* Verified observers resolve those sidecars through the financial pipeline;
+  financial health is complete and all report sections are generated.
+
+Open evidence-backed gaps:
+
+* Primary execution still has no independent upstream fact, so consumers retain
+  `financial_upstream_missing` and the artifact is partial.
+* The trace ended without a final-answer event, which also keeps the artifact
+  partial.
+
+Next roadmap item:
+
+Address those two narrow provenance/completion gaps before any production
+artifact write or market-data dual-write expansion.

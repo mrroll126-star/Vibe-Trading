@@ -1832,6 +1832,23 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No `.env` read.
 * No `local_reports` committed.
 
+## 2026-07-13
+
+### Validation
+
+* Revalidated the real `300750.SZ` primary financial structured-trace path.
+* Confirmed income, balance, and cashflow sidecars carry primary Eastmoney
+  provenance and are consumed by schema/artifact observers.
+* Confirmed the shell-tools opt-in fix holds for the controlled CLI trace:
+  no `bash` or `background_run` event was recorded.
+* Documented remaining partial-artifact conditions: missing primary upstream
+  fact and missing final-answer trace event.
+
+### Boundary
+
+* No production artifact, runtime file, `.env`, or `local_reports` output was
+  committed.
+
 ## 2026-07-11
 
 ### Added
