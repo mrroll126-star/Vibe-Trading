@@ -1907,6 +1907,23 @@ Boundary:
 * No production `research_schema.json` write.
 * No `local_reports` committed.
 
+## 2026-07-13 Structured Tool Dual-write Fixture Proof
+
+Actions performed:
+
+1. Reviewed serializer, collector, artifact generator, and fixture tests.
+2. Added a pure dual-write event helper retaining legacy result text beside a
+   serializer-derived payload.
+3. Added collector support that prefers structured payloads while preserving
+   legacy result fallback.
+4. Ran dual-write, report-builder, direct-tool schema, trace-pipeline, and
+   compile validations.
+
+Boundary:
+
+* No AgentLoop, real tool, TraceWriter, provider-chain, loader, Web UI, live
+  data, `.env`, runtime trace, or local-report change.
+
 ## 2026-07-12 Controlled Historical Trace Observation
 
 Actions performed:

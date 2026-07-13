@@ -122,6 +122,13 @@ Completed. Serializer fixtures prove that market and financial JSON envelopes
 can produce trace-compatible payloads and complete artifacts, while legacy
 text remains unavailable.
 
+Completed implementation proof: a dual-write event now retains legacy result
+text beside the serializer payload in fixtures. The collector prefers a valid
+`structured_payload` and falls back to legacy `result`, preserving historical
+trace compatibility. Complete market plus income/balance/cashflow fixtures
+produce a complete artifact; serializer failure and unsupported tools retain a
+valid legacy event with trace-only warnings.
+
 ### Phase 2: financial tool only
 
 Implement flag-gated dual-write for `get_financial_statements`. Add unit tests

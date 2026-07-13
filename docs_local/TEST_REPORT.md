@@ -4116,3 +4116,26 @@ Boundary:
 
 * Fixture-only proof. No AgentLoop, live data, Web UI, trace write, provider
   chain, loader, or `.env` access.
+
+## 2026-07-13 Structured Tool Dual-write Fixture Proof
+
+Implemented:
+
+* Added a fixture-only helper that creates trace-compatible events containing
+  both legacy `result` text and serializer-produced `structured_payload`.
+* Updated the offline collector to prefer a valid `structured_payload` and
+  retain its existing legacy `result` fallback.
+* Covered financial and market success, serializer failure isolation, artifact
+  completion, and unsupported-tool event integrity.
+
+Validation:
+
+* Dual-write tests: 5 passed.
+* Report-builder, direct-tool schema, and trace pipeline regressions: 15
+  passed.
+* Compile check: passed.
+
+Boundary:
+
+* No AgentLoop, real tool, TraceWriter, provider-chain, loader, Web UI, live
+  data, `.env`, runtime trace, or local report change.

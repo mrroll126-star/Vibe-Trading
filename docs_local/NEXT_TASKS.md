@@ -1081,3 +1081,20 @@ Completed:
 4. **Add market-tool dual-write and run one controlled real trace observation**
    * Business value: validate full schema completeness before production
      artifact writes are considered.
+
+## Current Recommended Order After Dual-write Fixture Proof
+
+1. **Push the dual-write fixture proof to the fork**
+   * Business value: preserve the tested legacy-compatible contract baseline.
+
+2. **Design the default-off runtime flag and TraceWriter v1 extension**
+   * Business value: define exact default-off behavior, JSON-sidecar safety,
+     and trace field compatibility before runtime instrumentation.
+
+3. **Implement financial-tool-only runtime dual-write behind the flag**
+   * Business value: make future financial traces recoverable without changing
+     Agent-facing legacy text.
+
+4. **Run one controlled trace observation before market-tool rollout**
+   * Business value: verify real financial confidence and artifact completeness
+     using the actual trace writer path.

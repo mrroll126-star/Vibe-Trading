@@ -1277,6 +1277,28 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ### Added
 
+* `agent/src/reports/tool_dual_write.py`.
+* `agent/tests/test_tool_dual_write.py`.
+
+### Changed
+
+* Offline trace collection now prefers a valid `structured_payload` and falls
+  back to the existing legacy `result` field.
+
+### Validation
+
+* Fixture dual-write events retained legacy text and generated a complete
+  research artifact with three-statement confidence.
+
+### Boundary
+
+* No AgentLoop, real tool, TraceWriter, live data, Web UI, `.env`, runtime
+  trace, provider-chain, or loader change.
+
+## 2026-07-13
+
+### Added
+
 * `scripts/observe_real_trace_to_artifact.py`.
 * `agent/tests/test_real_trace_artifact_observation.py`.
 

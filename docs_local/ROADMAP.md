@@ -1211,3 +1211,18 @@ Next roadmap item:
 
 Implement fixture-tested default-off TraceWriter v1 support before integrating
 any real tool execution path.
+
+## 2026-07-13 Structured Tool Dual-write Fixture Proof
+
+Completed:
+
+* Added a fixture-only legacy-plus-structured trace-event helper.
+* Confirmed the collector consumes structured payloads first and retains legacy
+  text fallback behavior.
+* Confirmed fixture financial and market results generate a complete artifact
+  without runtime trace writes.
+
+Next roadmap item:
+
+Design default-off runtime flag and TraceWriter v1 extension before any
+AgentLoop integration.

@@ -119,7 +119,7 @@ def build_research_report_from_trace_events(
 
 def _collect_tool_result(collection: TraceCollection, event: dict[str, Any], index: int) -> None:
     tool_name = str(event.get("tool_name") or event.get("tool") or "")
-    result = _decode_result(event.get("result"))
+    result = _decode_event_result(event)
     status = str(event.get("status") or "").lower()
 
     if result is None:
@@ -164,6 +164,16 @@ def _decode_result(value: Any) -> dict[str, Any] | None:
             return None
         return dict(parsed) if isinstance(parsed, dict) else None
     return None
+
+
+def _decode_event_result(event: dict[str, Any]) -> dict[str, Any] | None:
+    """Prefer verified dual-write payloads while retaining legacy compatibility."""
+
+    if "structured_payload" in event and event.get("structured_payload") is not None:
+        structured = _decode_result(event.get("structured_payload"))
+        if structured is not None:
+            return structured
+    return _decode_result(event.get("result"))
 
 
 def _add_result_warning(result: dict[str, Any], warning: str) -> None:
