@@ -50,6 +50,50 @@ Boundary:
 * `FinancialStatementsTool` did not change and does not yet produce real
   primary/fallback execution metadata.
 
+## 2026-07-13 A-share Financial Execution Metadata Producer
+
+Scope:
+
+* Fixture/mocked Eastmoney and Sina/a-stock-data execution only.
+* No real Agent task, Web UI, live request, `.env` read, or production artifact.
+
+Verified behavior:
+
+* A-share Eastmoney primary success returns call-bound metadata with
+  `provider=eastmoney`, `source=eastmoney`, `upstream=null`, and
+  `fallback.used=false`.
+* A successful fallback identifies `a_stock_data` as final provider and carries
+  the adapter's actual `sina_financial_report` / `a-stock-data` fields.
+* All-failed and fallback-ineligible paths preserve legacy JSON and never claim
+  a successful provider.
+* Primary errors are first-line, redacted, and bounded before metadata storage.
+* The legacy `execute()` method remains string-only; `execute_with_metadata()`
+  is the additive producer path used by ToolRegistry transport.
+
+Commands and results:
+
+```text
+.venv/bin/python -m unittest agent.tests.test_financial_execution_metadata_producer
+10 passed
+
+.venv/bin/python -m unittest agent.tests.test_tool_execution_result_transport agent.tests.test_financial_runtime_provenance agent.tests.test_financial_provenance_projection agent.tests.test_financial_normalizer agent.tests.test_financial_normalizer_pipeline agent.tests.test_financial_confidence_integration agent.tests.test_tool_result_serializer agent.tests.test_tool_dual_write agent.tests.test_trace_to_schema_pipeline agent.tests.test_report_builder agent.tests.test_research_artifact_generator agent.tests.test_real_trace_observation agent.tests.test_real_trace_artifact_observation
+88 passed
+
+.venv/bin/python -m unittest agent.tests.test_shell_tool_capability
+6 passed
+
+.venv/bin/python -m unittest agent.tests.test_financial_statements_tool agent.tests.test_a_stock_data_financials_fallback
+36 passed
+
+.venv/bin/python -m compileall -q agent/src agent/tests scripts
+passed
+```
+
+Total executed unittest cases: 140 passed.
+
+Pytest-based AgentLoop modules were not run because the existing virtual
+environment does not include `pytest`; no dependency was installed.
+
 Status: basic local deployment executed on 2026-07-05.
 
 No business code was modified. No real `.env`, token, API key, or OAuth file was created.

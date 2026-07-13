@@ -348,3 +348,23 @@ The generic transport proof is implemented without modifying
 
 The next task remains the actual primary/fallback producer inside the financial
 tool. No provider fact is created by this generic transport layer.
+
+## 15. A-share Producer Integration Status (2026-07-13)
+
+Implemented for confirmed A-share financial execution only:
+
+* Primary Eastmoney success emits explicit `provider=eastmoney`,
+  `source=eastmoney`, `fallback.used=false`, and a `null` upstream because the
+  current primary envelope has no separately verified upstream field.
+* A successful Sina/a-stock-data fallback emits final provider/source/upstream
+  from the actual normalized fallback result and retains a safe primary error.
+* A failed fallback never claims a successful final provider; it keeps the
+  legacy error JSON and emits `provider_success=false` with warnings.
+* A-share ETF/index fallback-ineligible results retain their legacy warning and
+  record no successful provider. US/HK behavior stays legacy-string-only with
+  no A-share metadata.
+
+The producer is reached through `FinancialStatementsTool.execute_with_metadata`.
+Its public `execute` method still returns precisely the legacy JSON string.
+All paths use a fresh `ToolExecutionResult`; no tool-instance metadata state is
+stored.

@@ -306,3 +306,13 @@ wrapper. The additive registry API preserves the old string interface, and
 AgentLoop passes returned metadata explicitly in both serial and parallel
 paths. This proves transport only: real primary facts remain absent until
 `FinancialStatementsTool` produces them.
+
+## 18. A-share Primary/Fallback Producer Status (2026-07-13)
+
+The A-share financial tool now supplies execution metadata through the
+metadata-aware tool interface. Eastmoney primary success supplies explicit
+provider/source facts, while its upstream remains `null` because no distinct
+field exists in the current execution branch. A successful Sina fallback uses
+the normalized fallback provider/source/upstream values; primary errors are
+redacted and bounded before metadata transport. All-failed and ineligible
+fallback paths remain non-successful and cannot create complete confidence.

@@ -26,6 +26,7 @@ from __future__ import annotations
 
 import json
 import logging
+import re
 from typing import Any
 
 from backtest.loaders.eastmoney_client import get_json, resolve_secid
@@ -37,6 +38,7 @@ from src.adapters.a_stock_data.financials import (
 )
 from src.adapters.a_stock_data.normalizer import normalize_a_stock_financials_result
 from src.agent.tools import BaseTool
+from src.agent.tool_execution import ToolExecutionResult
 from src.symbols.config import is_a_stock_data_adapter_enabled
 
 logger = logging.getLogger(__name__)
@@ -470,6 +472,85 @@ def _append_fallback_not_eligible(
     return envelope
 
 
+_SENSITIVE_ERROR_QUERY_RE = re.compile(
+    r"([?&](?:api[_-]?key|token|secret|authorization|password)=)[^&\s]+",
+    re.IGNORECASE,
+)
+_SENSITIVE_ERROR_HEADER_RE = re.compile(
+    r"(authorization\s*[:=]\s*)(?:bearer\s+)?\S+", re.IGNORECASE
+)
+_SENSITIVE_ERROR_ENV_RE = re.compile(
+    r"\b[A-Z][A-Z0-9_]*(?:API[_-]?KEY|TOKEN|SECRET|PASSWORD)\s*=\s*\S+"
+)
+_EXECUTION_ERROR_LIMIT = 300
+
+
+def _safe_execution_error(value: Any) -> str | None:
+    """Return a bounded error suitable for execution metadata only."""
+
+    if value in (None, ""):
+        return None
+    text = str(value).splitlines()[0].strip()
+    text = _SENSITIVE_ERROR_QUERY_RE.sub(r"\1[redacted]", text)
+    text = _SENSITIVE_ERROR_HEADER_RE.sub(r"\1[redacted]", text)
+    text = _SENSITIVE_ERROR_ENV_RE.sub("[redacted]", text)
+    if len(text) > _EXECUTION_ERROR_LIMIT:
+        text = f"{text[:_EXECUTION_ERROR_LIMIT]}..."
+    return text or None
+
+
+def _a_share_execution_metadata(
+    *,
+    code: str,
+    statement: str,
+    provider: str | None,
+    source: str | None,
+    upstream: str | None,
+    fallback_used: bool,
+    primary_error: Any = None,
+    provider_success: bool,
+    warnings: list[str] | None = None,
+) -> dict[str, Any]:
+    """Build explicit A-share execution facts without inspecting result rows."""
+
+    safe_error = _safe_execution_error(primary_error)
+    execution_warnings = list(dict.fromkeys(str(item) for item in (warnings or []) if item))
+    return {
+        "schema_version": "financial_execution_metadata.v1",
+        "tool_name": "get_financial_statements",
+        "symbol": code,
+        "statement_type": statement,
+        "provider": provider,
+        "source": source,
+        # Eastmoney's current primary envelope has no distinct upstream fact.
+        "upstream": upstream,
+        "fallback": {
+            "used": fallback_used,
+            "primary_provider": "eastmoney",
+            "primary_error": safe_error,
+        },
+        "fallback_used": fallback_used,
+        "primary_error": safe_error,
+        "data_quality": {
+            "provider_success": provider_success,
+            "warnings": execution_warnings,
+        },
+        "warnings": execution_warnings,
+    }
+
+
+def _with_execution_metadata(
+    legacy_result: str,
+    metadata: dict[str, Any] | None,
+) -> ToolExecutionResult:
+    """Return isolated execution facts while leaving legacy JSON untouched."""
+
+    return ToolExecutionResult(
+        legacy_result=legacy_result,
+        execution_metadata=metadata,
+    )
+
+
 class FinancialStatementsTool(BaseTool):
     """Fetch a stock's three financial statements or key per-period indicators."""
 
@@ -517,6 +598,11 @@ class FinancialStatementsTool(BaseTool):
     }
 
     def execute(self, **kwargs: Any) -> str:
+        """Execute through the legacy string-only public tool interface."""
+
+        return self.execute_with_metadata(**kwargs).legacy_result
+
+    def execute_with_metadata(self, **kwargs: Any) -> ToolExecutionResult:
         """Validate inputs, dispatch by market, and return a JSON envelope.
 
         Args:
@@ -534,21 +620,28 @@ class FinancialStatementsTool(BaseTool):
         """
         code = kwargs.get("code")
         if not isinstance(code, str) or not code.strip():
-            return _error("code must be a non-empty symbol string")
+            return _with_execution_metadata(
+                _error("code must be a non-empty symbol string"), None
+            )
         code = code.strip()
 
         statement = kwargs.get("statement", "indicators")
         if statement not in _VALID_STATEMENTS:
-            return _error(f"statement must be one of {list(_VALID_STATEMENTS)}")
+            return _with_execution_metadata(
+                _error(f"statement must be one of {list(_VALID_STATEMENTS)}"), None
+            )
 
         period = kwargs.get("period", "annual")
         if period not in _VALID_PERIODS:
-            return _error(f"period must be one of {list(_VALID_PERIODS)}")
+            return _with_execution_metadata(
+                _error(f"period must be one of {list(_VALID_PERIODS)}"), None
+            )
 
         market = _classify_market(code)
         if market is None:
-            return _error(
-                "code must carry a supported suffix: .SH/.SZ/.BJ, .US, or .HK"
+            return _with_execution_metadata(
+                _error("code must carry a supported suffix: .SH/.SZ/.BJ, .US, or .HK"),
+                None,
             )
 
         if market == "us":
@@ -574,21 +667,85 @@ class FinancialStatementsTool(BaseTool):
         }
         if all_failed:
             envelope["error"] = result["error"]
+        primary_legacy_result = json.dumps(envelope, ensure_ascii=False)
+        primary_error = envelope.get("error")
         if not is_a_stock_data_adapter_enabled():
-            return json.dumps(envelope, ensure_ascii=False)
+            if market != "a_share":
+                return _with_execution_metadata(primary_legacy_result, None)
+            if all_failed:
+                return _with_execution_metadata(
+                    primary_legacy_result,
+                    _a_share_execution_metadata(
+                        code=code,
+                        statement=statement,
+                        provider=None,
+                        source=source,
+                        upstream=None,
+                        fallback_used=False,
+                        primary_error=primary_error,
+                        provider_success=False,
+                        warnings=[
+                            "primary_financials_unavailable",
+                            "a_stock_data_fallback_disabled",
+                        ],
+                    ),
+                )
+            return _with_execution_metadata(
+                primary_legacy_result,
+                _a_share_execution_metadata(
+                    code=code,
+                    statement=statement,
+                    provider="eastmoney",
+                    source=source,
+                    upstream=None,
+                    fallback_used=False,
+                    provider_success=True,
+                ),
+            )
 
         if not should_try_a_stock_financials_fallback(envelope):
-            return json.dumps(envelope, ensure_ascii=False)
+            if market != "a_share":
+                return _with_execution_metadata(primary_legacy_result, None)
+            return _with_execution_metadata(
+                primary_legacy_result,
+                _a_share_execution_metadata(
+                    code=code,
+                    statement=statement,
+                    provider="eastmoney",
+                    source=source,
+                    upstream=None,
+                    fallback_used=False,
+                    provider_success=True,
+                ),
+            )
 
         eligibility = is_a_stock_financials_fallback_eligible(code, market=market)
         if not eligibility.get("eligible"):
-            return json.dumps(
-                _append_fallback_not_eligible(
-                    envelope,
+            ineligible_envelope = _append_fallback_not_eligible(
+                envelope,
+                code=code,
+                eligibility=eligibility,
+            )
+            if market != "a_share":
+                return _with_execution_metadata(
+                    json.dumps(ineligible_envelope, ensure_ascii=False), None
+                )
+            return _with_execution_metadata(
+                json.dumps(ineligible_envelope, ensure_ascii=False),
+                _a_share_execution_metadata(
                     code=code,
-                    eligibility=eligibility,
+                    statement=statement,
+                    provider=None if all_failed else "eastmoney",
+                    source=source,
+                    upstream=None,
+                    fallback_used=False,
+                    primary_error=primary_error,
+                    provider_success=not all_failed,
+                    warnings=[
+                        "a_stock_data_fallback_not_eligible",
+                        str(eligibility.get("reason") or ""),
+                    ],
                 ),
-                ensure_ascii=False,
             )
 
         try:
@@ -614,13 +771,30 @@ class FinancialStatementsTool(BaseTool):
             upstream=raw_fallback.get("upstream") if isinstance(raw_fallback, dict) else None,
             statement_type=statement,
         )
-        return json.dumps(
-            _with_a_stock_fallback_audit(
-                fallback,
+        audited_fallback = _with_a_stock_fallback_audit(
+            fallback,
+            code=code,
+            statement=statement,
+            period=period,
+            primary_envelope=envelope,
+        )
+        fallback_success = bool(audited_fallback.get("ok"))
+        fallback_warnings = list(
+            (audited_fallback.get("_data_quality") or {}).get(code, {}).get("warnings") or []
+        )
+        if not fallback_success:
+            fallback_warnings.append("a_stock_data_fallback_failed")
+        return _with_execution_metadata(
+            json.dumps(audited_fallback, ensure_ascii=False),
+            _a_share_execution_metadata(
                 code=code,
                 statement=statement,
-                period=period,
-                primary_envelope=envelope,
+                provider=audited_fallback.get("provider") if fallback_success else None,
+                source=audited_fallback.get("source"),
+                upstream=audited_fallback.get("upstream"),
+                fallback_used=True,
+                primary_error=primary_error,
+                provider_success=fallback_success,
+                warnings=fallback_warnings,
             ),
-            ensure_ascii=False,
         )

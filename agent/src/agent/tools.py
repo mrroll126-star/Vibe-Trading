@@ -91,6 +91,9 @@ class ToolRegistry:
                 )
             )
         try:
+            execute_with_metadata = getattr(tool, "execute_with_metadata", None)
+            if callable(execute_with_metadata):
+                return normalize_tool_execution_result(execute_with_metadata(**params))
             return normalize_tool_execution_result(tool.execute(**params))
         except Exception as exc:
             logger.exception("Tool %s failed", name)

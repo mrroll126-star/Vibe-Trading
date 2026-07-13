@@ -28,6 +28,21 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
   while preserving legacy LLM/tool-result text.
 * Corrected explicit `fallback.used=false` handling in the provenance projector.
 
+## 2026-07-13 A-share Financial Execution Metadata Producer
+
+### Added
+
+* A metadata-aware financial tool execution path for real A-share primary and
+  fallback branch facts.
+* Fixture coverage for primary/fallback/all-failed/ineligible/redaction and
+  artifact compatibility behavior.
+
+### Changed
+
+* ToolRegistry now prefers a tool's optional metadata-aware execution method
+  while preserving its public string-returning interface.
+* Direct financial tool callers retain the existing JSON-string result.
+
 ## 2026-07-05
 
 ### Added

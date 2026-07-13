@@ -29,6 +29,18 @@ Completed:
 Next gate: make the financial tool explicitly produce primary/fallback facts,
 then observe one controlled real trace.
 
+## 2026-07-13 A-share Financial Execution Metadata Producer
+
+Completed:
+
+* Added A-share primary/fallback execution facts without changing provider
+  selection, loaders, legacy tool text, or non-A-share behavior.
+* Preserved safe primary failure provenance when fallback is used.
+* Kept Eastmoney upstream absent rather than inferring it.
+
+Next gate: one controlled, shell-safe real trace observation with structured
+tool tracing enabled and no production artifact write.
+
 ## Phase 0: Bootstrap Local Setup
 
 Status: completed on 2026-07-05.

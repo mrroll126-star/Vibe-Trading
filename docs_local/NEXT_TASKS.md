@@ -4,19 +4,18 @@ Status: Phase 0 completed. Phase 1 foundation work is in progress.
 
 ## Current Research Schema Priority
 
-1. **Financial primary/fallback producer integration**
-   * Make `FinancialStatementsTool` explicitly emit verified execution facts
-   for its current Eastmoney/SEC and A-share fallback branches.
-   * Keep `VIBE_TRADING_ENABLE_STRUCTURED_TOOL_TRACE=0` as the default.
-2. **Controlled real financial trace re-validation**
+1. **Controlled real financial trace re-validation**
    * Only after fixture tests pass, run one shell-safe local research task and
    observe trace-to-artifact completeness without writing production
    artifacts.
+2. **Resolve evidence-based provenance gaps only**
+   * Evaluate whether the primary Eastmoney upstream may be explicitly modeled
+     or should remain `null`; do not guess.
 3. **Production artifact writer**
    * Consider only after a real trace has complete primary/fallback provenance.
 
-The runtime projector and per-call transport are complete. The current blocker
-is the missing financial execution-metadata producer, not schema consumption.
+The runtime projector, per-call transport, and A-share financial producer are
+complete. The next evidence gate is controlled real-trace observation.
 
 Basic local deployment works:
 

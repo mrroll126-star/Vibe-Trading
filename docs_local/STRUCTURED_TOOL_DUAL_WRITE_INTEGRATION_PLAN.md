@@ -237,3 +237,11 @@ string-only for all existing callers. The AgentLoop serial and parallel paths
 now provide metadata explicitly to trace finalization, while the legacy LLM
 message and trace result remain text-only. The real financial tool has not yet
 been changed to produce metadata.
+
+## 12. A-share Financial Producer Status (2026-07-13)
+
+The first real producer is now implemented for A-share financial calls only.
+When structured tracing is enabled, the existing runtime dual-write branch
+receives tool-produced metadata rather than test-injected `tc` state. Legacy
+text is unchanged, provider selection is unchanged, and no metadata is emitted
+for US/HK by this MVP. A controlled real trace is the next validation step.

@@ -313,3 +313,11 @@ per-call producer in the financial execution branch, transported through the
 registry without changing legacy tool text. This is intentionally separate from
 financial confidence rules; see
 `docs_local/PRIMARY_FINANCIAL_EXECUTION_METADATA_PRODUCER_DESIGN.md`.
+
+## 18. A-share Execution Metadata Availability (2026-07-13)
+
+The consumer pipeline can now receive real A-share primary/fallback metadata
+through the metadata-aware financial tool path. It remains responsible only
+for mechanical normalization and confidence. The source producer does not
+calculate rows, reporting periods, or report completeness, and it leaves an
+unverified Eastmoney upstream as `null` rather than inventing one.

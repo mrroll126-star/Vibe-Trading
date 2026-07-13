@@ -2317,6 +2317,33 @@ Boundary:
 * No real financial producer, Agent run, live data, Web UI, `.env` read,
   provider-chain, loader, TraceWriter, or runtime artifact change.
 
+## 2026-07-13 A-share Financial Execution Metadata Producer
+
+Actions performed:
+
+1. Added `FinancialStatementsTool.execute_with_metadata(...)` while retaining
+   its string-only public `execute(...)` behavior.
+2. Produced explicit A-share Eastmoney primary metadata and normalized
+   Sina/a-stock-data fallback metadata at the actual execution branch.
+3. Kept primary Eastmoney upstream `null`; no consumer or tool-name inference
+   was introduced.
+4. Added safe primary-error redaction, bounded error text, all-failed handling,
+   fallback-ineligible handling, and fixture-only artifact compatibility tests.
+5. Preserved US/HK legacy behavior and the existing fallback eligibility rules.
+
+Validation:
+
+* Producer tests: 10 passed.
+* Related trace/schema/artifact tests: 88 passed.
+* Shell safety tests: 6 passed.
+* Existing financial tool/fallback tests: 36 passed.
+* Compile check passed.
+
+Boundary:
+
+* No live provider request, Agent run, Web UI, `.env` read, provider-chain,
+  loader, TraceWriter, runtime artifact, or push.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:
