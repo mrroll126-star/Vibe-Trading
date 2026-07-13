@@ -1,5 +1,55 @@
 # Test Report
 
+## 2026-07-13 Fixture-first ToolExecutionResult Transport Proof
+
+Scope:
+
+* Offline generic tool-result transport only.
+* No real Agent task, Web UI, live data, `.env` read, or runtime artifact.
+
+Implementation verification:
+
+* `ToolRegistry.execute(...)` remains compatible with string-returning tools.
+* `ToolRegistry.execute_with_metadata(...)` returns immutable per-call
+  `ToolExecutionResult` values.
+* AgentLoop serial and parallel paths pass call-bound metadata explicitly to
+  finalization; legacy result text alone reaches the LLM context.
+* Flag off retains the legacy financial trace shape; flag on sends fixture
+  metadata through the existing provenance projector.
+* Corrected projector interpretation of explicit `fallback.used=false` so it
+  does not falsely label a primary result as fallback.
+
+Commands and results:
+
+```text
+.venv/bin/python -m unittest agent.tests.test_tool_execution_result_transport
+8 passed
+
+.venv/bin/python -m unittest agent.tests.test_financial_runtime_provenance agent.tests.test_financial_provenance_projection agent.tests.test_tool_dual_write agent.tests.test_tool_result_serializer agent.tests.test_trace_to_schema_pipeline agent.tests.test_report_builder agent.tests.test_research_artifact_generator
+49 passed
+
+.venv/bin/python -m unittest agent.tests.test_tool_timeout
+0 unittest-discovered tests; command completed successfully
+
+.venv/bin/python -m unittest agent.tests.test_shell_tool_capability
+6 passed
+
+.venv/bin/python -m compileall -q agent/src agent/tests scripts
+passed
+```
+
+Test environment limitation:
+
+* The pytest-based AgentLoop modules could not be imported because this local
+  `.venv` does not contain `pytest` (`ModuleNotFoundError`). No dependency was
+  installed for this fixture-only task. The new unittest coverage exercises the
+  changed serial and parallel transport functions directly.
+
+Boundary:
+
+* `FinancialStatementsTool` did not change and does not yet produce real
+  primary/fallback execution metadata.
+
 Status: basic local deployment executed on 2026-07-05.
 
 No business code was modified. No real `.env`, token, API key, or OAuth file was created.

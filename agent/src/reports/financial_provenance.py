@@ -214,6 +214,8 @@ def _fallback_status(
         for field in ("fallback_used", "fallback"):
             if field in source and source[field] is not None:
                 if isinstance(source[field], Mapping):
+                    if source[field].get("used") is not None:
+                        return bool(source[field]["used"]), True
                     return True, True
                 return bool(source[field]), True
     status = execution.get("fallback_status")

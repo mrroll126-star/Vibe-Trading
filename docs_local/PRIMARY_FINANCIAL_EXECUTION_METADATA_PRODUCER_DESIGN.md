@@ -327,3 +327,24 @@ Every step is default-off, fixture-tested, and independently reversible.
 This design does not implement a producer, run a real Agent task, add market
 metadata, modify loaders/providers/TraceWriter, generate production artifacts,
 change Web UI, add a database, implement valuation, or migrate all tools.
+
+## 14. Fixture-first Transport Proof Status (2026-07-13)
+
+The generic transport proof is implemented without modifying
+`FinancialStatementsTool`:
+
+* `ToolExecutionResult` is an immutable per-call wrapper for legacy text,
+  optional metadata, and internal transport warnings.
+* `ToolRegistry.execute(...)` remains the legacy string interface; additive
+  `execute_with_metadata(...)` normalizes old string tools and future wrapper
+  tools.
+* AgentLoop uses the additive interface in both serial and parallel paths,
+  passes metadata explicitly to finalization, and keeps it out of LLM context.
+* A deep copy plus immutable container normalization prevents later mutation of
+  caller metadata from affecting the completed call.
+* Fixture tests cover legacy compatibility, serial and parallel `call_id`
+  association, registry errors, invalid metadata, trace flag behavior, and the
+  financial provenance boundary.
+
+The next task remains the actual primary/fallback producer inside the financial
+tool. No provider fact is created by this generic transport layer.

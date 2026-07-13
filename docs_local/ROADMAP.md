@@ -16,6 +16,19 @@ Completed design-only milestone:
 
 Next implementation gate: fixture-first producer/registry transport proof.
 
+## 2026-07-13 ToolExecutionResult Transport Proof
+
+Completed:
+
+* Added a generic immutable per-call tool-result transport contract.
+* Kept the public registry string API compatible while adding an internal
+  metadata-aware execution method.
+* Covered AgentLoop serial and parallel propagation without shared mutable
+  metadata.
+
+Next gate: make the financial tool explicitly produce primary/fallback facts,
+then observe one controlled real trace.
+
 ## Phase 0: Bootstrap Local Setup
 
 Status: completed on 2026-07-05.

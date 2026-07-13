@@ -9,6 +9,8 @@ from abc import ABC, abstractmethod
 logger = logging.getLogger(__name__)
 from typing import Any, Dict, List, Optional
 
+from src.agent.tool_execution import ToolExecutionResult, normalize_tool_execution_result
+
 
 class BaseTool(ABC):
     """Tool base class.
@@ -70,18 +72,34 @@ class ToolRegistry:
         return [t.to_openai_schema() for t in self._tools.values()]
 
     def execute(self, name: str, params: Dict[str, Any]) -> str:
-        """Execute a tool and guarantee a valid JSON return value."""
+        """Execute a tool through the legacy string-only public interface."""
+        return self.execute_with_metadata(name, params).legacy_result
+
+    def execute_with_metadata(self, name: str, params: Dict[str, Any]) -> ToolExecutionResult:
+        """Execute a tool and return its isolated per-call transport result.
+
+        This additive interface lets AgentLoop consume optional execution
+        metadata without changing existing callers of :meth:`execute` or
+        requiring legacy tools to migrate from their string return contract.
+        """
         tool = self._tools.get(name)
         if not tool:
-            return json.dumps({"status": "error", "error": f"Tool '{name}' not found"}, ensure_ascii=False)
+            return ToolExecutionResult(
+                legacy_result=json.dumps(
+                    {"status": "error", "error": f"Tool '{name}' not found"},
+                    ensure_ascii=False,
+                )
+            )
         try:
-            return tool.execute(**params)
+            return normalize_tool_execution_result(tool.execute(**params))
         except Exception as exc:
             logger.exception("Tool %s failed", name)
-            return json.dumps({
-                "status": "error", "tool": name,
-                "error": str(exc),
-            }, ensure_ascii=False)
+            return ToolExecutionResult(
+                legacy_result=json.dumps({
+                    "status": "error", "tool": name,
+                    "error": str(exc),
+                }, ensure_ascii=False)
+            )
 
     @property
     def tool_names(self) -> List[str]:

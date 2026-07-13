@@ -28,6 +28,7 @@ from typing import Any, Callable, Dict, List, Optional
 from src.agent.context import ContextBuilder
 from src.agent.memory import WorkspaceMemory
 from src.agent.progress import HeartbeatTimer, ProgressEvent, _set_emitter
+from src.agent.tool_execution import ToolExecutionResult, normalize_tool_execution_result
 from src.agent.tools import ToolRegistry
 from src.agent.trace import TraceWriter
 from src.reports.runtime_dual_write import build_financial_trace_enrichment
@@ -1242,10 +1243,14 @@ class AgentLoop:
         # Execute in parallel — each worker gets its own heartbeat + progress emitter.
         def _run(tc_args: tuple) -> tuple:
             tc, args = tc_args
-            result, elapsed_ms = self._invoke_tool(tc.name, args)
-            result = self._append_benchmark_policy_result(tc.name, args, result)
-            result = self._append_asset_type_routing_warning_result(tc.name, args, result)
-            return tc, result, elapsed_ms
+            execution_result, elapsed_ms = self._invoke_tool_with_metadata(tc.name, args)
+            legacy_result = self._append_benchmark_policy_result(
+                tc.name, args, execution_result.legacy_result
+            )
+            legacy_result = self._append_asset_type_routing_warning_result(
+                tc.name, args, legacy_result
+            )
+            return tc, execution_result.with_legacy_result(legacy_result), elapsed_ms
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=min(len(runnable), 8)) as pool:
             futures = [pool.submit(_run, item) for item in runnable]
@@ -1255,11 +1260,27 @@ class AgentLoop:
                     results.append(f.result())
                 except Exception as exc:
                     tc = runnable[i][0]
-                    results.append((tc, json.dumps({"status": "error", "error": str(exc)}), 0))
+                    results.append((
+                        tc,
+                        ToolExecutionResult(
+                            legacy_result=json.dumps({"status": "error", "error": str(exc)})
+                        ),
+                        0,
+                    ))
 
         # Process results in order
-        for tc, result, elapsed_ms in results:
-            self._finalize_tool_result(tc, result, elapsed_ms, context, messages, trace, react_trace, iteration)
+        for tc, execution_result, elapsed_ms in results:
+            self._finalize_tool_result(
+                tc,
+                execution_result.legacy_result,
+                elapsed_ms,
+                context,
+                messages,
+                trace,
+                react_trace,
+                iteration,
+                execution_metadata=execution_result.execution_metadata,
+            )
 
     def _execute_single(
         self,
@@ -1293,11 +1314,25 @@ class AgentLoop:
             self._finalize_tool_result(tc, guard_result, 0, context, messages, trace, react_trace, iteration)
             return
 
-        result, elapsed_ms = self._invoke_tool(tc.name, args)
-        result = self._append_benchmark_policy_result(tc.name, args, result)
-        result = self._append_asset_type_routing_warning_result(tc.name, args, result)
+        execution_result, elapsed_ms = self._invoke_tool_with_metadata(tc.name, args)
+        legacy_result = self._append_benchmark_policy_result(
+            tc.name, args, execution_result.legacy_result
+        )
+        legacy_result = self._append_asset_type_routing_warning_result(
+            tc.name, args, legacy_result
+        )
 
-        self._finalize_tool_result(tc, result, elapsed_ms, context, messages, trace, react_trace, iteration)
+        self._finalize_tool_result(
+            tc,
+            legacy_result,
+            elapsed_ms,
+            context,
+            messages,
+            trace,
+            react_trace,
+            iteration,
+            execution_metadata=execution_result.execution_metadata,
+        )
 
     def _pre_tool_guard_result(self, tool_name: str, args: Dict[str, Any]) -> str | None:
         """Apply pre-invocation guards shared by serial and parallel tool paths."""
@@ -1509,6 +1544,13 @@ class AgentLoop:
         )
 
     def _invoke_tool(self, tool_name: str, args: Dict[str, Any]) -> tuple[str, int]:
+        """Execute a tool through the legacy string-only private interface."""
+        execution_result, elapsed_ms = self._invoke_tool_with_metadata(tool_name, args)
+        return execution_result.legacy_result, elapsed_ms
+
+    def _invoke_tool_with_metadata(
+        self, tool_name: str, args: Dict[str, Any]
+    ) -> tuple[ToolExecutionResult, int]:
         """Execute a tool with heartbeat + structured progress emission.
 
         Installs a thread-local progress emitter so the tool may call
@@ -1523,7 +1565,7 @@ class AgentLoop:
             args: Tool arguments dict.
 
         Returns:
-            Tuple of (result_str, elapsed_ms).
+            Tuple of (per-call result transport, elapsed_ms).
         """
         readonly = self._is_tool_readonly(tool_name)
         timed_out = threading.Event()
@@ -1612,21 +1654,21 @@ class AgentLoop:
             _set_emitter(_on_progress)
             try:
                 with _heartbeat_timer():
-                    result = self.registry.execute(tool_name, args)
+                    result = self._registry_execute_with_metadata(tool_name, args)
             finally:
                 finished.set()
                 _set_emitter(None)
-            return result or "", _elapsed_ms()
+            return normalize_tool_execution_result(result), _elapsed_ms()
 
         # Readonly tools run in a worker thread so a hung tool becomes a
         # bounded error: late results are discarded and the emitters are
         # suppressed via the timed_out event.
-        result_queue: queue.Queue[tuple[str | None, BaseException | None]] = queue.Queue(maxsize=1)
+        result_queue: queue.Queue[tuple[ToolExecutionResult | None, BaseException | None]] = queue.Queue(maxsize=1)
 
         def _worker() -> None:
             _set_emitter(_on_progress)
             try:
-                result_queue.put((self.registry.execute(tool_name, args), None))
+                result_queue.put((self._registry_execute_with_metadata(tool_name, args), None))
             except BaseException as exc:  # noqa: BLE001 - propagate through caller thread
                 result_queue.put((None, exc))
             finally:
@@ -1647,7 +1689,8 @@ class AgentLoop:
                     "timeout", f"Tool exceeded {timeout_label} timeout"
                 )
                 return (
-                    json.dumps(
+                    ToolExecutionResult(
+                        legacy_result=json.dumps(
                         {
                             "status": "error",
                             "error_code": "tool_timeout",
@@ -1655,13 +1698,24 @@ class AgentLoop:
                             "timeout_seconds": timeout,
                             "message": f"Tool exceeded {timeout_label} timeout",
                         },
-                        ensure_ascii=False,
+                            ensure_ascii=False,
+                        )
                     ),
                     elapsed_ms,
                 )
         if exc is not None:
             raise exc
-        return result or "", _elapsed_ms()
+        return normalize_tool_execution_result(result), _elapsed_ms()
+
+    def _registry_execute_with_metadata(
+        self, tool_name: str, args: Dict[str, Any]
+    ) -> ToolExecutionResult:
+        """Use the additive registry API when present, preserving test doubles."""
+
+        execute_with_metadata = getattr(self.registry, "execute_with_metadata", None)
+        if callable(execute_with_metadata):
+            return normalize_tool_execution_result(execute_with_metadata(tool_name, args))
+        return normalize_tool_execution_result(self.registry.execute(tool_name, args))
 
     def _is_tool_readonly(self, tool_name: str) -> bool:
         """Return whether a tool is known to be side-effect free."""
@@ -1684,6 +1738,7 @@ class AgentLoop:
         trace: TraceWriter,
         react_trace: list,
         iteration: int,
+        execution_metadata: Dict[str, Any] | None = None,
     ) -> None:
         """Record a tool result: update memory, append message, write trace, emit event.
 
@@ -1709,11 +1764,14 @@ class AgentLoop:
         messages.append(context.format_tool_result(tc.id, tc.name, truncated))
 
         trace_result = _redact_trace_result(result)
+        metadata = execution_metadata
+        if metadata is None:
+            metadata = _tool_call_mapping(tc, "execution_metadata")
         enrichment = build_financial_trace_enrichment(
             tool_name=tc.name,
             redacted_result=trace_result,
             tool_args=_tool_call_mapping(tc, "arguments"),
-            execution_metadata=_tool_call_mapping(tc, "execution_metadata"),
+            execution_metadata=metadata,
         )
         trace.write_tool_result(
             call_id=tc.id,

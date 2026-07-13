@@ -298,3 +298,11 @@ wrapper. The detailed contract is in
 Current `tc.execution_metadata` is a defensive optional read, not a
 production-populated field. The next implementation must not mutate the
 LLM-originated tool-call object or infer facts in a registry/consumer.
+
+## 17. Fixture-first Transport Proof Status (2026-07-13)
+
+The execution-metadata transport is now proven with an immutable per-call
+wrapper. The additive registry API preserves the old string interface, and
+AgentLoop passes returned metadata explicitly in both serial and parallel
+paths. This proves transport only: real primary facts remain absent until
+`FinancialStatementsTool` produces them.

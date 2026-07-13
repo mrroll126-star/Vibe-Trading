@@ -15,6 +15,19 @@ This changelog tracks local-only changes that are not part of upstream Vibe-Trad
 * Defined the next fixture-first per-call result transport step without
   changing legacy tool text or runtime behavior.
 
+## 2026-07-13 ToolExecutionResult Transport Proof
+
+### Added
+
+* Generic immutable `ToolExecutionResult` transport contract.
+* Additive metadata-aware ToolRegistry execution path and fixture coverage.
+
+### Changed
+
+* Serial and parallel AgentLoop paths now carry call-bound metadata internally
+  while preserving legacy LLM/tool-result text.
+* Corrected explicit `fallback.used=false` handling in the provenance projector.
+
 ## 2026-07-05
 
 ### Added

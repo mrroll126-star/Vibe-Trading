@@ -228,3 +228,12 @@ of execution facts. The next narrow implementation must carry a per-call
 registry paths. It keeps legacy text unchanged and avoids mutating a
 `ToolCallRequest` or relying on shared tool-instance state. See
 `docs_local/PRIMARY_FINANCIAL_EXECUTION_METADATA_PRODUCER_DESIGN.md`.
+
+## 11. Fixture-first Transport Proof Status (2026-07-13)
+
+Completed the generic transport proof with an additive
+`ToolRegistry.execute_with_metadata(...)` interface. `execute(...)` remains
+string-only for all existing callers. The AgentLoop serial and parallel paths
+now provide metadata explicitly to trace finalization, while the legacy LLM
+message and trace result remain text-only. The real financial tool has not yet
+been changed to produce metadata.

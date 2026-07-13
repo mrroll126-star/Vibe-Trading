@@ -2293,6 +2293,30 @@ Boundary:
   Web UI, or runtime artifact change.
 * No Agent run, live data, `.env` read, or push.
 
+## 2026-07-13 Fixture-first ToolExecutionResult Transport Proof
+
+Actions performed:
+
+1. Added the generic immutable `ToolExecutionResult` transport module.
+2. Preserved `ToolRegistry.execute(...) -> str` and added the additive
+   `execute_with_metadata(...)` path for AgentLoop.
+3. Transported metadata explicitly through serial and parallel execution;
+   legacy tool text remains the only LLM context content.
+4. Added fixture tests for compatibility, isolation, errors, serial/parallel
+   call association, and feature-flagged provenance projection.
+5. Corrected the projector so an explicit `fallback.used=false` is respected.
+
+Validation:
+
+* New transport tests: 8 passed.
+* Related regression tests: 49 passed.
+* Compile check passed.
+
+Boundary:
+
+* No real financial producer, Agent run, live data, Web UI, `.env` read,
+  provider-chain, loader, TraceWriter, or runtime artifact change.
+
 ## 2026-07-10 a-stock-data Phase G Controlled CLI / Tool-level Report Observation
 
 Actions performed:
