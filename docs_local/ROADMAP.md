@@ -1041,3 +1041,18 @@ Next roadmap item:
 
 Back up this safety fix, then run one controlled Agent research task to confirm
 the new trace no longer contains `bash` when shell tools are disabled.
+
+## 2026-07-13 Shell-safe Real Research Baseline Verified
+
+Completed:
+
+* Ran one controlled `300750.SZ` local CLI research task with shell tools
+  unset.
+* Confirmed the trace has no `bash` or `background_run` events.
+* Confirmed the trace remains compatible with the research-schema observer.
+
+Remaining before production artifact work:
+
+* Improve periodic financial data-confidence extraction.
+* Decide supported behavior for `indicators`.
+* Design the post-run schema artifact implementation and acceptance criteria.

@@ -3938,3 +3938,38 @@ Boundary:
 * Did not modify Web UI.
 * Did not commit `agent/runs`.
 * Did not commit `local_reports`.
+
+## 2026-07-13 Controlled Real Research Run Security Re-validation
+
+Goal: verify the local CLI shell-tool opt-in fix through one real `300750.SZ`
+research run with `VIBE_TRADING_ENABLE_SHELL_TOOLS` explicitly unset.
+
+Result:
+
+* Run ID: `20260713_112141_18_fafffc`; status: success.
+* Trace: `agent/runs/20260713_112141_18_fafffc/trace.jsonl`.
+* Ignored observation: `local_reports/real_trace_schema_observation_20260713_032343.json`.
+* 82 trace events; 24 tool results; final answer present.
+* Market data plus `income`, `balance`, `cashflow`, and `indicators` were found.
+* Schema compatibility summary generated with no missing top-level sections.
+* `bash` and `background_run` were absent from all trace tool events.
+
+Warnings:
+
+* Market latest date was `2026-07-10`, older than the requested date
+  `2026-07-13`.
+* Financial per-statement `_data_quality` metadata was missing in this trace.
+* One fund-flow request failed at the data-source network layer and was not
+  hidden.
+
+Regression:
+
+* `agent.tests.test_shell_tool_capability`: 6 passed.
+* `agent.tests.test_real_trace_observation agent.tests.test_trace_to_schema_pipeline agent.tests.test_report_builder`: 18 passed.
+* `.venv/bin/python -m compileall -q agent/src/reports agent/tests scripts`: passed.
+
+Boundary:
+
+* One real run only; no Web UI.
+* No AgentLoop, provider-chain, loader, or Web UI code change.
+* No `.env` read or printed; no runtime trace or local report committed.

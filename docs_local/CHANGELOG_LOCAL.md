@@ -1273,6 +1273,28 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No dependency installation.
 * No `local_reports` committed.
 
+## 2026-07-13 Controlled Real Research Run Security Re-validation
+
+### Changed
+
+* Recorded one real-run validation of the local CLI shell-tools default-off
+  behavior.
+* Recorded run `20260713_112141_18_fafffc`, its ignored observation output,
+  and the absence of `bash` and `background_run` trace events.
+* Updated follow-up priorities for financial data-confidence extraction and the
+  post-run research schema artifact.
+
+### Validation
+
+* Shell capability tests: 6 passed.
+* Trace/schema tests: 18 passed.
+* Compile check: passed.
+
+### Boundary
+
+* No production code changed in this validation task.
+* No `.env`, runtime traces, or local reports were committed.
+
 ## 2026-07-09
 
 ### Validation

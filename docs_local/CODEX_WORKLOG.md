@@ -1403,6 +1403,19 @@ Boundary:
 * Did not install dependencies.
 * Did not commit `local_reports`.
 
+## 2026-07-13 Controlled Real Research Run Security Re-validation
+
+1. Confirmed a clean working tree on `feature/bootstrap-local-setup`.
+2. Ran exactly one controlled local CLI research task for `300750.SZ` with the
+   shell-tools variable unset and existing safety guards enabled.
+3. Observed run `20260713_112141_18_fafffc` through the read-only trace
+   observer; its JSON summary was written only to ignored `local_reports/`.
+4. Verified `bash` and `background_run` were absent from the trace.
+5. Verified trace readability, tool-result collection, final-answer presence,
+   financial statement coverage, and schema compatibility.
+6. Re-ran shell capability, trace/schema, and compile regression checks.
+7. Updated documents only; no production code or runtime artifact entered Git.
+
 ## 2026-07-09 a-stock-data Phase E Controlled Direct Tool Fallback Smoke
 
 Actions performed:

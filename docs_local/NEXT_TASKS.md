@@ -877,3 +877,21 @@ Completed:
 
 6. **Web UI prototype only after schema proof strategy is accepted**
    * Reason: the product workflow should lead the UI, not the other way around.
+
+## Current Recommended Order After Shell-safe Real Research Run
+
+1. **Push local shell-safety and validation commits to the fork**
+   * Business value: preserve the verified shell-safe research baseline before
+     product work continues.
+
+2. **Design financial data-confidence extraction for periodic statements**
+   * Business value: retain provider, source, reporting period, fallback state,
+     and warnings in the schema as auditable financial-quality metadata.
+
+3. **Design the research-schema artifact post-processor MVP**
+   * Business value: turn compatible real traces into a stable structured
+     artifact without requiring the UI to parse narrative Markdown.
+
+4. **Decide `indicators` capability behavior**
+   * Business value: make unsupported indicator requests explicit before a
+     future metrics engine exists.
