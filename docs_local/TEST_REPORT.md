@@ -4164,3 +4164,43 @@ Boundary:
 
 * No real AgentLoop run, live data, Web UI, production artifact, provider-chain,
   loader, `.env` access, or runtime/local report commit.
+
+## 2026-07-13 Controlled Real Research Run with Financial Runtime Dual-write
+
+Run:
+
+* Run id: `20260713_122810_49_b5872e`.
+* Session id: none (local CLI run).
+* Trace: `agent/runs/20260713_122810_49_b5872e/trace.jsonl`.
+* Runtime flags: structured tool trace enabled; shell tools explicitly disabled.
+* One real Agent research run was executed for `300750.SZ`; no additional Agent
+  run was started.
+
+Observation:
+
+* The trace contains 63 events after completion and 16 tool-result events.
+* Financial tool calls include income, balance, cashflow, and indicators.
+* All four financial results have structured payloads; core statement payloads
+  contain twelve Eastmoney periods each. No `bash` or `background_run` event
+  appears.
+* The initial legacy observation scripts did not resolve `structured_payload`
+  sidecars, so they showed the legacy missing-financial view. A direct
+  read-only resolver check confirmed payload availability.
+* Schema/artifact generation remains `partial`: the primary financial envelope
+  uses `data[symbol].periods`, while the current report builder expects a row
+  list. Provider is absent, source is Eastmoney, upstream/fallback are absent,
+  and data-quality/reporting-period metadata is incomplete.
+* No final answer event was recorded, so the schema uses its final-answer
+  placeholder and warning.
+
+Validation:
+
+* Runtime dual-write tests: 5 passed.
+* Dual-write, report-builder, trace-pipeline, and direct-tool schema tests: 20
+  passed.
+* Compile check: passed.
+
+Boundary:
+
+* No code change, production artifact write, Web UI run, `.env` read, or
+  runtime/local report commit occurred during this observation.

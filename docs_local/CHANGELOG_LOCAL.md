@@ -1321,6 +1321,21 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 
 ## 2026-07-13
 
+### Validation
+
+* Controlled one-run CLI observation confirmed real financial structured trace
+  payloads for income, balance, cashflow, and indicators with shell tools off.
+* Identified two follow-up compatibility gaps: structured-payload sidecar
+  resolution in observers, and primary Eastmoney `periods` normalization for
+  report-builder financial confidence.
+
+### Boundary
+
+* Observation only after the single real run; no code change, Web UI,
+  production artifact, `.env` read, or runtime/local report commit.
+
+## 2026-07-13
+
 ### Added
 
 * `scripts/observe_real_trace_to_artifact.py`.

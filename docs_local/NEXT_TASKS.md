@@ -1113,3 +1113,20 @@ Completed:
 
 4. **Only then design market-data runtime dual-write activation**
    * Business value: keep the first runtime rollout narrow and auditable.
+
+## Current Recommended Order After Real Financial Dual-write Observation
+
+1. **Push the runtime dual-write MVP and observation commit to the fork**
+   * Business value: preserve the first real-trace validation result.
+
+2. **Design a primary financial envelope normalizer for `data[symbol].periods`**
+   * Business value: let verified Eastmoney primary payloads satisfy the
+     report-builder row-list contract without inferring financial facts.
+
+3. **Update observation consumers to resolve `structured_payload` sidecars**
+   * Business value: make existing schema/artifact observation scripts evaluate
+     the v1 payload path rather than silently falling back to legacy text.
+
+4. **Repeat one controlled financial trace only after normalization proof**
+   * Business value: verify complete financial confidence before expanding to
+     market-data runtime dual-write.

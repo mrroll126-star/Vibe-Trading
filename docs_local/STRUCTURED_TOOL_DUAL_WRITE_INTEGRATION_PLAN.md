@@ -155,6 +155,19 @@ observation script to confirm three-statement confidence, provenance, period,
 data-quality, warnings, and artifact completeness. Keep production artifact
 writing disabled.
 
+Observation on 2026-07-13:
+
+* Controlled CLI run `20260713_122810_49_b5872e` wrote structured payloads for
+  income, balance, cashflow, and indicators with the runtime flag enabled.
+* The payloads preserve the primary Eastmoney envelope and twelve available
+  periods per core statement. No shell tool event was recorded.
+* The existing report builder expects row lists, while this primary envelope
+  stores rows at `data[symbol].periods`. It therefore reports financial data as
+  missing despite the trace payload being recoverable.
+* The existing observation scripts also need `structured_payload` added to
+  their offload resolver field allowlist. This is an observation-consumer gap,
+  not a failure of trace enrichment.
+
 ## 7. Test and Acceptance Plan
 
 Before a real run:

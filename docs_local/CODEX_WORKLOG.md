@@ -1941,6 +1941,25 @@ Boundary:
 * No real AgentLoop run, live data, Web UI, production artifact, provider-chain,
   loader, `.env` access, or runtime/local report commit.
 
+## 2026-07-13 Controlled Real Research Run with Financial Runtime Dual-write
+
+Actions performed:
+
+1. Confirmed clean branch state, then ran exactly one local CLI research task
+   for `300750.SZ` with structured tool trace enabled and shell tools disabled.
+2. Identified run `20260713_122810_49_b5872e` and read its trace only.
+3. Ran existing schema and artifact observations, then performed a read-only
+   structured-payload resolver check.
+4. Confirmed income, balance, cashflow, and indicators dual-write payloads;
+   confirmed no shell-tool events.
+5. Documented the current primary-envelope and observation-reader compatibility
+   gaps. Ran offline regressions and compile checks.
+
+Boundary:
+
+* No code change, Web UI, production artifact, `.env` read, or runtime/local
+  report commit during the observation.
+
 ## 2026-07-12 Controlled Historical Trace Observation
 
 Actions performed:

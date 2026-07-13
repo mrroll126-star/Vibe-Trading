@@ -1241,3 +1241,20 @@ Next roadmap item:
 Run one controlled real financial trace with the flag enabled, then observe it
 through the existing schema-artifact pipeline without writing a production
 artifact.
+
+## 2026-07-13 Controlled Real Financial Dual-write Observation
+
+Completed:
+
+* Ran one local CLI research task for `300750.SZ` with structured financial
+  trace enrichment enabled and shell tools disabled.
+* Confirmed trace payloads for income, balance, cashflow, and indicators; no
+  shell-tool events were recorded.
+* Confirmed the remaining schema gap is primary-envelope normalization, not
+  trace payload persistence: Eastmoney stores rows under `data[symbol].periods`
+  while the current report builder expects a row list.
+
+Next roadmap item:
+
+Design a fixture-first primary financial-envelope normalizer and update
+observation readers for structured-payload sidecars before another real run.
