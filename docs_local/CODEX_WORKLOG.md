@@ -1403,6 +1403,18 @@ Boundary:
 * Did not install dependencies.
 * Did not commit `local_reports`.
 
+## 2026-07-13 Fixture-first Financial Confidence Integration Proof
+
+1. Confirmed a clean working tree and followed the approved builder-side
+   integration plan.
+2. Added report-builder result indexing for the core three financial statements.
+3. Connected the pure extractor without changing trace collection or any
+   runtime research path.
+4. Added six offline trace-fixture integration tests and updated complete-status
+   expectations in existing schema proofs.
+5. Ran focused integration and existing regression suites plus compile checks.
+6. Did not run AgentLoop, live data, Web UI, or write a production artifact.
+
 ## 2026-07-13 Financial Confidence Integration Design
 
 1. Confirmed the working tree was clean and reviewed the actual report builder,

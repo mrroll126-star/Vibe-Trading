@@ -87,7 +87,7 @@ class DirectToolSchemaPipelineTests(unittest.TestCase):
         )
 
         self.assertEqual(report["symbol"]["normalized_symbol"], SYMBOL)
-        self.assertEqual(report["financial_health"]["status"], "available")
+        self.assertEqual(report["financial_health"]["status"], "complete")
         self.assertEqual(len(report["financial_health"]["statements"]), 3)
         self.assertEqual(report["data_confidence"]["financial_data"]["provider"], "a_stock_data")
         self.assertEqual(report["data_confidence"]["financial_data"]["source"], "sina_financial_report")

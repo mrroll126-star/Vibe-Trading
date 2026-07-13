@@ -239,3 +239,22 @@ tool result, trace, or AgentLoop state needs rollback.
 Implement only after the fixture contract and duplicate-result policy are
 reviewed. The first implementation should not write `research_schema.json`;
 it should only improve in-memory/direct schema proof output.
+
+## 13. Fixture-first Integration Proof Status (2026-07-13)
+
+Implemented as the recommended Option A:
+
+* report_builder now mechanically indexes the three core statement results and
+  calls the existing pure extractor for stock assets only.
+* The builder merges extractor output into financial_health and uses
+  extractor-owned data_confidence.financial_data.
+* The trace collector remains unchanged, so its existing trace-to-report
+  function now proves the full offline path: trace fixture, collector,
+  extractor, builder, then schema.
+* Index and ETF paths retain existing blocked-financial behavior and do not
+  invoke company-statement confidence extraction.
+* Duplicate indexing prefers a successful result with usable rows and never
+  merges data from different providers.
+
+Validation remains fixture-only. No real run, live data, production artifact,
+AgentLoop, provider, loader, or Web UI path was changed.

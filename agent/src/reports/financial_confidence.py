@@ -93,7 +93,11 @@ def extract_financial_confidence(
         "providers": providers,
         "sources": sources,
         "upstreams": upstreams,
+        "provider": providers[0] if providers else "",
+        "source": sources[0] if sources else "",
+        "upstream": upstreams[0] if upstreams else "",
         "reporting_period": max(periods) if periods else "",
+        "period_end_date": max(periods) if periods else "",
         "reporting_period_status": reporting_period_status,
         "fallback_used": fallback_used,
         "warnings": warnings,
@@ -125,6 +129,8 @@ def _statement_confidence(statement_type: str, result: Mapping[str, Any]) -> dic
         or quality.get("fallback_used")
     )
     warnings = _string_list(result.get("warnings")) + _string_list(quality.get("warnings"))
+    if "a_stock_data_fallback_used" in warnings:
+        fallback_used = True
 
     if not result:
         status = "missing"

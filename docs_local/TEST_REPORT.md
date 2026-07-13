@@ -4008,3 +4008,26 @@ Boundary:
 
 * No live data, AgentLoop, Web UI, provider-chain, loader, or `.env` access.
 * Extractor is not yet wired into `build_research_report`.
+
+## 2026-07-13 Financial Confidence Integration Fixture Proof
+
+Implemented:
+
+* Connected the pure extractor to the report builder through a mechanical
+  statement-type result index.
+* Existing trace collection now produces statement-level financial confidence
+  when it calls the builder.
+* Complete core statements now use the explicit schema status complete; missing
+  or failed core statements remain partial or missing.
+
+Validation:
+
+* Financial confidence integration tests: 6 passed.
+* Extractor, report builder, trace, and direct-tool regressions: 22 passed.
+* Compile check: passed.
+
+Boundary:
+
+* Fixture-only pipeline proof; no live data, AgentLoop, or Web UI.
+* No provider-chain, loader, or production artifact change.
+* No .env access and no runtime/local report committed.

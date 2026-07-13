@@ -10,6 +10,7 @@ from __future__ import annotations
 from datetime import UTC, datetime
 from typing import Any
 
+from src.reports.financial_confidence import extract_financial_confidence
 from src.symbols import normalize_symbol
 
 
@@ -67,10 +68,17 @@ def build_research_report(
         financial_results,
         asset_type=str(symbol.get("asset_type") or ""),
     )
+    financial_confidence = _build_financial_confidence(
+        financial_results,
+        asset_type=str(symbol.get("asset_type") or ""),
+    )
+    if financial_confidence:
+        financial_health = _merge_financial_confidence(financial_health, financial_confidence)
     investment_memo = _build_investment_memo(interpretation)
     data_confidence = _build_data_confidence(
         market_snapshot=market_snapshot,
         financial_health=financial_health,
+        financial_confidence=financial_confidence,
     )
 
     return {
@@ -251,6 +259,72 @@ def _build_financial_health(
     }
 
 
+def _build_financial_confidence(
+    results: list[dict[str, Any]],
+    *,
+    asset_type: str,
+) -> dict[str, Any] | None:
+    """Index validated statement results before pure confidence extraction."""
+
+    if asset_type != "stock":
+        return None
+    return extract_financial_confidence(_index_financial_results(results), asset_type=asset_type)
+
+
+def _index_financial_results(results: list[dict[str, Any]]) -> dict[str, dict[str, Any]]:
+    """Keep one auditable result per core statement without merging providers."""
+
+    indexed: dict[str, dict[str, Any]] = {}
+    for result in results:
+        statement_type = str(
+            result.get("statement_type") or result.get("statement") or result.get("type") or ""
+        )
+        if statement_type not in {"income", "balance", "cashflow"}:
+            continue
+        current = indexed.get(statement_type)
+        if current is None or _financial_result_rank(result) > _financial_result_rank(current):
+            indexed[statement_type] = result
+    return indexed
+
+
+def _financial_result_rank(result: dict[str, Any]) -> int:
+    if not result.get("ok", False):
+        return 0
+    data = result.get("data")
+    if isinstance(data, list) and data:
+        return 2
+    if isinstance(data, dict) and any(
+        isinstance(value, list) and value for value in data.values()
+    ):
+        return 2
+    return 1
+
+
+def _merge_financial_confidence(
+    financial_health: dict[str, Any],
+    confidence: dict[str, Any],
+) -> dict[str, Any]:
+    extracted_health = confidence["financial_health"]
+    quality = financial_health.get("quality")
+    existing_warnings = _string_list(
+        quality.get("warnings") if isinstance(quality, dict) else []
+    )
+    merged_quality = dict(quality) if isinstance(quality, dict) else {}
+    merged_quality["reporting_period_status"] = extracted_health["reporting_period"]["status"]
+    merged_quality["warnings"] = _dedupe(
+        existing_warnings + _string_list(extracted_health["warnings"])
+    )
+
+    merged = dict(financial_health)
+    merged["status"] = extracted_health["status"]
+    merged["statement_level_confidence"] = extracted_health["statement_level_confidence"]
+    merged["reporting_period"] = extracted_health["reporting_period"]
+    merged["freshness_policy"] = extracted_health["freshness_policy"]
+    merged["fallback_status"] = extracted_health["fallback_status"]
+    merged["quality"] = merged_quality
+    return merged
+
+
 def _build_investment_memo(interpretation: dict[str, Any]) -> dict[str, Any]:
     return {
         "thesis": str(interpretation.get("thesis") or ""),
@@ -265,14 +339,34 @@ def _build_data_confidence(
     *,
     market_snapshot: dict[str, Any],
     financial_health: dict[str, Any],
+    financial_confidence: dict[str, Any] | None = None,
 ) -> dict[str, Any]:
     market_quality = market_snapshot.get("data_quality") if isinstance(market_snapshot.get("data_quality"), dict) else {}
     financial_statements = financial_health.get("statements") if isinstance(financial_health.get("statements"), list) else []
     first_financial = financial_statements[0] if financial_statements else {}
     financial_quality = first_financial.get("data_quality") if isinstance(first_financial.get("data_quality"), dict) else {}
+    extracted_financial_data = (
+        financial_confidence.get("data_confidence", {}).get("financial_data")
+        if isinstance(financial_confidence, dict)
+        else None
+    )
+    financial_data = (
+        dict(extracted_financial_data)
+        if isinstance(extracted_financial_data, dict)
+        else {
+            "provider": str(first_financial.get("provider") or financial_quality.get("provider") or ""),
+            "source": str(first_financial.get("source") or financial_quality.get("source") or ""),
+            "upstream": str(first_financial.get("upstream") or financial_quality.get("upstream") or ""),
+            "reporting_period": str(financial_quality.get("reporting_period") or ""),
+            "period_end_date": str(first_financial.get("latest_data_date") or financial_quality.get("latest_data_date") or ""),
+            "status": financial_health.get("status") or "unknown",
+            "warnings": _string_list(financial_health.get("quality", {}).get("warnings") if isinstance(financial_health.get("quality"), dict) else []),
+        }
+    )
     warnings = _dedupe(
         _string_list(market_snapshot.get("warnings"))
         + _string_list(financial_health.get("quality", {}).get("warnings") if isinstance(financial_health.get("quality"), dict) else [])
+        + _string_list(financial_data.get("warnings"))
     )
 
     return {
@@ -283,15 +377,7 @@ def _build_data_confidence(
             "status": market_snapshot.get("status") or "unknown",
             "warnings": _string_list(market_quality.get("warnings")),
         },
-        "financial_data": {
-            "provider": str(first_financial.get("provider") or financial_quality.get("provider") or ""),
-            "source": str(first_financial.get("source") or financial_quality.get("source") or ""),
-            "upstream": str(first_financial.get("upstream") or financial_quality.get("upstream") or ""),
-            "reporting_period": str(financial_quality.get("reporting_period") or ""),
-            "period_end_date": str(first_financial.get("latest_data_date") or financial_quality.get("latest_data_date") or ""),
-            "status": financial_health.get("status") or "unknown",
-            "warnings": _string_list(financial_health.get("quality", {}).get("warnings") if isinstance(financial_health.get("quality"), dict) else []),
-        },
+        "financial_data": financial_data,
         "warnings": warnings,
     }
 

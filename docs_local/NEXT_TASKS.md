@@ -956,3 +956,21 @@ Completed:
 4. **Design the post-run research-schema artifact MVP**
    * Business value: write a durable artifact only after confidence metadata is
      demonstrated end to end in fixture and controlled trace paths.
+
+## Current Recommended Order After Financial Confidence Integration Proof
+
+1. **Push the local integration proof and prior baseline commits to the fork**
+   * Business value: preserve the complete offline confidence pipeline before
+     starting real-run artifact work.
+
+2. **Design controlled real-trace confidence observation**
+   * Business value: verify that real trace financial results preserve provider,
+     source, period, and fallback metadata needed by the extractor.
+   * Scope: observation only; do not write a production artifact.
+
+3. **Define the indicators capability policy**
+   * Business value: keep unsupported derived metrics separate from the three
+     raw-statement completeness contract.
+
+4. **Design the post-run research-schema artifact MVP**
+   * Business value: only after real-trace metadata compatibility is confirmed.

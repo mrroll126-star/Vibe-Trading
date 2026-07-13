@@ -109,7 +109,7 @@ class TraceToSchemaPipelineTests(unittest.TestCase):
         self.assertEqual(report["research_meta"]["raw_event_count"], 7)
         self.assertEqual(report["symbol"]["normalized_symbol"], SYMBOL)
         self.assertEqual(report["market_snapshot"]["status"], "available")
-        self.assertEqual(report["financial_health"]["status"], "available")
+        self.assertEqual(report["financial_health"]["status"], "complete")
         self.assertEqual(len(report["financial_health"]["statements"]), 3)
         self.assertEqual(report["data_confidence"]["financial_data"]["provider"], "a_stock_data")
         self.assertEqual(report["data_confidence"]["financial_data"]["source"], "sina_financial_report")
@@ -206,7 +206,7 @@ class TraceToSchemaPipelineTests(unittest.TestCase):
             generated_at="2026-07-11T00:00:00+00:00",
         )
 
-        self.assertEqual(report["financial_health"]["status"], "available")
+        self.assertEqual(report["financial_health"]["status"], "complete")
         self.assertEqual(report["investment_memo"]["thesis"], "")
         self.assertEqual(report["investment_memo"]["bull_case"], [])
         self.assertIn("final_answer_missing_from_trace", report["data_confidence"]["warnings"])

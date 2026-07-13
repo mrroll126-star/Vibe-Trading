@@ -1273,6 +1273,31 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No dependency installation.
 * No `local_reports` committed.
 
+## 2026-07-13 Fixture-first Financial Confidence Integration Proof
+
+### Added
+
+* agent/tests/test_financial_confidence_integration.py.
+
+### Changed
+
+* Connected the pure financial confidence extractor to report_builder.py.
+* Added a deterministic three-statement result-index step and preserved existing
+  blocked index/ETF behavior.
+* Updated schema tests so a fully available income/balance/cashflow set is
+  represented as complete.
+
+### Validation
+
+* Integration tests: 6 passed.
+* Extractor/report/trace/direct-tool regression tests: 22 passed.
+* Compile check: passed.
+
+### Boundary
+
+* Fixture-first proof only; no live data, AgentLoop, Web UI, provider-chain,
+  loader, .env, or production artifact interaction.
+
 ## 2026-07-13 Financial Confidence Integration Design
 
 ### Added

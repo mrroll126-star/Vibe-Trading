@@ -1103,3 +1103,19 @@ Next roadmap item:
 
 Implement the fixture-first report-builder integration only after the selected
 result policy is accepted.
+
+## 2026-07-13 Financial Confidence Integration Proof
+
+Completed:
+
+* Connected trace fixture collection through the pure financial confidence
+  extractor into the structured report builder.
+* Verified complete, fallback, missing-statement, missing-metadata,
+  index/ETF-blocked, and missing-final-answer scenarios offline.
+* Kept the proof outside AgentLoop, live data, Web UI, and production artifact
+  storage.
+
+Next roadmap item:
+
+Observe confidence metadata from a controlled historical or real trace before
+any persisted research-schema artifact is implemented.

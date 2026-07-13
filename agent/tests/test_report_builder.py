@@ -87,7 +87,7 @@ class ReportBuilderTests(unittest.TestCase):
         self.assertEqual(report["market_snapshot"]["price"], 1500.5)
         self.assertEqual(report["market_snapshot"]["status"], "available")
         self.assertEqual(len(report["financial_health"]["statements"]), 3)
-        self.assertEqual(report["financial_health"]["status"], "available")
+        self.assertEqual(report["financial_health"]["status"], "complete")
         self.assertEqual(report["financial_health"]["statements"][0]["provider"], "a_stock_data")
         self.assertEqual(report["investment_memo"]["bull_case"], ["Brand strength"])
         self.assertEqual(report["data_confidence"]["financial_data"]["source"], "sina_financial_report")
