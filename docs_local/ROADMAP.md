@@ -1056,3 +1056,19 @@ Remaining before production artifact work:
 * Improve periodic financial data-confidence extraction.
 * Decide supported behavior for `indicators`.
 * Design the post-run schema artifact implementation and acceptance criteria.
+
+## 2026-07-13 Financial Data Confidence Contract Designed
+
+Completed:
+
+* Defined a separate financial reporting-period policy rather than reusing
+  market-data freshness labels.
+* Defined statement-level provenance, completeness, fallback, warning, and
+  combined financial-health rules for income, balance, and cashflow.
+* Defined the boundary that provider, source, period, counts, and fallback
+  state are program-produced facts, not LLM-generated report fields.
+
+Next roadmap item:
+
+Design the minimal fixture-first Financial Confidence Extractor before adding a
+post-run research-schema artifact.

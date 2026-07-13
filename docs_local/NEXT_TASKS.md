@@ -895,3 +895,24 @@ Completed:
 4. **Decide `indicators` capability behavior**
    * Business value: make unsupported indicator requests explicit before a
      future metrics engine exists.
+
+## Current Recommended Order After Financial Data Confidence Design
+
+1. **Push local baseline commits to the fork**
+   * Business value: back up the shell-safe real-run and confidence-contract
+     baseline before implementation work begins.
+
+2. **Design a minimal Financial Confidence Extractor implementation**
+   * Business value: carry statement provider, source, reporting period,
+     fallback state, completeness, and warnings into the report schema without
+     LLM inference.
+   * Scope: fixture-first and post-processing only; no AgentLoop or provider
+     chain change in the first implementation.
+
+3. **Define `indicators` capability policy**
+   * Business value: distinguish unavailable derived metrics from missing raw
+     financial statements.
+
+4. **Design the research-schema artifact post-processor MVP**
+   * Business value: persist an audited structured report after a real run only
+     when the confidence contract is available.

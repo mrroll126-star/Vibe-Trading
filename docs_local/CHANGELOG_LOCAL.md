@@ -1273,6 +1273,25 @@ Recorded Web UI boundary retest for the stock-specific symbol guard:
 * No dependency installation.
 * No `local_reports` committed.
 
+## 2026-07-13 Financial Data Confidence Extraction Design
+
+### Added
+
+* `docs_local/FINANCIAL_DATA_CONFIDENCE_DESIGN.md`.
+
+### Changed
+
+* Defined financial confidence extraction, reporting-period policy, fallback
+  provenance, and schema integration for income, balance, and cashflow.
+* Updated the implementation order: financial confidence extraction precedes
+  a production research-schema artifact.
+
+### Boundary
+
+* Design documentation only.
+* No AgentLoop, provider-chain, loader, Web UI, service, live-data, or `.env`
+  interaction.
+
 ## 2026-07-13 Controlled Real Research Run Security Re-validation
 
 ### Changed

@@ -1,0 +1,211 @@
+# Financial Data Confidence Extraction Design
+
+## 1. Purpose
+
+This contract defines a future Financial Confidence Extractor that turns normalized
+`FinancialStatementsTool` output into auditable report fields. It covers only
+`income`, `balance`, and `cashflow`; it does not change AgentLoop, providers,
+loaders, Web UI, or runtime behavior.
+
+```text
+Tool output
+  -> Financial Confidence Extractor
+  -> financial_health + data_confidence + warnings
+```
+
+Financial confidence is about disclosed reporting periods. It must not reuse
+intraday market-data freshness labels.
+
+## 2. Financial Confidence Data Model
+
+Each requested statement produces a record, even when it is missing, failed,
+blocked, or not applicable. Metadata is never silently omitted.
+
+```json
+{
+  "statement_type": "income",
+  "status": "available",
+  "provider": "a_stock_data",
+  "source": "sina_financial_report",
+  "upstream": "sina",
+  "latest_period": "2026-03-31",
+  "row_count": 3,
+  "completeness": "sufficient",
+  "quality_status": "reported_period_available",
+  "reporting_period_status": "current_for_expected_cycle",
+  "fallback_used": true,
+  "primary_error": "primary_financials_unavailable",
+  "warnings": ["primary_provider_unavailable", "a_stock_data_fallback_used"]
+}
+```
+
+| Field | Rule | Ownership |
+| --- | --- | --- |
+| `statement_type` | `income`, `balance`, or `cashflow` | Tool request/result |
+| `status` | `available`, `partial`, `missing`, `failed`, `blocked`, or `not_applicable` | Extractor |
+| `provider`, `source`, `upstream` | Actual path that supplied usable rows | Tool output only |
+| `latest_period` | Latest parsed report date | Normalized statement row only |
+| `row_count` | Normalized usable-row count | Program calculated |
+| `completeness`, `quality_status` | Usability/audit assessment | Extractor |
+| `fallback_used`, `primary_error`, `warnings` | Primary/fallback outcome | Tool output plus extractor rule |
+
+The Research Schema must contain:
+
+```json
+{
+  "financial_health": {
+    "status": "partial",
+    "statement_level_confidence": [],
+    "reporting_period": {},
+    "freshness_policy": {},
+    "fallback_status": {},
+    "warnings": []
+  },
+  "data_confidence": { "financial_data": {} }
+}
+```
+
+## 3. Three-Statement Contract
+
+### Income
+
+Expected fields where supplied: revenue/operating revenue, net profit, EPS, and
+report date. `available` needs usable rows, a parseable period, provider, and
+source. Missing period/source/provider or a required metric makes it `partial`.
+The Agent may discuss revenue or profit only from reported values and periods.
+
+### Balance
+
+Expected fields where supplied: total assets, total liabilities, shareholder
+equity, and report date. The same status rules apply. If assets, liabilities,
+or equity are missing, the Agent must not claim a complete solvency or capital
+structure assessment.
+
+### Cash Flow
+
+Expected fields where supplied: operating, investing, financing, and net cash
+flow plus report date. If operating cash flow is missing, the Agent must not
+infer cash-generation quality from profit alone.
+
+## 4. Combined Financial Health
+
+| Status | Rule |
+| --- | --- |
+| `available` | All three core statements are available or acceptably partial, with provider/source/period disclosed. |
+| `partial` | At least one usable statement exists but any core statement is missing, failed, blocked, or materially incomplete. |
+| `missing` | No usable core statement exists. |
+| `blocked` | Guard or asset-routing policy prevented a financial request. |
+
+`complete` for the MVP means income, balance, and cashflow all exist. News,
+research reports, indicators, and market data do not alter this definition.
+
+## 5. Provenance and Fallback
+
+### Primary Success
+
+Set `fallback_used=false`; retain the actual primary provider/source/upstream.
+Do not label data as fallback merely because fallback capability exists.
+
+### Primary Failure, Fallback Success
+
+Set `fallback_used=true`, retain `provider=a_stock_data`,
+`source=sina_financial_report`, and `upstream=sina` when those are supplied.
+Add concise warnings `primary_provider_unavailable` and
+`a_stock_data_fallback_used`. Preserve a safe primary error summary without
+transport details or credentials.
+
+### Primary and Fallback Failure
+
+Set statement status to `failed`, preserve `financial_statement_unavailable`,
+and produce no conclusion for that statement.
+
+### Ineligible Asset
+
+ETF, index, US/HK symbol, ambiguous code, and unverified Chinese name must not
+run the current A-share fallback. Report `blocked` or `not_applicable`; do not
+misrepresent this as a provider outage.
+
+## 6. Reporting Period Policy
+
+| Status | Meaning | Report behavior |
+| --- | --- | --- |
+| `current_for_expected_cycle` | Latest period is plausible for a normal reporting cycle. | State the exact period; allow period-bounded analysis. |
+| `period_available_but_age_unassessed` | Date parses but expected-cycle policy cannot assess it. | Allow historical discussion and disclose the limitation. |
+| `stale_for_expected_cycle` | Latest period materially lags the configured disclosure cycle. | Do not call it latest financial condition; warn. |
+| `missing_period` | No parseable reporting period. | Do not call results latest; limit analysis. |
+| `invalid_period` | Date is malformed or inconsistent. | Exclude from conclusions and warn. |
+
+A future implementation may classify dates as Q1/H1/Q3/FY only when reliable.
+It must keep the exact `latest_period` date as the source of truth. Filing
+deadlines and grace windows are future configurable policy, not hard-coded now.
+
+## 7. Agent Prohibited Behaviors
+
+The Agent must not:
+
+1. Infer missing revenue, profit, assets, liabilities, or cash flow.
+2. Describe financial health as complete when a core statement is missing or materially incomplete.
+3. Hide fallback usage or provider failure.
+4. Call missing or age-unassessed data the latest financial condition.
+5. Turn periodic financial figures into current-day facts.
+6. Manufacture indicators, forecasts, target prices, or ratios without inputs.
+7. Treat an `indicators` failure as proof that raw three-statement data is absent.
+
+When cashflow is absent, for example, the report must explicitly state that
+cash-conversion analysis cannot be made from verified data.
+
+## 8. Schema Integration
+
+The extractor runs after tool-result normalization and before AI interpretation:
+
+```text
+normalized statement rows + source metadata
+  -> Financial Confidence Extractor
+  -> financial_health.statements[]
+  -> financial_health.statement_level_confidence[]
+  -> financial_health.quality and warnings
+  -> data_confidence.financial_data
+  -> bounded AI financial summary and investment memo
+```
+
+Program-owned fields include provider, source, upstream, period, row count,
+fallback state, status, and warnings. The LLM may write only bounded
+interpretation after it receives those facts and limitations.
+
+Example `data_confidence.financial_data`:
+
+```json
+{
+  "status": "partial",
+  "reporting_period": "2026-03-31",
+  "providers": ["a_stock_data"],
+  "sources": ["sina_financial_report"],
+  "fallback_used": true,
+  "warnings": []
+}
+```
+
+## 9. Future Implementation Acceptance Criteria
+
+Fixture-first tests must prove:
+
+1. Primary success preserves actual source metadata and `fallback_used=false`.
+2. Fallback success preserves provider/source/upstream, primary error disclosure, and `fallback_used=true`.
+3. Missing/failed statements create explicit records and combined `partial` or `missing` status.
+4. Missing period never becomes a latest-data claim.
+5. Ineligible assets never enter the A-share fallback.
+6. Both `financial_health` and `data_confidence` receive program-produced metadata.
+7. AI input includes missing statements, period status, and fallback warnings.
+
+## 10. Scope and Rollback
+
+This is documentation only. A future extractor must be isolated in the
+schema/post-processing layer, behind focused fixture tests. It must be possible
+to disable that new path without changing `FinancialStatementsTool`, its
+fallback, the provider chain, or raw tool output.
+
+## 11. Recommended Next Step
+
+Design the minimal fixture-first `FinancialConfidenceExtractor` implementation
+and acceptance tests before producing a persisted `research_schema.json`
+artifact or expanding a-stock-data to new data domains.

@@ -1403,6 +1403,19 @@ Boundary:
 * Did not install dependencies.
 * Did not commit `local_reports`.
 
+## 2026-07-13 Financial Data Confidence Extraction Design
+
+1. Confirmed the working tree was clean and reviewed the existing financial
+   capability and research-schema contracts.
+2. Added the Financial Data Confidence Design document.
+3. Defined statement-level contracts for income, balance, and cashflow.
+4. Defined separate reporting-period categories for financial filings; no
+   market-data freshness rule is reused.
+5. Defined primary/fallback/failed/ineligible-asset provenance behavior.
+6. Defined program-owned schema metadata and prohibited Agent behaviors.
+7. Updated roadmap and next-task ordering. No code, services, live data, or
+   credentials were used.
+
 ## 2026-07-13 Controlled Real Research Run Security Re-validation
 
 1. Confirmed a clean working tree on `feature/bootstrap-local-setup`.
