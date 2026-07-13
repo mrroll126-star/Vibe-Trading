@@ -1,5 +1,6 @@
 """Structured report builders for research workspace proofs."""
 
+from src.reports.artifact_generator import generate_research_artifact
 from src.reports.report_builder import ReportBuildError, build_research_report
 from src.reports.financial_confidence import FinancialConfidenceError, extract_financial_confidence
 from src.reports.trace_collector import (
@@ -10,6 +11,7 @@ from src.reports.trace_collector import (
 
 __all__ = [
     "ReportBuildError",
+    "generate_research_artifact",
     "FinancialConfidenceError",
     "TraceCollection",
     "extract_financial_confidence",

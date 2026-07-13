@@ -992,3 +992,22 @@ Completed:
 4. **Implement controlled artifact generation only after fixture proof**
    * Business value: create a durable run-level research schema without making
      the Web UI parse trace.jsonl.
+
+## Current Recommended Order After Artifact Generator Proof
+
+1. **Push local baseline commits to the fork**
+   * Business value: back up the fixture-only artifact generator and its tested
+     confidence pipeline before any controlled real-trace work.
+
+2. **Design controlled real-trace artifact observation**
+   * Business value: compare real trace metadata with the fixture contract while
+     writing only to ignored local_reports.
+   * Scope: observation, no agent/runs artifact write.
+
+3. **Define the indicators capability policy**
+   * Business value: keep unsupported derived metrics separate from raw
+     statement confidence.
+
+4. **Design production artifact writer activation**
+   * Business value: decide trigger, atomic write, sidecar metadata, and API
+     ownership only after real-trace compatibility is confirmed.
